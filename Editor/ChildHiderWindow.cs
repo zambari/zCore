@@ -13,9 +13,12 @@ using UnityEditor;
  Editor window enabling you to remember and restore Hierarchy selections.
  Aslo searches for simiarily named objects within hierarchy (for example objects called Text).
  Theres also a shortcut for toggling the active state of bookmarked objects
- version 1.03 addich hider even if one is present in paren
- version 1.02  mutliple selections for active toggle now working   (2017.10.11)
+
+ 
  version 1.01    (2017.09.04)
+ version 1.02  mutliple selections for active toggle now working   (2017.10.11)
+  version 1.03 addich hider even if one is present in paren
+   version 1.03 a removed debug
 
 */
 
@@ -130,7 +133,7 @@ public class ChildHiderWindow : EditorWindow
     }
     void OnSelectionChange()
     {
-        Debug.Log("isithc");
+//        Debug.Log("isithc");
         ReScan();
     }
     void OnHierarchyChange()
