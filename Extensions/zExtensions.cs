@@ -15,7 +15,8 @@
 // v0.54 removecomponenst, remoechildren
 // v0.55 CamelCase ! Breaking change
 // v0.56 tojson creates streamingassts if not extising
-
+// v0.56a tojson/fromjson adds .json to filename if not present
+// v0.57a show, hide
 
 using UnityEngine;
 using System;
@@ -69,7 +70,7 @@ public static class zExt
 
     public static void RemoveAllComponentsExcluding(this GameObject obj, params Type[] types)
     {
-//        List<Type> typeList = new List<Type>(types);
+        //        List<Type> typeList = new List<Type>(types);
 
 
         Component[] c = obj.GetComponents<Component>();
@@ -88,16 +89,62 @@ public static class zExt
 
         RepaintHierarchy();
     }
+    [Obsolete("use HideObject In Hierarchy")]
     public static void HideObject(this GameObject obj, HideFlags flag = HideFlags.HideInHierarchy)
+    {
+        HideObjectInHierarchy(obj, flag);
+    }
+    public static void HideObjectInHierarchy(this GameObject obj, HideFlags flag = HideFlags.HideInHierarchy)
     {
         obj.hideFlags = flag;
         RepaintHierarchy();
+
     }
+
+    [Obsolete("use ShowObjectInHierarchy")]
     public static void ShowObject(this GameObject obj, HideFlags flag = HideFlags.None)
+    {
+        ShowObject(obj, flag);
+    }
+    public static void ShowObjectInHierarchy(this GameObject obj, HideFlags flag = HideFlags.None)
     {
         obj.hideFlags = flag;
 
     }
+
+
+    public static void Hide(this Transform obj)
+    {
+
+        if (obj != null) Hide(obj.gameObject);
+
+    }
+    public static void Show(this Transform obj)
+    {
+        if (obj != null) Show(obj.gameObject);
+    }
+    public static void Hide(this GameObject obj)
+    {
+        if (obj == null) return;
+        var showHide = obj.GetComponent<IShowHide>();
+        if (showHide != null)
+            showHide.Hide();
+        else
+            obj.SetActive(false);
+
+    }
+    public static void Show(this GameObject obj)
+    {
+        if (obj == null) return;
+        var showHide = obj.GetComponent<IShowHide>();
+        if (showHide != null)
+            showHide.Show();
+        else
+            obj.SetActive(true);
+
+    }
+
+
     public static GameObject[] GetGameObjectsWithComponent<T>() where T : Component
     {
         T[] foundObjects = GameObject.FindObjectsOfType<T>();
@@ -130,7 +177,7 @@ public static class zExt
         return new string(b);
     }
 
-   
+
 
     public static bool IsNullOrEmpty<T>(this List<T> source)
     {
@@ -463,6 +510,7 @@ public static class zExt
     public static void saveJson(this object obj, string path)
     {
         string dataAsJson = JsonUtility.ToJson(obj, true);
+        if (!path.Contains(".json")) path += ".json";
         File.WriteAllText(path, dataAsJson);
         if (File.Exists(path))
         {
@@ -481,7 +529,10 @@ public static class zExt
     /// </summary>
     public static T FromJson<T>(this T obj, string path) // different naming conventino
     {
-        return obj.loadJson<T>(Application.streamingAssetsPath + "/" + path);
+
+        if (!path.Contains(".json")) path += ".json";
+        if (!path.Contains(Application.streamingAssetsPath)) path = Application.streamingAssetsPath + "/" + path;
+        return obj.loadJson<T>(path);
     }
 
     /// <summary>
@@ -489,6 +540,9 @@ public static class zExt
     /// </summary>
     public static T loadJson<T>(this T obj, string path)
     {
+        //   if (!path.Contains(".json")) path+=".json";
+        //   if (!path.Contains(Application.streamingAssetsPath)) path = Application.streamingAssetsPath+"/"+path;
+
         string dataAsJson = File.ReadAllText(path);
         if (dataAsJson == null || dataAsJson.Length < 2)
             Debug.Log("loading file:" + path + " failed");
@@ -731,11 +785,11 @@ public static class RectExtensions
         {
 
             GameObject go = transform.GetChild(i).gameObject;
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             MonoBehaviour.DestroyImmediate(go);
-            #else 
+#else
             MonoBehaviour.Destroy(go);
-            #endif
+#endif
             k++;
         }
         //        Debug.Log("destroyed " + k + " children of " + transform.name, transform.gameObject);
@@ -744,7 +798,7 @@ public static class RectExtensions
     {
         RemoveChildren(g.transform, 0);
     }
-   public static void SetParentAndFill(this RectTransform rect, RectTransform parentRect)
+    public static void SetParentAndFill(this RectTransform rect, RectTransform parentRect)
     {
         rect.SetParent(parentRect);
         FillParent(rect);
@@ -1103,107 +1157,111 @@ public static class RectExtensions
 
     }
 }
-namespace Z {
+namespace Z
+{
 
-public static class zExtGeneric {
-
-
-     /// <summary>
-    /// Performs an equality test between two objects, if they are different, the assignmnent is made,
-    /// afterwards a call is invoked
-    /// </summary>
-    /// <param name="currentValue"> reference to your holder variable </param>
-    /// <param name="newValue"> a new value, nothing happens if its the same </param>
-
-
-    public static void IfChanged<T>(ref T currentValue, T newValue, Action whenDifferent)
+    public static class zExtGeneric
     {
-        if (newValue == null && currentValue != null)
+
+
+        /// <summary>
+        /// Performs an equality test between two objects, if they are different, the assignmnent is made,
+        /// afterwards a call is invoked
+        /// </summary>
+        /// <param name="currentValue"> reference to your holder variable </param>
+        /// <param name="newValue"> a new value, nothing happens if its the same </param>
+
+
+        public static void IfChanged<T>(ref T currentValue, T newValue, Action whenDifferent)
         {
-            currentValue = newValue;
-            whenDifferent.Invoke();
+            if (newValue == null && currentValue != null)
+            {
+                currentValue = newValue;
+                whenDifferent.Invoke();
+            }
+            else
+                if (!newValue.Equals(currentValue))
+            {
+                currentValue = newValue;
+                whenDifferent.Invoke();
+            }
+
         }
-        else
+        public static void IfChanged<T>(ref T currentValue, T newValue, Action<T> whenDifferent)
+        {
+            if (newValue == null && currentValue != null)
+            {
+                currentValue = newValue;
+                if (whenDifferent != null) whenDifferent.Invoke(currentValue);
+            }
+            else
             if (!newValue.Equals(currentValue))
+            {
+                currentValue = newValue;
+                if (whenDifferent != null) whenDifferent.Invoke(currentValue);
+            }
+
+        }
+        public static bool IfChanged<T>(this T newValue, ref T currentValue, Action<T> whenDifferent)
         {
-            currentValue = newValue;
-            whenDifferent.Invoke();
+            if (newValue == null && currentValue != null)
+            {
+                currentValue = newValue;
+                if (whenDifferent != null) whenDifferent.Invoke(currentValue);
+                return true;
+            }
+            else
+            if (!newValue.Equals(currentValue))
+            {
+                currentValue = newValue;
+                if (whenDifferent != null) whenDifferent.Invoke(currentValue);
+                return true;
+            }
+            return false;
         }
 
-    }
-    public static void IfChanged<T>(ref T currentValue, T newValue, Action<T> whenDifferent)
-    {
-        if (newValue == null && currentValue != null)
+
+        public static bool IfChanged<T>(this T newValue, ref T currentValue, Action whenDifferent)
         {
-            currentValue = newValue;
-            if (whenDifferent != null) whenDifferent.Invoke(currentValue);
-        }
-        else
-        if (!newValue.Equals(currentValue))
-        {
-            currentValue = newValue;
-            if (whenDifferent != null) whenDifferent.Invoke(currentValue);
+            if (newValue == null && currentValue != null)
+            {
+                currentValue = newValue;
+                if (whenDifferent != null) whenDifferent.Invoke();
+                return true;
+            }
+            else
+            if (!newValue.Equals(currentValue))
+            {
+                currentValue = newValue;
+                if (whenDifferent != null) whenDifferent.Invoke();
+                return true;
+            }
+            return false;
         }
 
-    }
-    public static bool IfChanged<T>(this T newValue, ref T currentValue, Action<T> whenDifferent)
-    {
-        if (newValue == null && currentValue != null)
+
+        /// <summary>
+        ///  Can be used where you want an action triggered when the value you are assigning is different then the current one
+        /// for example if you have a bool value myVal anw want to perform an action when its changed
+        /// <para></para>
+        /// myVal=GUILayout.Toggle(myVal).IfChanges( (x)=> {  myVal=x; /*do something else*/ });
+        /// Have in mind that the assignment will only happen after the callback u
+        /// </summary>
+        /* */
+        public static T IfChanges<T>(this T currentValue, T oldValue, Action callbackWhenChanged)
         {
-            currentValue = newValue;
-            if (whenDifferent != null) whenDifferent.Invoke(currentValue);
-            return true;
+            if (!currentValue.Equals(oldValue))
+                callbackWhenChanged.Invoke();
+            return currentValue;
         }
-        else
-        if (!newValue.Equals(currentValue))
+
+        public static T IfChanges<T>(this T currentValue, T oldValue, Action<T> callbackWhenChanged)
         {
-            currentValue = newValue;
-            if (whenDifferent != null) whenDifferent.Invoke(currentValue);
-            return true;
+            if (!currentValue.Equals(oldValue))
+                callbackWhenChanged.Invoke(currentValue);
+            return currentValue;
         }
-        return false;
-    }
-
-
-    public static bool IfChanged<T>(this T newValue, ref T currentValue, Action whenDifferent)
-    {
-        if (newValue == null && currentValue != null)
-        {
-            currentValue = newValue;
-            if (whenDifferent != null) whenDifferent.Invoke();
-            return true;
-        }
-        else
-        if (!newValue.Equals(currentValue))
-        {
-            currentValue = newValue;
-            if (whenDifferent != null) whenDifferent.Invoke();
-            return true;
-        }
-        return false;
-    }
-
-
-    /// <summary>
-    ///  Can be used where you want an action triggered when the value you are assigning is different then the current one
-    /// for example if you have a bool value myVal anw want to perform an action when its changed
-    /// <para></para>
-    /// myVal=GUILayout.Toggle(myVal).IfChanges( (x)=> {  myVal=x; /*do something else*/ });
-    /// Have in mind that the assignment will only happen after the callback u
-    /// </summary>
-    /* */
-    public static T IfChanges<T>(this T currentValue, T oldValue, Action callbackWhenChanged)
-    {
-        if (!currentValue.Equals(oldValue))
-            callbackWhenChanged.Invoke();
-        return currentValue;
-    }
-
-    public static T IfChanges<T>(this T currentValue, T oldValue, Action<T> callbackWhenChanged)
-    {
-        if (!currentValue.Equals(oldValue))
-            callbackWhenChanged.Invoke(currentValue);
-        return currentValue;
     }
 }
-}
+
+

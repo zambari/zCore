@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 //v.02 ANGLE FFS
+//v.03 smoothtime3d
 
 /// <summary>
 /// A collection of Mathf.SmoothDamp wrappers
@@ -12,14 +13,14 @@ public class Damper
     public float deltaCutoff = 0.1f;
     public float currentValue;
     [SerializeField] protected float _targetValue;
-    public Damper(float minVal,float smoothing)
+    public Damper(float minVal, float smoothing)
     {
-        deltaCutoff=minVal;
-        smoothTime=smoothing;
+        deltaCutoff = minVal;
+        smoothTime = smoothing;
     }
     public Damper()
     {
-        
+
     }
     public float targetValue
     {
@@ -41,7 +42,10 @@ public class Damper
     }
     public float UpdatedValue()
     {
-        currentValue = Mathf.SmoothDamp(currentValue, targetValue, ref velocity, smoothTime);
+        //currentValue = Mathf.SmoothDamp(currentValue, targetValue, ref velocity, smoothTime);
+        currentValue = Mathf.SmoothDamp(currentValue, targetValue, ref velocity, smoothTime,Mathf.Infinity, Time.unscaledDeltaTime); //unscaled
+
+         
         if (Mathf.Abs(targetValue - currentValue) < deltaCutoff) motionFinished = true;
         return currentValue;
     }
@@ -53,9 +57,9 @@ public class Damper
 [System.Serializable]
 public class DamperLerp : Damper
 {
-    new  public float UpdatedValue()
+    new public float UpdatedValue()
     {
-        currentValue = Mathf.Lerp(currentValue, targetValue,  smoothTime*Time.deltaTime);
+        currentValue = Mathf.Lerp(currentValue, targetValue, smoothTime * Time.deltaTime);
         if (Mathf.Abs(targetValue - currentValue) < deltaCutoff) motionFinished = true;
         return currentValue;
     }
@@ -65,7 +69,8 @@ public class DamperAngle : Damper
 {
     new public float UpdatedValue()
     {
-        currentValue = Mathf.SmoothDampAngle(currentValue, targetValue, ref velocity, smoothTime);
+        //currentValue = Mathf.SmoothDampAngle(currentValue, targetValue, ref velocity, smoothTime);
+          currentValue = Mathf.SmoothDampAngle(currentValue, targetValue, ref velocity, smoothTime,Mathf.Infinity,Time.unscaledDeltaTime);
         if (Mathf.Abs(targetValue - currentValue) < deltaCutoff) motionFinished = true;
         return currentValue;
     }
@@ -106,6 +111,18 @@ public class Damper3D
             zDamp.smoothTime = value;
         }
     }
+
+    public Vector3 smoothTime3D
+    {
+        get { return new Vector3(xDamp.smoothTime, yDamp.smoothTime, zDamp.smoothTime); }
+        set
+        {
+            xDamp.smoothTime = value.x;
+            yDamp.smoothTime = value.y;
+            zDamp.smoothTime = value.z;
+        }
+    }
+
     public bool motionFinished
     {
         get
@@ -148,6 +165,17 @@ public class Damper3D
             zDamp.velocity = value.z;
         }
     }
+
+    public float deltaCutoff
+    {
+        get { return xDamp.deltaCutoff; }
+        set
+        {
+            xDamp.deltaCutoff = value;
+            yDamp.deltaCutoff = value;
+            zDamp.deltaCutoff = value;
+        }
+    }
 }
 
 
@@ -181,6 +209,15 @@ public class Damper2D
             yDamp.smoothTime = value;
         }
     }
+    public Vector3 smoothTime2D
+    {
+        get { return new Vector2(xDamp.smoothTime, yDamp.smoothTime); }
+        set
+        {
+            xDamp.smoothTime = value.x;
+            yDamp.smoothTime = value.y;
+        }
+    }
     public bool motionFinished
     {
         get
@@ -211,9 +248,22 @@ public class Damper2D
             yDamp.currentValue = value.y;
         }
     }
+
+    public float deltaCutoff
+    {
+        get { return xDamp.deltaCutoff; }
+        set
+        {
+            xDamp.deltaCutoff = value;
+            yDamp.deltaCutoff = value;
+
+        }
+    }
 }
 // a version that avoids a jump between 0 and 360 for rotation
 
+/*
+[System.Obsolete]
 [System.Serializable]
 public class Damper3DRotation : Damper3D
 {
@@ -246,12 +296,12 @@ public class Damper3DRotation : Damper3D
             zDamp.targetValue = value.z;
         }
     }
-}
+}*/
 //old ver end
 [System.Serializable]
-public class Damper3DAngle 
+public class Damper3DAngle
 {
-       public void InitializeValue(Vector3 value)
+    public void InitializeValue(Vector3 value)
     {
         xDampA.InitializeValue(value.x);
         yDampA.InitializeValue(value.y);
@@ -268,11 +318,22 @@ public class Damper3DAngle
             zDampA.smoothTime = value;
         }
     }
+    public Vector3 smoothTime3D
+    {
+        get { return new Vector3(xDampA.smoothTime, yDampA.smoothTime, zDampA.smoothTime); }
+        set
+        {
+            xDampA.smoothTime = value.x;
+            yDampA.smoothTime = value.y;
+            zDampA.smoothTime = value.z;
+        }
+    }
+
     public bool motionFinished
     {
         get
         {
-            return xDampA.motionFinished && yDampA.motionFinished &&zDampA.motionFinished;
+            return xDampA.motionFinished && yDampA.motionFinished && zDampA.motionFinished;
         }
     }
     public Vector3 UpdatedValue()
@@ -286,9 +347,9 @@ public class Damper3DAngle
         zDampA = new DamperAngle();
     }
 
-     DamperAngle xDampA;
-     DamperAngle yDampA;
-     DamperAngle zDampA;
+    DamperAngle xDampA;
+    DamperAngle yDampA;
+    DamperAngle zDampA;
 
 
     new public Vector3 targetValue
