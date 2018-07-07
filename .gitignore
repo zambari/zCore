@@ -1,0 +1,21 @@
+#=============== 
+#v 1.03
+#===============
+**/[Tt]emp
+**/[Ll]ibrary
+**/[Bb]uild
+
+#=====================================
+#Visual Studio / MonoDevelop generated
+#=====================================
+ExportedObj/
+**/obj/
+*.svd
+*.userprefs
+*.csproj
+*.pidb
+*.suo
+*.sln
+*.user
+*.unityproj
+*.booproj
