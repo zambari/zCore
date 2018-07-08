@@ -17,6 +17,7 @@
 // v0.56 tojson creates streamingassts if not extising
 // v0.56a tojson/fromjson adds .json to filename if not present
 // v0.57a show, hide
+// v0.58 seconds to string
 
 using UnityEngine;
 using System;
@@ -34,7 +35,13 @@ using UnityEditor;
 public static class zExt
 {
 
+public static string TimeFromSeconds(int seconds)
+{
 
+      int  min= Mathf.FloorToInt(seconds / 60);
+      return string.Format("{0:D2}:{1:D2}", min, seconds % 60);
+
+}
     public static byte BinaryToByte(this string input)
     {
         int temp = 0;
