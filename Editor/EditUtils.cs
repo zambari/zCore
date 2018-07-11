@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 // v.0.1ml creators added
+// v.0.2 Slider add
 
 public static class EditUiltZ
 {
@@ -37,6 +39,83 @@ public static class EditUiltZ
 
     }
 
+    [MenuItem("Tools/Create/Slider with text (Round Handle)")]
+    static void CreateSliderWithText()
+    {
+        CreateSliderWithText(false);
+    }
+
+    [MenuItem("Tools/Create/Slider with text (Clear Handle)")]
+    static void CreateSliderWithTextCustom()
+    {
+        CreateSliderWithText(true);
+    }
+    static void CreateSliderWithText(bool emptyKnob)
+    {
+        DefaultControls.Resources uiResources = new DefaultControls.Resources();
+
+        Sprite DefaultUISprite = new Sprite();
+        Sprite Knob = new Sprite();
+        Sprite BG = new Sprite();
+        foreach (Sprite sprite in Resources.FindObjectsOfTypeAll<Sprite>())
+        {
+            if (sprite.name == "UISprite")
+                DefaultUISprite = sprite;
+            if (sprite.name == "Knob")
+                Knob = sprite;
+            if (sprite.name == "Background")
+                BG = sprite;
+        }
+        if (!emptyKnob)
+            uiResources.knob = Knob;
+
+        uiResources.background = BG;
+        uiResources.standard = DefaultUISprite;
+        var g = DefaultControls.CreateSlider(uiResources);
+        if (Selection.activeGameObject != null && Selection.activeGameObject.GetComponentInParent<Canvas>() != null)
+        {
+            Slider s = Selection.activeGameObject.GetComponentInParent<Slider>();
+            if (s != null) g.transform.SetParent(s.transform.parent);
+            else
+                g.transform.SetParent(Selection.activeGameObject.transform);
+
+        }
+        else
+        {
+            Canvas c = GameObject.FindObjectOfType<Canvas>();
+            if (c != null)
+                g.transform.SetParent(c.transform);
+        }
+        g.transform.localScale=Vector3.one;
+        if (emptyKnob)
+        {
+            Transform slide = g.transform.Find("Handle Slide Area");
+            Transform handle = slide.Find("Handle");
+            if (handle != null)
+            {
+                Image i = handle.GetComponent<Image>();
+                i.color = new Color32(77, 152, 255, 255);
+            }
+        }
+        var te = new GameObject("Text value display");
+        te.transform.SetParent(g.transform);
+        if (Selection.activeGameObject != null) g.transform.position = Selection.activeGameObject.transform.position + new Vector3(0, -50, 0);
+
+        Text t = te.AddComponent<Text>();
+        t.alignment = TextAnchor.MiddleLeft;
+        t.gameObject.AddComponent<SliderValueDisplay>();
+        RectTransform rect = t.GetComponent<RectTransform>();
+        rect.localScale = Vector3.one;
+        rect.pivot = new Vector2(0, 0.5f);
+        rect.anchorMin = new Vector2(1, 0.5f);
+        rect.anchorMax = rect.anchorMin;
+
+        rect.localPosition = new Vector3(90, 0, 0);
+        rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,30);
+
+        Selection.activeGameObject = g;
+
+    }
     static List<string> materialNames;
     static List<Color> colors;
     static List<float> mettalic;
