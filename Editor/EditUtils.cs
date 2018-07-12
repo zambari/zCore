@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 // v.0.1ml creators added
 // v.0.2 Slider add
+// v.0.3 sprite no constructor
 
 public static class EditUiltZ
 {
@@ -54,9 +55,9 @@ public static class EditUiltZ
     {
         DefaultControls.Resources uiResources = new DefaultControls.Resources();
 
-        Sprite DefaultUISprite = new Sprite();
-        Sprite Knob = new Sprite();
-        Sprite BG = new Sprite();
+        Sprite DefaultUISprite = null;
+        Sprite Knob = null;
+        Sprite BG = null;
         foreach (Sprite sprite in Resources.FindObjectsOfTypeAll<Sprite>())
         {
             if (sprite.name == "UISprite")
