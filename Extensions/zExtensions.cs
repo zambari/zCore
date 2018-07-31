@@ -18,6 +18,7 @@
 // v0.56a tojson/fromjson adds .json to filename if not present
 // v0.57a show, hide
 // v0.58 seconds to string
+// v0.59 bytearray to string updated (no more nasty allocations)
 
 using UnityEngine;
 using System;
@@ -335,13 +336,17 @@ public static string TimeFromSeconds(int seconds)
     }
     public static string ArrayToString(this byte[] b) // 2017.08.18
     {
-        string s = "";
+		 return System.Text.Encoding.UTF8.GetString(b);
+        /*
+		
+		// very bad method below:
+		string s = "";
         for (int i = 0; i < b.Length; i++)
         {
             if (b[0] == 0) return s;
             s += (char)b[i];
         }
-        return s;
+        return s;*/
     }
     public static bool executeIfTrue(this bool condition, Action ac)
     {
