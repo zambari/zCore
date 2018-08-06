@@ -18,7 +18,8 @@
 // v0.56a tojson/fromjson adds .json to filename if not present
 // v0.57a show, hide
 // v0.58 seconds to string
-// v0.59 bytearray to string updated (no more nasty allocations)
+// v0.59 tobyte array update by szymon  (no more nasty allocations) 
+// v0.60 mapping toolkit merge
 
 using UnityEngine;
 using System;
@@ -30,19 +31,52 @@ using System.IO;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-
+using Z.Extras;
 
 /// oeverrides zRectExtensions
+
 public static class zExt
 {
+    public static void DrawMarkerGizmo(this Transform transform, Color color, float size = 0.15f)
+    {
+        Vector3 pos = transform.position;
+        float smaller = size / 15;
+        Gizmos.color = color;
+        Gizmos.DrawWireCube(pos, new Vector3(size, smaller, smaller));
+        Gizmos.DrawWireCube(pos, new Vector3(smaller, size, smaller));
+        Gizmos.DrawWireCube(pos, new Vector3(smaller, smaller, size));
 
-public static string TimeFromSeconds(int seconds)
-{
+    }
 
-      int  min= Mathf.FloorToInt(seconds / 60);
-      return string.Format("{0:D2}:{1:D2}", min, seconds % 60);
+    public static void DrawGizmoCross(this Vector3 pos, float size = 0.07f)
+    {
+        float smaller = size / 15;
 
-}
+        Gizmos.DrawCube(pos, new Vector3(size, smaller, smaller));
+        Gizmos.DrawCube(pos, new Vector3(smaller, size, smaller));
+        Gizmos.DrawCube(pos, new Vector3(smaller, smaller, size));
+    }
+
+    //taken from : https://gist.github.com/AlexanderDzhoganov/d795b897005389071e2a
+    public static void DumpToPng(this RenderTexture rt, string pngOutPath)
+    {
+        var oldRT = RenderTexture.active;
+
+        var tex = new Texture2D(rt.width, rt.height);
+        RenderTexture.active = rt;
+        tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+        tex.Apply();
+
+        File.WriteAllBytes(pngOutPath, tex.EncodeToPNG());
+        RenderTexture.active = oldRT;
+    }
+    public static string TimeFromSeconds(int seconds)
+    {
+
+        int min = Mathf.FloorToInt(seconds / 60);
+        return string.Format("{0:D2}:{1:D2}", min, seconds % 60);
+
+    }
     public static byte BinaryToByte(this string input)
     {
         int temp = 0;
@@ -187,11 +221,6 @@ public static string TimeFromSeconds(int seconds)
 
 
 
-    public static bool IsNullOrEmpty<T>(this List<T> source)
-    {
-        return (source == null || source.Count == 0);
-    }
-
     public static string nameOrNull(this MonoBehaviour source)
     {
         return (source == null ? "null" : source.name);
@@ -250,14 +279,6 @@ public static string TimeFromSeconds(int seconds)
         return "<color=#" + c + c + c + ">" + s + "</color>";
     }
 
-    public static bool ToBool(this int b)
-    {
-        return (b == 1);
-    }
-    public static int ToInt(this bool b)
-    {
-        return (b ? 1 : 0);
-    }
     public static string MakeColor(this string s, Color c)
     {
         return "<color=" + ColorUtility.ToHtmlStringRGB(c) + ">" + s + "</color>";
@@ -292,23 +313,6 @@ public static string TimeFromSeconds(int seconds)
             c[i] = (char)b[i];
         return c;
     }
-    public static void CallRandom<T>(this T target, params Action<T>[] actionsToCall)
-    {
-        if (actionsToCall != null && actionsToCall.Length > 0)
-        {
-            int index = UnityEngine.Random.Range(0, actionsToCall.Length);
-            actionsToCall[index].Invoke(target);
-        }
-    }
-    public static T CallRandom<T>(this T target, params Func<T, T>[] actionsToCall)
-    {
-        if (actionsToCall != null && actionsToCall.Length > 0)
-        {
-            int index = UnityEngine.Random.Range(0, actionsToCall.Length);
-            return actionsToCall[index].Invoke(target);
-        }
-        return target;
-    }
 
 
     public static void DestroySmart(this Component c)
@@ -336,11 +340,8 @@ public static string TimeFromSeconds(int seconds)
     }
     public static string ArrayToString(this byte[] b) // 2017.08.18
     {
-		 return System.Text.Encoding.UTF8.GetString(b);
-        /*
-		
-		// very bad method below:
-		string s = "";
+        return System.Text.Encoding.UTF8.GetString(b);
+        /*string s = "";
         for (int i = 0; i < b.Length; i++)
         {
             if (b[0] == 0) return s;
@@ -544,24 +545,9 @@ public static string TimeFromSeconds(int seconds)
 
         if (!path.Contains(".json")) path += ".json";
         if (!path.Contains(Application.streamingAssetsPath)) path = Application.streamingAssetsPath + "/" + path;
-        return obj.loadJson<T>(path);
+        return obj.LoadJson<T>(path);
     }
 
-    /// <summary>
-    /// Loads an object from json. usage: newObject= newObject.FromJson&lt;typeOfNewObject&gt;(path)
-    /// </summary>
-    public static T loadJson<T>(this T obj, string path)
-    {
-        //   if (!path.Contains(".json")) path+=".json";
-        //   if (!path.Contains(Application.streamingAssetsPath)) path = Application.streamingAssetsPath+"/"+path;
-
-        string dataAsJson = File.ReadAllText(path);
-        if (dataAsJson == null || dataAsJson.Length < 2)
-            Debug.Log("loading file:" + path + " failed");
-        else
-            obj = JsonUtility.FromJson<T>(dataAsJson);
-        return obj;
-    }
 
 
     public static void AddLayoutElementFlexible(this GameObject g, bool flexible = true)
@@ -586,8 +572,7 @@ public static string TimeFromSeconds(int seconds)
 
     }
 
-    public static bool shiftPressed()
-
+    public static bool ShiftPressed()
     {
         return (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift));
     }
@@ -647,14 +632,7 @@ public static string TimeFromSeconds(int seconds)
         }
         return elements.ToArray();
     }
-    public static string asByteSize(this float byteCount)
-    {
 
-        if (byteCount < 10000) return Mathf.Round(byteCount / 1024) + "kb ";
-        else
-            return (byteCount / (1024 * 1024)).ToShortString() + "MB ";
-
-    }
     public static Color Random(this Color c)
     {
         /*  if (c==null) { c =baseColor; }
@@ -1184,6 +1162,38 @@ namespace Z
         /// <param name="newValue"> a new value, nothing happens if its the same </param>
 
 
+    }
+}
+
+// too broad methods moved to namespace
+namespace Z.Extras
+{
+    public static class zExtExtra
+    {
+        public static void CallRandom<T>(this T target, params Action<T>[] actionsToCall)
+        {
+            if (actionsToCall != null && actionsToCall.Length > 0)
+            {
+                int index = UnityEngine.Random.Range(0, actionsToCall.Length);
+                actionsToCall[index].Invoke(target);
+            }
+        }
+        public static T CallRandom<T>(this T target, params Func<T, T>[] actionsToCall)
+        {
+            if (actionsToCall != null && actionsToCall.Length > 0)
+            {
+                int index = UnityEngine.Random.Range(0, actionsToCall.Length);
+                return actionsToCall[index].Invoke(target);
+            }
+            return target;
+        }
+
+
+        public static bool IsNullOrEmpty<T>(this List<T> source)
+        {
+            return (source == null || source.Count == 0);
+        }
+
         public static void IfChanged<T>(ref T currentValue, T newValue, Action whenDifferent)
         {
             if (newValue == null && currentValue != null)
@@ -1266,14 +1276,50 @@ namespace Z
                 callbackWhenChanged.Invoke();
             return currentValue;
         }
+        public static string AsByteSize(this float byteCount)
+        {
 
+            if (byteCount < 10000) return Mathf.Round(byteCount / 1024) + "kb ";
+            else
+                return (byteCount / (1024 * 1024)).ToShortString() + "MB ";
+
+        }
         public static T IfChanges<T>(this T currentValue, T oldValue, Action<T> callbackWhenChanged)
         {
             if (!currentValue.Equals(oldValue))
                 callbackWhenChanged.Invoke(currentValue);
             return currentValue;
         }
+
+
+        public static bool ToBool(this int b)
+        {
+            return (b == 1);
+        }
+        public static int ToInt(this bool b)
+        {
+            return (b ? 1 : 0);
+        }
+
+        /// <summary>
+        /// Loads an object from json. usage: newObject= newObject.FromJson&lt;typeOfNewObject&gt;(path)
+        /// </summary>
+        public static T LoadJson<T>(this T obj, string path)
+        {
+            //   if (!path.Contains(".json")) path+=".json";
+            //   if (!path.Contains(Application.streamingAssetsPath)) path = Application.streamingAssetsPath+"/"+path;
+
+            string dataAsJson = File.ReadAllText(path);
+            if (dataAsJson == null || dataAsJson.Length < 2)
+                Debug.Log("loading file:" + path + " failed");
+            else
+                obj = JsonUtility.FromJson<T>(dataAsJson);
+            return obj;
+        }
+        [Obsolete]
+        public static T loadJson<T>(this T obj, string path)
+        {
+            return LoadJson(obj, path);
+        }
     }
 }
-
-
