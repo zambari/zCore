@@ -1,73 +1,57 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+//v02
 [ExecuteInEditMode]
-public class MaterialSetBasic : MonoBehaviour {
+public class MaterialSetBasic : MonoBehaviour
+{
     public Material materialToSet;
-    // Use this for initialization
-    public bool setNow;
-     
-    private void OnValidate()
-    {
-        if (setNow)
-        {
-            setNow = false;
-            setm();
-
-        }
-
-    }
-    //public materialPrese
+    public Material materialToSetAlt;
+    public Material materialToSetOrg;
     MeshRenderer[] mrends;
-    void setm()
+    void SetMaterial(Material m)
     {
         if (materialToSet == null) return;
-        if (mrends==null)
+       // if (mrends == null)
             mrends = GetComponentsInChildren<MeshRenderer>();
 
         Material[] oneMat = new Material[1];
         Material[] twoMats = new Material[2];
-        oneMat[0] = materialToSet;
-        twoMats[0] = materialToSet;
-        twoMats[1] = materialToSet;
+        oneMat[0] = m;
+        twoMats[0] = m;
+        twoMats[1] = m;
 
         for (int i = 0; i < mrends.Length; i++)
-            {
-
-
-          //  if (setShared)
-            {
+        {
                 if (mrends[i].sharedMaterials.Length == 1)
 
                     mrends[i].sharedMaterials = oneMat;
                 else
-                    mrends[i].sharedMaterials = twoMats ;
-            }
-           /* else 
-                   
-            }
-            else
-            {
-                mrends[i].material = materialToSet;
-            }
-            */
-            }
+                    mrends[i].sharedMaterials = twoMats;
+        }
 
-        
-            
+    }
+    [ExposeMethodInEditor]
+    void SetMaterialNow()
+    {
+        SetMaterial(materialToSet);
     }
 
+    [ExposeMethodInEditor]
+    void SetMaterialAlt()
+    {
+        SetMaterial(materialToSetAlt);
+    }
 
-    void Start () {
-
-        //   mrends = GetComponentsInChildren<MeshRenderer>();
-        setm();
-      
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    [ExposeMethodInEditor]
+    void SetMaterialOrg()
+    {
+        SetMaterial(materialToSetOrg);
+    }
+    [ExposeMethodInEditor]
+    void GeMaterial()
+    {
+        MeshRenderer meshRenderer = GetComponentInChildren<MeshRenderer>();
+        if (meshRenderer != null) materialToSetOrg = meshRenderer.sharedMaterial;
+    }
 }
