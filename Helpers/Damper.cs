@@ -352,7 +352,7 @@ public class Damper3DAngle
     DamperAngle zDampA;
 
 
-    new public Vector3 targetValue
+    public Vector3 targetValue
     {
         //get { return new Vector3(xDamp.targetValue%360,yDamp.targetValue%360,zDamp.targetValue%360); }
         get { return new Vector3(xDampA.targetValue, yDampA.targetValue, zDampA.targetValue); }
