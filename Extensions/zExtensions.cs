@@ -20,6 +20,7 @@
 // v0.58 seconds to string
 // v0.59 tobyte array update by szymon  (no more nasty allocations) 
 // v0.60 mapping toolkit merge
+// v0.61 dumpcurve uppercase
 
 using UnityEngine;
 using System;
@@ -218,8 +219,6 @@ public static class zExt
         }
         return new string(b);
     }
-
-
 
     public static string nameOrNull(this MonoBehaviour source)
     {
@@ -478,7 +477,7 @@ public static class zExt
     /// prints a list of keyframes, in a formsuitable for copy and pasting back to the code to recreate
     /// add a name for it to be present in the output
     /// </summary>
-    public static void dumpKeys(this AnimationCurve a, string name = null)
+    public static void DumpKeys(this AnimationCurve a, string name = null)
     {
         a.listKeyFramesAsCode(name);
     }
