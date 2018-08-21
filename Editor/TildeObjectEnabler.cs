@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
+// v0.02 favourite object added
 
 public static class ObjectEnableToggle
 {
@@ -15,7 +16,7 @@ public static class ObjectEnableToggle
            Selection.activeGameObject=Selection.activeGameObject.transform.parent.gameObject;
         }
     }*/
-
+   static GameObject selectedObject;
     [MenuItem("Tools/Actions/Toggle Enabled  _`")]
     static void ToggleEnabled()
     {
@@ -26,7 +27,24 @@ public static class ObjectEnableToggle
                 ToggleActiveStatus(Selection.gameObjects[i], newActiveStatus);
         }
     }
-
+  [MenuItem("Tools/Actions/Select favourite Togglable object  _%#`")]
+    static void SelectTogglable()
+    {
+        if (Selection.activeGameObject != null)
+        {
+          selectedObject=Selection.activeGameObject;
+          Debug.Log(selectedObject.name+" was marked for control tilde toggle");
+        }
+    }
+      [MenuItem("Tools/Actions/Toggle favourite object  _#`")]
+    static void SelectedTogglableToggle()
+    {
+        if (selectedObject != null)
+        {
+          ToggleActiveStatus(selectedObject,!selectedObject.activeSelf);
+        }
+        else Debug.Log("No favourite object, please mark it with ctrl+shift+` ");
+    }
     static void ToggleActiveStatus(GameObject o, bool status)
     {
         o.SetActive(status);
