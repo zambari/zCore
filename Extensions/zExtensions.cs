@@ -21,6 +21,7 @@
 // v0.59 tobyte array update by szymon  (no more nasty allocations) 
 // v0.60 mapping toolkit merge
 // v0.61 dumpcurve uppercase
+// v0.62 settext 
 
 using UnityEngine;
 using System;
@@ -73,7 +74,7 @@ public static class zExt
     }
     public static string TimeFromSeconds(int seconds)
     {
-
+        if (seconds<0) return "";
         int min = Mathf.FloorToInt(seconds / 60);
         return string.Format("{0:D2}:{1:D2}", min, seconds % 60);
 
@@ -154,13 +155,20 @@ public static class zExt
         obj.hideFlags = flag;
 
     }
-
-
-    public static void Hide(this Transform obj)
+  public static void SetText(this Text text,float s)
     {
+        if (text!=null) text.SetText(s.ToShortString());
 
-        if (obj != null) Hide(obj.gameObject);
+    }
+    public static void SetText(this Text text,int s)
+    {
+        if (text!=null) text.SetText(s.ToString());
 
+    }
+
+    public static void SetText(this Text text,string s)
+    {
+        if (text!=null) text.text=s;
     }
     public static void Show(this Transform obj)
     {
@@ -173,9 +181,14 @@ public static class zExt
         if (showHide != null)
             showHide.Hide();
         else
-            obj.SetActive(false);
-
+           obj.SetActive(false);
+     }  
+    
+    public static void Hide(this Transform obj)
+    {
+        if (obj != null) Hide(obj.gameObject);
     }
+
     public static void Show(this GameObject obj)
     {
         if (obj == null) return;
@@ -250,7 +263,7 @@ public static class zExt
     }
     public static string MakeBlue(this string s)
     {
-        return "<color=blue>" + s + "</color>";
+        return "<color=#1010ff>" + s + "</color>";
     }
     public static string MakeRed(this string s)
     {
