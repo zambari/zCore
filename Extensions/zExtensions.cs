@@ -21,7 +21,7 @@
 // v0.59 tobyte array update by szymon  (no more nasty allocations) 
 // v0.60 mapping toolkit merge
 // v0.61 dumpcurve uppercase
-
+// v0.62 normalize to screen size
 using UnityEngine;
 using System;
 using UnityEngine.Events;
@@ -38,6 +38,11 @@ using Z.Extras;
 
 public static class zExt
 {
+
+    public static Vector2 NormalizeToScreenSize(this Vector2 input)
+    {
+        return new Vector2(input.x/Screen.width,input.y/Screen.height);
+    }
     public static void DrawMarkerGizmo(this Transform transform, Color color, float size = 0.15f)
     {
         Vector3 pos = transform.position;
@@ -73,7 +78,7 @@ public static class zExt
     }
     public static string TimeFromSeconds(int seconds)
     {
-
+        if (seconds<0) return "";
         int min = Mathf.FloorToInt(seconds / 60);
         return string.Format("{0:D2}:{1:D2}", min, seconds % 60);
 
@@ -250,7 +255,7 @@ public static class zExt
     }
     public static string MakeBlue(this string s)
     {
-        return "<color=blue>" + s + "</color>";
+        return "<color=#1010ff>" + s + "</color>";
     }
     public static string MakeRed(this string s)
     {
