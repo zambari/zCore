@@ -42,7 +42,9 @@ using Z.Extras;
 
 public static class zExt
 {
-  public static string ToHex(this byte b)
+
+   
+    public static string ToHex(this byte b)
     {
         return ((int)b).ToString("x2");
     }
