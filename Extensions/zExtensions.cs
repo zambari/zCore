@@ -21,7 +21,10 @@
 // v0.59 tobyte array update by szymon  (no more nasty allocations) 
 // v0.60 mapping toolkit merge
 // v0.61 dumpcurve uppercase
+// v0.62 normalize to screen size
 // v0.62 settext 
+// v0.63 toHex
+// v0.64 makecolor
 
 using UnityEngine;
 using System;
@@ -39,6 +42,57 @@ using Z.Extras;
 
 public static class zExt
 {
+  public static string ToHex(this byte b)
+    {
+        return ((int)b).ToString("x2");
+    }
+    public static string ToHex(this int i)
+    {
+        return i.ToString("x2");
+    }
+    public static byte BinaryToByte(this string input)
+    {
+        int temp = 0;
+        if (input.Length != 8) Debug.Log("invalid input string len " + input.Length + " please use 8 chars");
+        int endIndex = input.Length - 1;
+        int pos = input.Length - 1 - 8;
+        if (pos < 0) pos = 0;
+        int current2 = 1;
+        for (int i = endIndex; i >= pos; i--)
+        {
+            if (input[i] == '1')
+                temp = temp + current2;
+            current2 = current2 * 2;
+        }
+
+        return (byte)temp;
+    }
+
+    public static string ByteToBinaryString(this byte inputByte)
+    {
+        char[] b = new char[8];
+        int pos = b.Length - 1;
+        int i = 0;
+
+        while (i < 8)
+        {
+            if ((inputByte & (1 << i)) != 0)
+            {
+                b[pos] = '1';
+            }
+            else
+            {
+                b[pos] = '0';
+            }
+            pos--;
+            i++;
+        }
+        return new string(b) + " ";
+    }
+    public static Vector2 NormalizeToScreenSize(this Vector2 input)
+    {
+        return new Vector2(input.x/Screen.width,input.y/Screen.height);
+    }
     public static void DrawMarkerGizmo(this Transform transform, Color color, float size = 0.15f)
     {
         Vector3 pos = transform.position;
@@ -79,23 +133,6 @@ public static class zExt
         return string.Format("{0:D2}:{1:D2}", min, seconds % 60);
 
     }
-    public static byte BinaryToByte(this string input)
-    {
-        int temp = 0;
-        if (input.Length != 8) Debug.Log("invalid input string len " + input.Length + " please use 8 chars");
-        int endIndex = input.Length - 1;
-        int pos = input.Length - 1 - 8;
-        if (pos < 0) pos = 0;
-        int current2 = 1;
-        for (int i = endIndex; i >= pos; i--)
-        {
-            if (input[i] == '1')
-                temp = temp + current2;
-            current2 = current2 * 2;
-        }
-
-        return (byte)temp;
-    }
     public static void HideObjects(this GameObject[] list, HideFlags flag = HideFlags.HideInHierarchy)
     {
         foreach (GameObject g in list)
@@ -110,8 +147,86 @@ public static class zExt
 #endif
 
     }
+#region  marshalling
+   public static byte[] ToByteArray(this int[] intz)// 2017.08.18
+    {
+        byte[] byteArray = new byte[intz.Length];
+        for (int i = 0; i < intz.Length; i++)
+            byteArray[i] = (byte)intz[i];
+        return byteArray;
+    }
+
+    public static byte[] ToByteArray(this string s)// 2017.08.18
+    {
+        byte[] byteArray = new byte[s.Length];
+        for (int i = 0; i < s.Length; i++)
+            byteArray[i] = (byte)s[i];
+        return byteArray;
+    }
+    public static string ByteArrayToString(this byte[] b, int startIndex = 0) // 2017.08.18
+
+    {
+        return b.ArrayToString(startIndex);
+    }
+     public static string ByteArrayToStringAsHex(this byte[] b, int startIndex = 0) // 2017.08.18
+     {
+         string s = "";
+        if (b[0] == 0) return s;
+        for (int i = startIndex; i < b.Length; i++)
+                s += "["+(b[i]).ToHex()+"]";
+        return s;
+
+   }
+    public static string ArrayToString(this byte[] b, int startIndex = 0) // 2017.08.18
+    {
+        string s = "";
+        if (b[0] == 0) return s;
+        for (int i = startIndex; i < b.Length; i++)
+        {
+            char c = (char)b[i];
+            if (!char.IsControl(c))
+            {
+                s += c;
+            }
+        }
+        return s;
+    }
+       public static string ArrayToString(this byte[] b) // 2017.08.18
+    {
+        return System.Text.Encoding.UTF8.GetString(b);
+        /*string s = "";
+        for (int i = 0; i < b.Length; i++)
+        {
+            if (b[0] == 0) return s;
+            s += (char)b[i];
+        }
+        return s;*/
+    }  
+      public static byte[] ToByteArrayFromHex(this string s)
+    {
+        // Debug.Log("Warning, string should consist of pairs of hex characters, separated by space !");
+
+        string[] hexStrings = s.Trim().Split(' ');
 
 
+        byte[] bytes = new byte[hexStrings.Length];
+        for (int i = 0; i < bytes.Length; i++)
+        {
+            //Debug.Log(" stirng 1 "+hexStrings[i]);
+            int conv = (int)Convert.ToUInt32(hexStrings[i], 16);
+            bytes[i] = (byte)conv;
+        }
+        return bytes;
+    }
+    public static string PadString(this string s, int len)
+    {
+        if (string.IsNullOrEmpty(s)) s = "";
+
+        for (int i = s.Length; i < len; i++) s += ' ';
+        return s;
+    }
+
+    #endregion
     public static void RemoveAllComponentsExcluding(this GameObject obj, params Type[] types)
     {
         //        List<Type> typeList = new List<Type>(types);
@@ -155,6 +270,7 @@ public static class zExt
         obj.hideFlags = flag;
 
     }
+    #region ui
   public static void SetText(this Text text,float s)
     {
         if (text!=null) text.SetText(s.ToShortString());
@@ -174,6 +290,7 @@ public static class zExt
     {
         if (obj != null) Show(obj.gameObject);
     }
+    #endregion ui
     public static void Hide(this GameObject obj)
     {
         if (obj == null) return;
@@ -211,27 +328,7 @@ public static class zExt
         }
         return g;
     }
-    public static string ByteToBinaryString(this byte inputByte)
-    {
-        char[] b = new char[8];
-        int pos = b.Length - 1;
-        int i = 0;
-
-        while (i < 8)
-        {
-            if ((inputByte & (1 << i)) != 0)
-            {
-                b[pos] = '1';
-            }
-            else
-            {
-                b[pos] = '0';
-            }
-            pos--;
-            i++;
-        }
-        return new string(b);
-    }
+   
 
     public static string nameOrNull(this MonoBehaviour source)
     {
@@ -261,6 +358,13 @@ public static class zExt
     {
         return "<color=green>" + s + "</color>";
     }
+    
+    public static string MakeColor(this string s, float r, float g, float b, float a =1 )
+    {
+        Color c = new Color (r,g,b,a);
+        return s.MakeColor(c);
+    }
+
     public static string MakeBlue(this string s)
     {
         return "<color=#1010ff>" + s + "</color>";
@@ -343,24 +447,7 @@ public static class zExt
 
 
     }
-    public static byte[] ToByteArray(this string s)// 2017.08.18
-    {
-        byte[] byteArray = new byte[s.Length];
-        for (int i = 0; i < s.Length; i++)
-            byteArray[i] = (byte)s[i];
-        return byteArray;
-    }
-    public static string ArrayToString(this byte[] b) // 2017.08.18
-    {
-        return System.Text.Encoding.UTF8.GetString(b);
-        /*string s = "";
-        for (int i = 0; i < b.Length; i++)
-        {
-            if (b[0] == 0) return s;
-            s += (char)b[i];
-        }
-        return s;*/
-    }
+ 
     public static bool executeIfTrue(this bool condition, Action ac)
     {
         if (condition) ac.Invoke();
@@ -1205,7 +1292,19 @@ namespace Z.Extras
         {
             return (source == null || source.Count == 0);
         }
+    public static T IfChanges<T>(this T currentValue, T oldValue, Action callbackWhenChanged)
+    {
+        if (!currentValue.Equals(oldValue))
+            callbackWhenChanged.Invoke();
+        return currentValue;
+    }
 
+    public static T IfChanges<T>(this T currentValue, T oldValue, Action<T> callbackWhenChanged)
+    {
+        if (!currentValue.Equals(oldValue))
+            callbackWhenChanged.Invoke(currentValue);
+        return currentValue;
+    }
         public static void IfChanged<T>(ref T currentValue, T newValue, Action whenDifferent)
         {
             if (newValue == null && currentValue != null)
@@ -1282,12 +1381,7 @@ namespace Z.Extras
         /// Have in mind that the assignment will only happen after the callback u
         /// </summary>
         /* */
-        public static T IfChanges<T>(this T currentValue, T oldValue, Action callbackWhenChanged)
-        {
-            if (!currentValue.Equals(oldValue))
-                callbackWhenChanged.Invoke();
-            return currentValue;
-        }
+      
         public static string AsByteSize(this float byteCount)
         {
 
@@ -1296,12 +1390,7 @@ namespace Z.Extras
                 return (byteCount / (1024 * 1024)).ToShortString() + "MB ";
 
         }
-        public static T IfChanges<T>(this T currentValue, T oldValue, Action<T> callbackWhenChanged)
-        {
-            if (!currentValue.Equals(oldValue))
-                callbackWhenChanged.Invoke(currentValue);
-            return currentValue;
-        }
+
 
 
         public static bool ToBool(this int b)
