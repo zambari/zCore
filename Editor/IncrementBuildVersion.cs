@@ -16,7 +16,7 @@ namespace Z
         public List<string> versionHistory;
         public override string ToString()
         {
-            return "build: "+buildNr+"  time:s "+buildDate;
+            return "time: "+buildDate+"   build nr: "+buildNr;
         }
     }
 
