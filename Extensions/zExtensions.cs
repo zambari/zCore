@@ -1411,7 +1411,7 @@ namespace Z.Extras
         {
             //   if (!path.Contains(".json")) path+=".json";
             //   if (!path.Contains(Application.streamingAssetsPath)) path = Application.streamingAssetsPath+"/"+path;
-
+			if (!File.Exists(path)) return default(T);
             string dataAsJson = File.ReadAllText(path);
             if (dataAsJson == null || dataAsJson.Length < 2)
                 Debug.Log("loading file:" + path + " failed");
