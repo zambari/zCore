@@ -7,10 +7,8 @@ using UnityEngine.UI;
 public class DebugShowUnderCursor : MonoBehaviour
 {
     Text text;
-    EventSystem eventSystem;
     void Start()
     {
-        eventSystem = EventSystem.current;
         text = GetComponent<Text>();
     }
 
