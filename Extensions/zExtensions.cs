@@ -25,6 +25,7 @@
 // v0.62 settext 
 // v0.63 toHex
 // v0.64 makecolor
+// v0.65 c null warning
 
 using UnityEngine;
 using System;
@@ -464,8 +465,9 @@ public static class zExt
     }
     public static void CollapseComponent(this MonoBehaviour mono, bool expanded = false)
     {
-        Component c = mono;
+     
 #if UNITY_EDITOR
+		Component c = mono;
         if (c != null)
             UnityEditorInternal.InternalEditorUtility.SetIsInspectorExpanded(c, false);
 #endif
