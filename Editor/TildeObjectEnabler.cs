@@ -47,6 +47,7 @@ public static class ObjectEnableToggle
     }
     static void ToggleActiveStatus(GameObject o, bool status)
     {
+        Undo.RecordObject(o,"EnableToggle");
         o.SetActive(status);
         if (o.activeSelf
          && !o.activeInHierarchy)
@@ -55,7 +56,10 @@ public static class ObjectEnableToggle
             while (thisTransform != null)
             {
                 if (thisTransform.gameObject.activeInHierarchy == false)
+                {
+                    Undo.RecordObject(thisTransform.gameObject,"EnableToggle");
                     thisTransform.gameObject.SetActive(true);
+                }
 
                 thisTransform = thisTransform.parent;
             }
