@@ -5,85 +5,124 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // v.03 // simpleconeolse replacemnet
-
-
-// removed monodep
+// v.04 // new fades
 
 [RequireComponent(typeof(Text))]
 public class ScreenConsole : MonoBehaviour
 {
+    Text text;
+    public Color color = Color.white;
+    public bool useFades=true;
     public static ScreenConsole instance;
-    List<string> logList;
+    static List<string> logList;
+    static List<float> times;
     public bool alsoLogToConsole;
-
+    RectTransform rect;
+    bool logDirty;
+    [Header("Fade duration")]
+    public float fadeTime = 5;
+    [Header("Fade starts after this time")]
+    public float fadeDelay = 10;
+    [Header("Affects performance")]
+    public float refreshTime = 0.1f;
+    WaitForSeconds waiter;
+    public int maxlinecharacterCount = 100;
     public bool captureMainLog = true;
     public bool captureMainErrors = true;
     public bool captureMainExceptions = true;
-    public int maxLines = 50;
-    public float autoHideTime = 5;
-    Text text;
-    bool logDirty;
-    public Vector2 fadeLimits = new Vector2(0.2f, 0.8f);
-    bool wasAdded;
-    CanvasGroup canvasGroup;
-    bool faderRunning = false;
-    public float fadeTime = 5;
-    public float fadeDelay = 2;
-    WaitForSeconds waiter;
-    IEnumerator Fader()
+    static StringBuilder sb;
+    /* IEnumerator Fader()
+     {
+         if (faderRunning || canvasGroup == null) yield break; ;
+         faderRunning = true;
+         canvasGroup.alpha = fadeLimits.y;
+         while (canvasGroup.alpha > fadeLimits.x)
+         {
+             canvasGroup.alpha -= Time.deltaTime / fadeTime;
+             yield return null;
+             if (wasAdded)
+             {
+                 canvasGroup.alpha = fadeLimits.y;
+                 wasAdded = false;
+                 yield return new WaitForSeconds(fadeDelay);
+             }
+         }
+         faderRunning = false;
+     } */
+    /*  void GetMaxLineCount()
+     {
+         if (text == null) text = GetComponent<Text>();
+         var lineHeight = text.font.lineHeight * text.lineSpacing;
+         var rectHegight = GetComponent<RectTransform>().rect.height;
+         maxLines = Mathf.FloorToInt(rectHegight / lineHeight);
+     }*/
+    void OnValidate()
     {
-        if (faderRunning || canvasGroup == null) yield break; ;
-        faderRunning = true;
-        canvasGroup.alpha = fadeLimits.y;
-        while (canvasGroup.alpha > fadeLimits.x)
-        {
-            canvasGroup.alpha -= Time.deltaTime / fadeTime;
-            yield return null;
-            if (wasAdded)
-            {
-                canvasGroup.alpha = fadeLimits.y;
-                wasAdded = false;
-                yield return new WaitForSeconds(fadeDelay);
-            }
-        }
-        faderRunning = false;
-
+        if (text == null) text = GetComponent<Text>();
+        text.supportRichText = useFades;
+        text.color = color;
+        waiter = new WaitForSeconds(refreshTime);
     }
     [ExposeMethodInEditor]
-
-    void printRubbisj()
+    void PrintSomeRubbih()
     {
-        for (int i = 0; i < 20; i++) Log(i + " dahdias edasdsdsae");
+        if (Application.isPlaying)
+            StartCoroutine(RubbishPrinter());
+    }
+    [ExposeMethodInEditor]
+    void PrintMoreubbih()
+    {
+        if (Application.isPlaying)
+            StartCoroutine(RubbishPrinter(40, 10, 50, 5, 30));
+    }
+    [ExposeMethodInEditor]
+    void Logerrors()
+    {
+        Debug.LogError("error");
+    }
+    IEnumerator RubbishPrinter(int count = 20, int wordMin = 5, int wordMax = 15, int wordCountMin = 1, int wordCountMax = 10)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            string s = i + " ";
+            for (int j = 0; j < Random.Range(wordCountMin, wordCountMax); j++)
+                s += zExt.RandomString(Random.Range(wordMin, wordMax));
+            Log(s);
+            yield return null;
+        }
     }
 
     void OnEnable()
     {
-        canvasGroup = GetComponentInParent<CanvasGroup>();
         Application.logMessageReceived += HandleLog;
     }
     void OnDisable()
     {
         Application.logMessageReceived -= HandleLog;
     }
+    bool antiFeedback;
     void HandleLog(string logString, string stackTrace, LogType type)
     {
-        if ((type == LogType.Error && captureMainErrors)
-            || (type == LogType.Log && captureMainLog)
-        || (type == LogType.Exception && captureMainExceptions))
-
+        if (antiFeedback) return;
+        if (type == LogType.Log && captureMainLog)
             Log(logString);
-
+        else
+        if (type == LogType.Error && captureMainErrors)
+            Log(useFades ? "<color=#ff0000>" + logString + "</color>" : logString);
+        else
+        if (type == LogType.Exception && captureMainExceptions)
+            Log(useFades ? "<color=#ff2020>" + logString + "</color>" : logString);
     }
 
     void Clear()
     {
         logList = new List<string>();
+        times = new List<float>();
         logDirty = true;
     }
 
     public static void Log(string logentry)
     {
-
         if (instance == null)
         {
             //            Debug.LogWarning(" simple log not present !");
@@ -91,52 +130,82 @@ public class ScreenConsole : MonoBehaviour
         else
         {
             instance.log(logentry);
-
         }
     }
     public void log(string logentry)
     {
         if (logList == null) return;
+        if (maxlinecharacterCount > 0 && logentry.Length > maxlinecharacterCount) logentry = logentry.Substring(0, maxlinecharacterCount);
         logList.Add(logentry);
-        wasAdded = true;
+        times.Add(Time.time);
         logDirty = true;
-        if (instance.alsoLogToConsole) Debug.Log(logentry);
-        if (!faderRunning || canvasGroup == null)
-            instance.StartCoroutine(instance.Fader());
-
-        if (alsoLogToConsole) Debug.Log(logentry);
-
-
+        if (alsoLogToConsole)
+        {
+            antiFeedback = true;
+            Debug.Log(logentry);
+            antiFeedback = false;
+        }
     }
-
 
 
     IEnumerator Rebuilder()
     {
         while (true)
         {
-            if (logDirty)
+            if (logDirty || useFades)
             {
-                while (logList.Count > maxLines) logList.RemoveAt(0);
-                StringBuilder sb = new StringBuilder();
+                if (logList.Count == 0) yield return waiter; // might hang list line
+                while ((text.preferredHeight > rect.rect.height))
+                {
+                    logList.RemoveAt(0);
+                    times.RemoveAt(0);
+                }
+                sb.Clear();
+                float currentTime = Time.time;
                 for (int i = 0; i < logList.Count; i++)
                 {
-                    sb.Append(logList[i]);
+                    if (useFades)
+                    {
+                        float thisLife = currentTime - times[i] - fadeDelay;
+                        if (thisLife > fadeTime)
+                        {
+                            times.RemoveAt(0);
+                            logList.RemoveAt(0);
+                            //   i--;
+                            continue;
+                        }
+                        else
+                        {
+                            float thisFadeAmt = thisLife / fadeTime;
+                            Color thisColor = color;
+                            thisColor.a = 1 - thisFadeAmt;
+                            sb.Append("<color=#");
+                            sb.Append(ColorUtility.ToHtmlStringRGBA(thisColor));
+                            sb.Append(">");
+                            sb.Append(logList[i]);
+                            sb.Append("</color>");
+                        }
+                    }
+                    else
+                        sb.Append(logList[i]);
                     sb.Append("\n");
                 }
                 text.text = sb.ToString();
+                logDirty = false;
             }
             yield return waiter;
         }
 
     }
+
     void Awake()
     {
-        waiter = new WaitForSeconds(0.2f);
+        rect = GetComponent<RectTransform>();
+        waiter = new WaitForSeconds(refreshTime);
+        sb=new StringBuilder();
         text = GetComponent<Text>();
         if (instance != null) { Debug.LogWarning("another SimplEonsole : other object " + instance.name + " this object we are " + name, gameObject); }
         instance = this;
-        logList = new List<string>();
         Clear();
         StartCoroutine(Rebuilder());
     }

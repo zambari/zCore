@@ -8,7 +8,9 @@ public class RectAnchorHelper : MonoBehaviour {
 
 
 public bool edit;
+public bool symmetricalXMode;
 
+public bool symmetricalYMode;
 RectTransform rect;
 [Range(0,1)]
 public float xAnchorMin;
@@ -23,9 +25,11 @@ public float yAnchorMax;
 void OnValidate()
 
 {
-    
+    if (Application.isPlaying) return;
     if (rect==null) rect=GetComponent<RectTransform>();
    // showSymmetrical=_showSymmetrical;
+    if (symmetricalXMode) xAnchorMax=1-xAnchorMin;
+    if (symmetricalYMode) yAnchorMax=1-yAnchorMin;
      if (edit)
      {
          SetValues();
