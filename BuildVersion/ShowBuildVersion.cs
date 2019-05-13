@@ -1,4 +1,8 @@
-﻿using System.Collections;
+﻿/// <summary>
+/// This class is meant to be attached to a Text object - will read and display lastest build version
+/// </summary>
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,12 +25,11 @@ public class ShowBuildVersion : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        StartCoroutine(GetMac());
+        StartCoroutine(GetBuildVersion());
     }
 
-    IEnumerator GetMac()
+    IEnumerator GetBuildVersion()
     {
-
         Text text = GetComponent<Text>();
 
 #if UNITY_ANDROID && !UNITY_EDITOR
