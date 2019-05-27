@@ -12,7 +12,7 @@ namespace Z
 /// Purpose of this class is to save outcom of physics simulation. Run your simulation and press Save, 
 /// when you exit play mode, press Load and Remove Rigidbodies - you now have a baked final state of yoru obejcts
 /// </summary>
-
+    [SelectionBase]
     public class TransformSaver : MonoBehaviour
     {
         [System.Serializable]

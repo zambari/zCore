@@ -58,7 +58,7 @@ public class GridCreator : MonoBehaviour
     [ExposeMethodInEditor]
     void CreateClones()
     {
-        GameObject parent = new GameObject(" [Group]");
+        GameObject parent = new GameObject(name+" [Group]");
         Undo.RegisterCreatedObjectUndo(parent, "Cloning");
         if (transform.parent != null) parent.transform.parent = transform.parent;
         parent.transform.position = transform.position;
