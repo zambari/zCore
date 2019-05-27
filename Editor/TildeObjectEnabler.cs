@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
 // v0.02 favourite object added
+// v0.03/02 UNDO
 
 public static class ObjectEnableToggle
 {
