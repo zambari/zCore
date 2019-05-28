@@ -6,15 +6,17 @@ using UnityEngine.UI;
 
 // v.03 // simpleconeolse replacemnet
 // v.04 // new fades
+// v.05 // back to manual line count
 
 [RequireComponent(typeof(Text))]
 public class ScreenConsole : MonoBehaviour
 {
     Text text;
     public Color color = Color.white;
-    public bool useFades=true;
+    public bool useFades = true;
     public static ScreenConsole instance;
     static List<string> logList;
+    // public List<string> logList2; //temp
     static List<float> times;
     public bool alsoLogToConsole;
     RectTransform rect;
@@ -31,6 +33,7 @@ public class ScreenConsole : MonoBehaviour
     public bool captureMainErrors = true;
     public bool captureMainExceptions = true;
     static StringBuilder sb;
+    public int maxLines = 10;
     /* IEnumerator Fader()
      {
          if (faderRunning || canvasGroup == null) yield break; ;
@@ -62,6 +65,10 @@ public class ScreenConsole : MonoBehaviour
         text.supportRichText = useFades;
         text.color = color;
         waiter = new WaitForSeconds(refreshTime);
+        string temp = "Log:";
+        for (int i = 1; i < maxLines - 1; i++) temp += "-\n";
+        temp += "---\n";
+        text.text = temp;
     }
     [ExposeMethodInEditor]
     void PrintSomeRubbih()
@@ -155,26 +162,36 @@ public class ScreenConsole : MonoBehaviour
             if (logDirty || useFades)
             {
                 if (logList.Count == 0) yield return waiter; // might hang list line
-                while ((text.preferredHeight > rect.rect.height))
+
+                while ((logList.Count > maxLines))
                 {
                     logList.RemoveAt(0);
                     times.RemoveAt(0);
                 }
+
+                //    logList2 = logList; //temp
+                /*     while ((text.preferredHeight > rect.rect.height))
+                    {
+                        logList.RemoveAt(0);
+                        times.RemoveAt(0);
+                    }
+                    */
                 sb.Clear();
                 float currentTime = Time.time;
                 for (int i = 0; i < logList.Count; i++)
                 {
-                    if (useFades)
+
+                    float thisLife = currentTime - times[i] - fadeDelay;
+                    if (thisLife > fadeTime)
                     {
-                        float thisLife = currentTime - times[i] - fadeDelay;
-                        if (thisLife > fadeTime)
-                        {
-                            times.RemoveAt(0);
-                            logList.RemoveAt(0);
-                            //   i--;
-                            continue;
-                        }
-                        else
+                        times.RemoveAt(0);
+                        logList.RemoveAt(0);
+                        //   i--;
+                        continue;
+                    }
+                    else
+                    {
+                        if (useFades)
                         {
                             float thisFadeAmt = thisLife / fadeTime;
                             Color thisColor = color;
@@ -185,9 +202,11 @@ public class ScreenConsole : MonoBehaviour
                             sb.Append(logList[i]);
                             sb.Append("</color>");
                         }
+                        else
+                            sb.Append(logList[i]);
                     }
-                    else
-                        sb.Append(logList[i]);
+
+
                     sb.Append("\n");
                 }
                 text.text = sb.ToString();
@@ -202,7 +221,7 @@ public class ScreenConsole : MonoBehaviour
     {
         rect = GetComponent<RectTransform>();
         waiter = new WaitForSeconds(refreshTime);
-        sb=new StringBuilder();
+        sb = new StringBuilder();
         text = GetComponent<Text>();
         if (instance != null) { Debug.LogWarning("another SimplEonsole : other object " + instance.name + " this object we are " + name, gameObject); }
         instance = this;
