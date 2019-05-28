@@ -26,6 +26,7 @@
 // v0.63 toHex
 // v0.64 makecolor
 // v0.65 c null warning
+// v0.66 dump to base64 rendertexure extention
 
 using UnityEngine;
 using System;
@@ -150,6 +151,32 @@ public static class zExt
 #endif
 
     }
+
+ 
+
+
+    public static string DumpToJPGBase64(this RenderTexture rt, int quality = 90)
+    {
+        var oldRT = RenderTexture.active;
+
+        var tex = new Texture2D(rt.width, rt.height);
+        RenderTexture.active = rt;
+        tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+        tex.Apply();
+        byte[] bytes = tex.EncodeToJPG(quality);
+        string encoded = Convert.ToBase64String(bytes);
+        // convert.frombase64string
+        RenderTexture.active = oldRT;
+        return encoded;
+
+    }
+
+    public static float Duration(this UnityEngine.Video.VideoPlayer videoPlayer)
+    {
+        return videoPlayer.frameCount / videoPlayer.frameRate;
+    }
+
+
 #region  marshalling
    public static byte[] ToByteArray(this int[] intz)// 2017.08.18
     {
