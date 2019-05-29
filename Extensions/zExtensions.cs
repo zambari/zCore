@@ -29,6 +29,8 @@
 // v0.66 dump to base64 rendertexure extention
 // v0.67 rect extensions moved to a diff classs
 // v0.68 showhide conditional
+// v0.69 moved to layoutextentins
+// v0.70 showhide on monobehaviour
 
 using UnityEngine;
 using System;
@@ -350,7 +352,20 @@ public static class zExt
             obj.SetActive(true);
 
     }
+     public static void Hide(this MonoBehaviour obj)
+    {
+        if (obj != null) Hide(obj.gameObject);
+    }
 
+    public static void Show(this MonoBehaviour obj)
+    {
+        if (obj == null) return;
+        var showHide = obj.GetComponent<IShowHide>();
+        if (showHide != null)
+            showHide.Show();
+        else
+            obj.gameObject.SetActive(true);
+    }
     #endif
     public static GameObject[] GetGameObjectsWithComponent<T>() where T : Component
     {
@@ -751,21 +766,6 @@ public static class zExt
         return children;
     }
 
-    public static LayoutElement[] GetActiveElements(this HorizontalLayoutGroup layout)
-    {
-        List<LayoutElement> elements = new List<LayoutElement>();
-        if (layout == null) return elements.ToArray();
-        for (int i = 0; i < layout.transform.childCount; i++)
-        {
-            GameObject thisChild = layout.transform.GetChild(i).gameObject;
-            LayoutElement le = thisChild.GetComponent<LayoutElement>();
-            if (le != null)
-            {
-                if (!le.ignoreLayout) elements.Add(le);
-            }
-        }
-        return elements.ToArray();
-    }
 
     public static Color Random(this Color c)
     {
