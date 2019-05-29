@@ -26,6 +26,8 @@ public class AssetDefineManager : AssetPostprocessor
 		//desktop[0]=BuildTargetGroup.
 		//new AssetDefine("AssetDefineManager.cs", null, "AssetCustomDefine"),
 	//	new AssetDefine("AssetDefineManager.cs", null, "AssetCustomDefine", "MyOtherDefine"),
+			 
+			 new AssetDefine("ISHowHide.cs",destkop , "ISHOWHIDE"),
 			 new AssetDefine("IAnimateInOut.cs",destkop , "iAnimateInOut"),
 		    new AssetDefine("zLog.cs",destkop , "zLog"),
 			new AssetDefine("zOSC.cs",destkop , "zOSC"),

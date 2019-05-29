@@ -1,6 +1,7 @@
 ﻿//v0.2
 using UnityEngine;
 using UnityEngine.UI;
+using Z;
 
 public class MoveRel : MonoBehaviour
 {

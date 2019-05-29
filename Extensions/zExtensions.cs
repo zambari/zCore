@@ -28,6 +28,7 @@
 // v0.65 c null warning
 // v0.66 dump to base64 rendertexure extention
 // v0.67 rect extensions moved to a diff classs
+// v0.68 showhide conditional
 
 using UnityEngine;
 using System;
@@ -39,7 +40,7 @@ using System.IO;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-using Z.Extras;
+//using Z.Extras;
 
 /// oeverrides zRectExtensions
 
@@ -317,11 +318,13 @@ public static class zExt
     {
         if (text!=null) text.text=s;
     }
+    #endregion ui
+    #if ISHOWHIDE
     public static void Show(this Transform obj)
     {
         if (obj != null) Show(obj.gameObject);
     }
-    #endregion ui
+
     public static void Hide(this GameObject obj)
     {
         if (obj == null) return;
@@ -348,7 +351,7 @@ public static class zExt
 
     }
 
-
+    #endif
     public static GameObject[] GetGameObjectsWithComponent<T>() where T : Component
     {
         T[] foundObjects = GameObject.FindObjectsOfType<T>();
