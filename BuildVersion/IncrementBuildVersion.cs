@@ -50,7 +50,7 @@ namespace Z
                 if (b == null)
                     Debug.Log("Failed to read buildinfo.json");
                 
-                Debug.Log($"Last build had number: {b.buildNr} built on  {b.buildDate}");
+                Debug.Log("Last build had number: "+b.buildNr+" built on  "+b.buildDate);
             }
             catch
             {

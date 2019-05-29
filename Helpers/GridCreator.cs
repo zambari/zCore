@@ -80,7 +80,7 @@ public class GridCreator : MonoBehaviour
                     Undo.RegisterCreatedObjectUndo(newGo, "Cloning");
                     Vector3 thisOffset = new Vector3(i * bounds.x * spacing, j * bounds.y * spacing, k * bounds.z * spacing);
                     newGo.transform.position = transform.TransformPoint(thisOffset);
-                    newGo.name = $"{name} [{i}  {j}  {k}]";
+                    newGo.name =name+" "+i+"  "+j+"  "+k;
                     clones[index++] = newGo;
                     DestroyImmediate(newGo.GetComponent<GridCreator>());
                 }

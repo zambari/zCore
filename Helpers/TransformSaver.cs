@@ -42,7 +42,7 @@ namespace Z
             transforms = transforms.FromJson(fileName);
             if (transforms.transforms.Length != transform.childCount)
             {
-                Debug.Log($"invalid child count, should be {transforms.transforms.Length}, is {transform.childCount} (sure this is the right object?");
+                Debug.Log("invalid child count, should be "+transforms.transforms.Length+", is "+transform.childCount+"sure this is the right object?");
                 return;
             }
             for (int i = 0; i < transform.childCount; i++)

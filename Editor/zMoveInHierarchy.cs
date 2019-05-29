@@ -6,7 +6,9 @@ using UnityEngine.UI;
 // quickly put together by zambari
 
 /// v.1.01 moves 
-
+/// v.1.02 namespace
+/// 
+using Z;
 public static class zMoveInHierarchyCommand
 {
 

@@ -176,7 +176,7 @@ public class ScreenConsole : MonoBehaviour
                         times.RemoveAt(0);
                     }
                     */
-                sb.Clear();
+                sb=new System.Text.StringBuilder();
                 float currentTime = Time.time;
                 for (int i = 0; i < logList.Count; i++)
                 {
