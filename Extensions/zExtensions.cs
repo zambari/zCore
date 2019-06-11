@@ -30,7 +30,7 @@
 // v0.67 rect extensions moved to a diff classs
 // v0.68 showhide conditional
 // v0.69 moved to layoutextentins
-// v0.70 showhide on monobehaviour
+// v0.70 showhide on monobehaviour, randomize uppercase
 
 using UnityEngine;
 using System;
@@ -543,7 +543,7 @@ public static class zExt
 
     }
 
-    public static float randomizeRespectingNormalisation(this float f, float howMuch)
+    public static float RandomizeRespectingNormalisation(this float f, float howMuch)
     {
         float n = f + UnityEngine.Random.value * howMuch - howMuch / 2;
         if (n < 0) n = 0;
@@ -553,13 +553,13 @@ public static class zExt
         return n;
 
     }
-    public static Color randomize(this Color c, float howMuchHue = 0.15f, float howMuchSat = 0.3f, float howMuchL = 0.2f)
+    public static Color Randomize(this Color c, float howMuchHue = 0.15f, float howMuchSat = 0.3f, float howMuchL = 0.2f)
     {
         float H, S, L;
         Color.RGBToHSV(c, out H, out S, out L);
-        H = H.randomizeRespectingNormalisation(howMuchHue);
-        S = S.randomizeRespectingNormalisation(howMuchSat);
-        L = L.randomizeRespectingNormalisation(howMuchL);
+        H = H.RandomizeRespectingNormalisation(howMuchHue);
+        S = S.RandomizeRespectingNormalisation(howMuchSat);
+        L = L.RandomizeRespectingNormalisation(howMuchL);
         Color newCol = Color.HSVToRGB(H, S, L);
         newCol.a = c.a;
         return newCol;

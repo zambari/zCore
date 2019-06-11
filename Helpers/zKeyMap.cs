@@ -38,17 +38,22 @@ public class zKeyMap : MonoBehaviour
         onUpList = new List<Action>();
         onDownList = new List<Action>();
     }
+    [Obsolete]
     public static bool map(MonoBehaviour mono, KeyCode key, Action actionOnDown, Action actionOnUp = null)
-    {  
-        bool ret=true;
+    {
+        return Map(mono, key, actionOnDown, actionOnUp);
+    }
+    public static bool Map(MonoBehaviour mono, KeyCode key, Action actionOnDown, Action actionOnUp = null)
+    {
+        bool ret = true;
         if (k == null)
         {
             createLists();
         }
         if (k.Contains(key))
         {
-            Debug.LogWarning("key " + key.ToString() + " is  mapped more than once "+mono.name,mono);
-           ret= false;
+            Debug.LogWarning("key " + key.ToString() + " is  mapped more than once " + mono.name, mono);
+            ret = false;
         }
         k.Add(key);
         m.Add(mono);
@@ -60,19 +65,19 @@ public class zKeyMap : MonoBehaviour
     /// <summary>.
     /// Depreciated, use  map(MonoBehaviour mono, KeyCode key, Action actionOnDown)
     /// </summary>
-/*    public static bool map(MonoBehaviour mono, Action actionOnDown, KeyCode key)
-    {
-        Debug.Log("depreciated method call by "+mono.name,mono);
-        return false;
-    //    return map(mono, actionOnDown, key);
-    }*/
+    /*    public static bool map(MonoBehaviour mono, Action actionOnDown, KeyCode key)
+        {
+            Debug.Log("depreciated method call by "+mono.name,mono);
+            return false;
+        //    return map(mono, actionOnDown, key);
+        }*/
 
-///
-/* 
-    public static bool map(MonoBehaviour mono, , Action actionOnDown)
-    {
-      return map(mono, actionOnDown, key);
-    }*/
+    ///
+    /* 
+        public static bool map(MonoBehaviour mono, , Action actionOnDown)
+        {
+          return map(mono, actionOnDown, key);
+        }*/
 
 
     void Update()

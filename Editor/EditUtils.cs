@@ -160,7 +160,7 @@ public static class EditUiltZ
 
     static void CreatePallet(string name, float mettalic, float smoothness, float emmission, float randomizeColor = 0, bool black = true)
     {
-        CreateMaterial("Red " + name, Color.red.randomize(randomizeColor), mettalic, smoothness, emmission);
+        CreateMaterial("Red " + name, Color.red.Randomize(randomizeColor), mettalic, smoothness, emmission);
         CreateMaterial("Green " + name, Color.green, mettalic, smoothness, emmission);
         CreateMaterial("Blue " + name, Color.blue, mettalic, smoothness, emmission);
         CreateMaterial("White " + name, Color.white, mettalic, smoothness, emmission);
