@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+//v.0.2. symmetrical mode
+
 
 public class RectAnchorHelper : MonoBehaviour {
 
