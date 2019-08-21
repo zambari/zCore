@@ -37,7 +37,7 @@ public class ShowBuildVersion : MonoBehaviour
 #else
         string url = "file://" + System.IO.Path.Combine(Application.streamingAssetsPath, "buildInfo.json");
 #endif
-             Debug.Log("reading buildver from   " + url);
+//             Debug.Log("reading buildver from   " + url);
         var www = new WWW(url);
         yield return www;
         text.text = "Build unknown";
@@ -50,7 +50,7 @@ public class ShowBuildVersion : MonoBehaviour
         {
             var buildVersion = JsonUtility.FromJson<ShowBuildVersion.BuildVersion>(www.text);
             if (buildVersion != null)
-                text.text = "Build " + buildVersion.buildNr;
+                text.text = "Build " + (buildVersion.buildNr+1); // gets incremented after succesful build
         }
     }
 }
