@@ -51,8 +51,8 @@ namespace Z
             {
                 b = b.FromJson(fileName);
                 if (b == null)
-                    Debug.Log($"Failed to read {fileName}");
-                Debug.Log($"Last build had number: {b.buildNr - 1}  built on  {b.buildDate}");
+                    Debug.Log("Failed to read "+fileName);
+                Debug.Log("Last build had number: "+(b.buildNr - 1)+"built on  "+b.buildDate);
             }
             catch
             {
@@ -67,19 +67,19 @@ namespace Z
             {
                 b = b.FromJson(fileName);
                 if (b == null)
-                    Debug.Log($"Failed to read {fileName}");
+                    Debug.Log("Failed to read "+fileName);
                 {
                     b.buildNr--;
                     b.buildDate = "version was manually decreased";
 
                 }
                 b.ToJson(fileName);
-                Debug.Log($"Decreased version to {b.buildNr}");
+                Debug.Log("Decreased version to "+b.buildNr);
             }
             catch
             {
 
-                Debug.Log($"Failed to read {fileName}");
+                Debug.Log("Failed to read "+fileName);
             }
         }
 #endif
