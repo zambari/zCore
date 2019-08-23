@@ -8,9 +8,17 @@ using UnityEngine;
 using UnityEngine.UI;
 using Z;
 [RequireComponent(typeof(Text))]
+[ExecuteInEditMode]
 public class ShowBuildVersion : MonoBehaviour
 {
-     [System.Serializable]
+#if UNITY_EDITOR
+    void Awake()
+    {
+        ReadVersionOffline();
+    }
+#endif
+
+    [System.Serializable]
     public class BuildVersion
     {
         public int buildNr = 1;
@@ -18,7 +26,7 @@ public class ShowBuildVersion : MonoBehaviour
         public List<string> versionHistory;
         public override string ToString()
         {
-            return "time: "+buildDate+"   build nr: "+buildNr;
+            return "time: " + buildDate + "   build nr: " + buildNr;
         }
     }
 
@@ -30,27 +38,43 @@ public class ShowBuildVersion : MonoBehaviour
 
     IEnumerator GetBuildVersion()
     {
-        Text text = GetComponent<Text>();
 
+        Text text = GetComponent<Text>();
 #if UNITY_ANDROID && !UNITY_EDITOR
-        string url = "jar:file://" + Application.dataPath + "!/assets/" + "buildInfo.json";
+        string url = "jar:file://" + Application.dataPath + "!/assets/" + IncrementBuildVersion.fileName;
 #else
-        string url = "file://" + System.IO.Path.Combine(Application.streamingAssetsPath, "buildInfo.json");
+        string url = "file://" + System.IO.Path.Combine(Application.streamingAssetsPath,  IncrementBuildVersion.fileName);
 #endif
-//             Debug.Log("reading buildver from   " + url);
+        //             Debug.Log("reading buildver from   " + url);
         var www = new WWW(url);
         yield return www;
         text.text = "Build unknown";
         if (www.error != null)
         {
 
-      Debug.Log("error " + www.error);
+            Debug.Log("error " + www.error);
         }
         else
         {
             var buildVersion = JsonUtility.FromJson<ShowBuildVersion.BuildVersion>(www.text);
             if (buildVersion != null)
-                text.text = "Build " + (buildVersion.buildNr+1); // gets incremented after succesful build
+                text.text = "Build " + (buildVersion.buildNr + 1); // gets incremented after succesful build
         }
+    }
+    void Reset()
+    {
+        Debug.Log("reset");
+        ReadVersionOffline();
+        GetComponent<Text>().raycastTarget = false;
+    }
+    void ReadVersionOffline()
+    {
+        Debug.Log("ver");
+        Text text = GetComponent<Text>();
+        ShowBuildVersion.BuildVersion buildVersion = null;
+        buildVersion = buildVersion.FromJson(IncrementBuildVersion.fileName);
+
+        if (buildVersion != null)
+            text.text = "Build " + (buildVersion.buildNr + 1); // gets incremented after succesful build
     }
 }

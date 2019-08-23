@@ -4,6 +4,7 @@
 // v.0.4 - menuitems to display current and decrease
 // v.0.5 - filename now a variable
 // v.0.6 - version lag fixed
+// v.0.7 - disables raycast target
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -18,7 +19,7 @@ namespace Z
     public class IncrementBuildVersion : ScriptableObject
     {
 
-        const string fileName = "buildInfo.json";
+      public const string fileName = "buildInfo.json";
 
         [PostProcessBuild]
         public static void OnPostProcessBuild(BuildTarget target, string buildPath)
