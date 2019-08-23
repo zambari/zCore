@@ -63,13 +63,11 @@ public class ShowBuildVersion : MonoBehaviour
     }
     void Reset()
     {
-        Debug.Log("reset");
         ReadVersionOffline();
         GetComponent<Text>().raycastTarget = false;
     }
     void ReadVersionOffline()
     {
-        Debug.Log("ver");
         Text text = GetComponent<Text>();
         ShowBuildVersion.BuildVersion buildVersion = null;
         buildVersion = buildVersion.FromJson(IncrementBuildVersion.fileName);
