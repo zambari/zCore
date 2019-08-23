@@ -9,6 +9,7 @@
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.Callbacks;
+#endif
 using UnityEngine;
 using System.Collections.Generic;
 namespace Z
@@ -19,8 +20,8 @@ namespace Z
     public class IncrementBuildVersion : ScriptableObject
     {
 
-      public const string fileName = "buildInfo.json";
-
+        public const string fileName = "buildInfo.json";
+#if UNITY_EDITOR
         [PostProcessBuild]
         public static void OnPostProcessBuild(BuildTarget target, string buildPath)
         {
@@ -39,7 +40,7 @@ namespace Z
             if (b.versionHistory == null) b.versionHistory = new List<string>();
             b.versionHistory.Insert(0, b.ToString());
             b.ToJson(fileName);
-            Debug.Log("Finished build nr " + (b.buildNr ));
+            Debug.Log("Finished build nr " + (b.buildNr));
         }
 
         [MenuItem("Tools/Version Auto Incrementer/Print Current Version and date")]
@@ -51,7 +52,7 @@ namespace Z
                 b = b.FromJson(fileName);
                 if (b == null)
                     Debug.Log($"Failed to read {fileName}");
-                Debug.Log($"Last build had number: {b.buildNr-1}  built on  {b.buildDate}");
+                Debug.Log($"Last build had number: {b.buildNr - 1}  built on  {b.buildDate}");
             }
             catch
             {
@@ -81,6 +82,9 @@ namespace Z
                 Debug.Log($"Failed to read {fileName}");
             }
         }
+#endif
+
+
     }
 }
-#endif
+

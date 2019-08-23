@@ -68,11 +68,13 @@ public class ShowBuildVersion : MonoBehaviour
     }
     void ReadVersionOffline()
     {
+        #if UNITY_EDITOR
         Text text = GetComponent<Text>();
         ShowBuildVersion.BuildVersion buildVersion = null;
         buildVersion = buildVersion.FromJson(IncrementBuildVersion.fileName);
 
         if (buildVersion != null)
             text.text = "Build " + (buildVersion.buildNr + 1); // gets incremented after succesful build
+        #endif
     }
 }
