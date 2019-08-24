@@ -50,7 +50,7 @@ public class MaterialReplacer : MonoBehaviour
     {
 
         var mrs = Resources.FindObjectsOfTypeAll(typeof(MeshRenderer)) as MeshRenderer[];
-        Debug.Log($" found {mrs.Length} mrs");
+        Debug.Log(" found "+mrs.Length+" mrs");
         for (int i = 0; i < mrs.Length; i++)
         {
             if (mrs[i].gameObject.scene.isLoaded && mrs[i].sharedMaterial == sourceMaterial)
