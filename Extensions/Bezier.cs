@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-namespace Z{
+
 public static class Bezier {
 
 // via StackOverflow
@@ -57,4 +57,3 @@ void OnDrawGizmos()
 
 
  */
-}

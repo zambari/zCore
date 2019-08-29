@@ -6,13 +6,17 @@ using UnityEngine.UI;
 #pragma warning disable 219
 //zambari 2017
 // v.1.01
+// v.1.02 extra space when no tag
+[System.Serializable]
 public class NameHelper
 {
-    const int maxLen = 15;
+    const int maxLen = 45;
     MonoBehaviour mono;
-    static char seperator = '\uFEFF'; // unicode whitespace
+
+    public static char seperator = '\uFEFF'; // unicode whitespace
+                                             //static char seperator = '@'; // debug
     const string extraSpace = "  ";
-    string baseName;
+    public string baseName;
     bool isMangledCached;
     bool useSecondTag = false;
     string _tag = "";
@@ -39,7 +43,7 @@ public class NameHelper
                 _tag = decoA + value + decoB;
             else
                 _tag = value;
-         //   SetName();
+            //   SetName();
         }
     }
     public string tagPost
@@ -49,25 +53,38 @@ public class NameHelper
         {
             if (value == null || value.Length == 0) useSecondTag = false; else useSecondTag = true;
             _tagPost = value;
-         //   SetName();
+            //   SetName();
         }
     }
 
-    public void SetName(string newName=null)
+    public void SetName(string newName = null)
     {
-        if (newName!=null) 
-           baseName=newName;
-        
-
-        if (baseName.Length > maxLen) baseName = baseName.Substring(0, maxLen);
-
+        if (newName != null)
+            baseName = GetWithoutTags(newName);
+        else
+        {
+            baseName = GetWithoutTags(mono.name);
+            if (baseName.Length<3) Debug.Log("cos zle z naszym name");
+        }
         string[] s = baseName.Split('\n');
         baseName = s[0];
 
+        if (baseName.Length > maxLen) baseName = baseName.Substring(0, maxLen);
+
+
+        string thisNewName = tag;
+        if (!useSecondTag)
+        {
+            thisNewName += extraSpace;
+         
+        }
+           thisNewName += seperator;
+        thisNewName += baseName;
+
         if (useSecondTag)
-            mono.name = tag + extraSpace + seperator + baseName + seperator + extraSpace + _tagPost;
-        else
-            mono.name = tag + extraSpace + seperator + baseName;
+            thisNewName += seperator + extraSpace + _tagPost;
+
+        mono.name = thisNewName;
     }
     public void SetTag(string t)
     {
@@ -82,8 +99,8 @@ public class NameHelper
     }
     public void RemoveTag()
     {
-        if (baseName != null)
-            mono.name = baseName;
+        //if (baseName != null)
+        mono.name = GetWithoutTags(mono.name);// baseName;
     }
     public string removeTag
     {
@@ -98,18 +115,18 @@ public class NameHelper
     }
 
     //string baseName;
-/*    public string unMangled(string b)
-    {
-        string[] split = b.Split(seperator);
-        if (split.Length < 2) return b;
-        return split[1];
-    }*/
+    /*    public string unMangled(string b)
+        {
+            string[] split = b.Split(seperator);
+            if (split.Length < 2) return b;
+            return split[1];
+        }*/
     public NameHelper(MonoBehaviour source)
     {
         mono = source;
-        baseName =  GetWithoutTags(mono.name);
+        baseName = GetWithoutTags(mono.name);
 
-        
+
     }
 
 }

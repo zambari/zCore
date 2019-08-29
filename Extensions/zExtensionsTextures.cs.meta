@@ -1,11 +1,8 @@
 fileFormatVersion: 2
-<<<<<<< Updated upstream
-guid: 02106b0955116f948b8afa6b2de12e3a
-=======
-guid: c15a19115de624347a26f4688e722650
->>>>>>> Stashed changes
+guid: d11c27d581d6b924f90cb8106693bf34
+timeCreated: 1516802201
+licenseType: Free
 MonoImporter:
-  externalObjects: {}
   serializedVersion: 2
   defaultReferences: []
   executionOrder: 0

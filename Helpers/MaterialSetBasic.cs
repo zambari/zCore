@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//v02
+//v0.2
+//v0.3 gets material on rest
 [ExecuteInEditMode]
 public class MaterialSetBasic : MonoBehaviour
 {
@@ -49,9 +50,15 @@ public class MaterialSetBasic : MonoBehaviour
         SetMaterial(materialToSetOrg);
     }
     [ExposeMethodInEditor]
-    void GeMaterial()
+    void GetMaterial()
     {
         MeshRenderer meshRenderer = GetComponentInChildren<MeshRenderer>();
         if (meshRenderer != null) materialToSetOrg = meshRenderer.sharedMaterial;
+    }
+    void Reset()
+    {
+        GetMaterial();
+        materialToSetAlt=materialToSet;
+        materialToSetOrg=materialToSet;
     }
 }
