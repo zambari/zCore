@@ -6,9 +6,32 @@ using System.IO;
 #if UNITY_EDITOR
 #endif
 
+//v0.2 rect row split
+
 
 public static class zExtensionsRect
 {
+
+    public static Rect SplitRow(this Rect row, float start, float end, float margin = 2, float lineHeight = 14)
+    {
+        float x = row.x + row.width * start;
+        float w = row.width * (end - start);
+        if (start > 0) x += margin;
+        if (end < 1) w -= margin;
+        return new Rect(x, row.y, w, lineHeight);
+    }
+    public static Rect MarginLeft(this Rect rect, float margin)
+    {
+        return new Rect(rect.x + margin, rect.y, rect.width - margin, rect.height);
+    }
+    public static Rect AdvanceLine(this Rect rect, float advance = 16)
+    {
+        return new Rect(rect.x, rect.y - advance, rect.width, rect.height);
+    }
+    public static Rect MarginRight(this Rect rect, float margin)
+    {
+        return new Rect(rect.x, rect.y, rect.width - margin, rect.height);
+    }
     public static void RemoveChildren(this Transform transform, int childIndex = 0)
     {
         int k = 0;
@@ -97,6 +120,9 @@ public static class zExtensionsRect
         vl.childForceExpandHeight = false;
         vl.childForceExpandWidth = false;
     }
+
+
+
     public static void SetRelativeSizeX(this RectTransform rect, RectTransform parentRect, float v)
     {
         float sizeX = parentRect.rect.width;

@@ -4,9 +4,7 @@ using UnityEngine;
 
 public class SpotController : MonoBehaviour
 {
-    [SerializeField] Light light;
-
-
+    [SerializeField] new Light light;
     public enum MyLightType { spot, directional }
     public MyLightType type;
     public Color color = Color.white;

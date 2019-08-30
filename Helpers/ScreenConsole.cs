@@ -19,7 +19,6 @@ public class ScreenConsole : MonoBehaviour
     // public List<string> logList2; //temp
     static List<float> times;
     public bool alsoLogToConsole;
-    RectTransform rect;
     bool logDirty;
     [Header("Fade duration")]
     public float fadeTime = 5;
@@ -219,7 +218,6 @@ public class ScreenConsole : MonoBehaviour
 
     void Awake()
     {
-        rect = GetComponent<RectTransform>();
         waiter = new WaitForSeconds(refreshTime);
         sb = new StringBuilder();
         text = GetComponent<Text>();
