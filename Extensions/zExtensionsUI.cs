@@ -57,12 +57,13 @@ public static void SetText(this Text text,float s)
     //     }
     //     return thisImage;
     // }
-    public static RectTransform rect(this GameObject go)
-    {
-        RectTransform r = go.GetComponent<RectTransform>();
-        if (r == null) r = go.AddComponent<RectTransform>();
-        return r;
-    }
+    // public static RectTransform rect(this GameObject go)
+    // {
+        
+    //     RectTransform r = go.GetComponent<RectTransform>();
+    //     if (r == null) r = go.AddComponent<RectTransform>();
+    //     return r;
+    // }
 
     
     public static Texture2D Create(this Texture2D t, Color fillColor, int sixeX = 1, int sizeY = 1) //, bool apply=true

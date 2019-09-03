@@ -106,7 +106,7 @@ public static class zExtensionsRect
 #endif
     }
 
-    public static RectTransform AddChild(this GameObject parent)
+    public static RectTransform AddChildRectTransform(this GameObject parent)
     {
         RectTransform parentRect = parent.GetComponent<RectTransform>();
         return parentRect.AddChild();

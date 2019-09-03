@@ -3,50 +3,116 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Z;
+using zUI;
 
 // v0.2  duzo dobrego
 // v0.3  napespace
+// v.0.4 undo??
 public class LayoutEditorUtilities
 {
     const int defaultSpacing = 5;
-
+    public enum LayoutDirection { Horizontal, Vertical };
 
     static Transform CreateCanvasIfNotPresent()
     {
-        if (Selection.activeGameObject != null || Selection.activeGameObject.GetComponentInParent<Canvas>() != null) return Selection.activeGameObject.transform; //GetComponentInParent<Canvas>().transform;
+        //  if (Selection.activeGameObject != null || Selection.activeGameObject.GetComponentInParent<Canvas>() != null) return Selection.activeGameObject.transform; //GetComponentInParent<Canvas>().transform;
         Canvas can = GameObject.FindObjectOfType(typeof(Canvas)) as Canvas;
-        if (can == null)
+        if (can != null)
+            return can.transform;
+        else
         {
-            GameObject c = new GameObject("Canvas");
+            GameObject c = new GameObject("Canvas", typeof(Canvas), typeof(GraphicRaycaster), typeof(CanvasScaler));
+            Undo.RegisterCreatedObjectUndo(c,"layouyt");
             c.AddComponent<Canvas>();
             c.AddComponent<GraphicRaycaster>();
             c.AddComponent<CanvasScaler>();
             // Selection.activeGameObject = c;
+            EventSystem e = GameObject.FindObjectOfType<EventSystem>();
+            if (e == null)
+            {
+                new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
+            }
+
             return c.transform;
         }
-        else return can.transform;
-        //    Selection.activeGameObject = can.gameObject;
-        //  }
     }
-    static void CreateLayout(RectTransform container, bool vertical)
+
+
+    [MenuItem("GameObject/UI/Add Horizontal Layout to selection")]
+    static void CreateHorizontalLayout()
     {
-        int count = 3;
-        //        int spacing = 5;
+        Selection.activeObject = CreateHoritontalOrVertical(LayoutDirection.Horizontal, 3);
+    }
+    [MenuItem("GameObject/UI/Add Vertical Layout to selection")]
+    static void CreateVerticalLayout()
+    {
+        Selection.activeObject = CreateHoritontalOrVertical(LayoutDirection.Vertical, 3);
+    }
+
+    static RectTransform CreateHoritontalOrVertical(LayoutDirection dir, int count)
+    {
+        RectTransform target = null;
+        if (Selection.activeGameObject != null && Selection.activeGameObject.GetComponent<RectTransform>() != null)
+        {
+            target = Selection.activeGameObject.GetComponent<RectTransform>();
+            Undo.RecordObject(target, "adding layout 1");
+            Undo.RecordObject(Selection.activeGameObject, "Adding layout");
+            return PopulateLayout(target.AddImageChild().GetComponent<RectTransform>(), dir, count);
+        }
+        else
+        {
+            Debug.LogError("Works on selected rect, please create or select a Panel ");
+            return null;
+
+        }
+
+        var canvas = CreateCanvasIfNotPresent();
+
+
+        RectTransform container = canvas.GetComponent<RectTransform>();
+        {
+            Debug.Log("rect selection");
+            container = Selection.activeGameObject.GetComponent<RectTransform>();
+
+            var newObj = new GameObject("Layout", typeof(RectTransform), typeof(Image));
+               Undo.RegisterCreatedObjectUndo(newObj,"Layout");
+
+            newObj.transform.SetParent(container);
+            container = newObj.GetComponent<RectTransform>();
+            Selection.activeObject = container;
+            //            container=container.gameObject.AddChildRectTransform();
+        }
+
+        if (container == null)
+        {
+            Debug.Log("no container");
+            var newCont = new GameObject("RectContainer", typeof(RectTransform), typeof(Image));
+            Undo.RegisterCreatedObjectUndo(newCont,"Layout");
+            container = newCont.GetComponent<RectTransform>();
+        }
+
+        Image a = container.GetComponent<Image>();
+        if (a != null) a.enabled = false;
+
+
+
+    }
+    static RectTransform PopulateLayout(RectTransform container, LayoutDirection dir, int count)
+    {
+        bool vertical = dir == LayoutDirection.Vertical;
 
         if (vertical)
-
             container.gameObject.AddComponent<VerticalLayoutGroup>().SetChildControl();
         else
-
             container.gameObject.AddComponent<HorizontalLayoutGroup>().SetChildControl();
-
-        //  container.gameObject.AddOrGetComponent<LayoutGroupHelper>();
         List<GameObject> cretedObjects = new List<GameObject>();
         for (int i = 0; i < count; i++)
         {
             RectTransform child = container.AddChild();
+            Undo.RegisterCreatedObjectUndo(child,"layoutt");
             cretedObjects.Add(child.gameObject);
             child.anchorMin = new Vector2(0, 0);
             child.anchorMax = new Vector2(1, 1);
@@ -58,36 +124,12 @@ public class LayoutEditorUtilities
             LayoutElement le = child.gameObject.AddComponent<LayoutElement>();
             le.flexibleHeight = (vertical ? 1f / count : 1);
             le.flexibleWidth = (vertical ? 1 : 1f / count);
-
+            child.localScale=Vector3.one; //why do we need this
         }
         container.name = (vertical ? "VerticalLayout" : "HorizontalLayout");
+        return container;
     }
 
-
-    [MenuItem("GameObject/UI/Panel with Horizontal Layout")]
-    static void CreateHorizontalLayout()
-    {
-        CreateCanvasIfNotPresent();
-
-        RectTransform container = Selection.activeGameObject.rect();//.AddChild();
-        Image a = container.GetComponent<Image>();
-        if (a != null) a.enabled = false;
-        Undo.RecordObject(Selection.activeGameObject, "Adding layout");
-        CreateLayout(container.AddImageChild().GetComponent<RectTransform>(), false);
-    }
-    [MenuItem("GameObject/UI/Panel with Vrtical layout")]
-    static void CreateVerticalLayout()
-    {
-
-        CreateCanvasIfNotPresent();
-
-        RectTransform container = Selection.activeGameObject.rect();//.AddChild();
-        Image a = container.GetComponent<Image>();
-        if (a != null) a.enabled = false;
-
-        Undo.RecordObject(Selection.activeGameObject, "Adding layout");
-        CreateLayout(container.AddImageChild().GetComponent<RectTransform>(), true);
-    }
 
     [MenuItem("Tools/Layout H<->V Converion")]
     static void ConvertLayout()
