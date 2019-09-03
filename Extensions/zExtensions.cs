@@ -34,7 +34,8 @@
 // v0.68 showhide conditional
 // v0.69 moved to layoutextentins
 // v0.70 showhide on monobehaviour, randomize uppercase
-// v0.71 vector2.Contains(float)
+// v0.71 vector2.Contains(float) 71b clamp
+
 
 
 
@@ -119,6 +120,12 @@ public static class zExt
     public static bool Contains(this Vector2 range, float parameter)
     {
         return (parameter >= range.x && parameter <= range.y);
+    }
+    public static float Clamp(this Vector2 range, float parameter)
+    {
+        if (parameter < range.x) parameter = range.x;
+        if (parameter > range.y) parameter = range.y;
+        return parameter;
     }
     public static Vector2 NormalizeToScreenSize(this Vector2 input)
     {
