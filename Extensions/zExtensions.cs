@@ -34,6 +34,7 @@
 // v0.68 showhide conditional
 // v0.69 moved to layoutextentins
 // v0.70 showhide on monobehaviour, randomize uppercase
+// v0.71 vector2.Contains(float)
 
 
 
@@ -70,9 +71,9 @@ public static class zExt
         if (showHide != null)
             showHide.Hide();
         else
-           obj.SetActive(false);
-     }  
-    
+            obj.SetActive(false);
+    }
+
     public static void Hide(this Transform obj)
     {
         if (obj != null) Hide(obj.gameObject);
@@ -88,7 +89,7 @@ public static class zExt
             obj.SetActive(true);
 
     }
-     public static void Hide(this MonoBehaviour obj)
+    public static void Hide(this MonoBehaviour obj)
     {
         if (obj != null) Hide(obj.gameObject);
     }
@@ -115,7 +116,10 @@ public static class zExt
         }
         return builder.ToString();
     }
-
+    public static bool Contains(this Vector2 range, float parameter)
+    {
+        return (parameter >= range.x && parameter <= range.y);
+    }
     public static Vector2 NormalizeToScreenSize(this Vector2 input)
     {
         return new Vector2(input.x / Screen.width, input.y / Screen.height);
