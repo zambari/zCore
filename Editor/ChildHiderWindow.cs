@@ -22,122 +22,125 @@ using UnityEditor;
 
 */
 
-
-public class ChildHiderWindow : EditorWindow
+namespace Z
 {
-    List<ChildrenHide> chList;
-    [MenuItem("Tools/ChildrenHider")]
-    static void Init()
+    public class ChildHiderWindow : EditorWindow
     {
+        List<ChildrenHide> chList;
+        [MenuItem("Tools/ChildrenHider")]
+        static void Init()
+        {
 #pragma warning disable 219
 
-        ChildHiderWindow window =
-            (ChildHiderWindow)EditorWindow.GetWindow(typeof(ChildHiderWindow));
-        window.ReScan();
+            ChildHiderWindow window =
+                (ChildHiderWindow)EditorWindow.GetWindow(typeof(ChildHiderWindow));
+            window.ReScan();
 #pragma warning restore 219
-    }
-    [SerializeField]
-    List<GameObject> bookmarkedObjects;
-    GameObject[] namedTheSameLOnLevel0;
-    GameObject[] namedTheSameLOnLevel1;
-    GameObject[] namedTheSameLOnLevel2;
-    GameObject[] namedTheSameLOnLevel3;
-    object[] lastSelectionState;
-    bool sorted;
-    bool soloMode;
-    string[] ChildStateStrings = { "Visible", "Hidden" };
-    bool currentChildState;
-
-    void OnGUI()
-    {
-        if (Selection.activeGameObject != null && Selection.activeGameObject.GetComponent<ChildrenHide>() == null)
-        {
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("nr of direct children here: " + Selection.activeGameObject.transform.childCount);
-
-            if ((Selection.objects.Length>1) &&(GUILayout.Button("Add Hiders")) )
-            {
-                foreach(object o in Selection.objects)
-                {
-                    GameObject g=o as GameObject;
-                   if (g!=null && g.GetComponent<ChildrenHide>()==null) 
-                 { 
-                     ChildrenHide ch=g.AddComponent<ChildrenHide>();
-
-                 }
-                }
-
-            }
-            GUILayout.EndHorizontal();
         }
+        [SerializeField]
+        List<GameObject> bookmarkedObjects;
+        GameObject[] namedTheSameLOnLevel0;
+        GameObject[] namedTheSameLOnLevel1;
+        GameObject[] namedTheSameLOnLevel2;
+        GameObject[] namedTheSameLOnLevel3;
+        object[] lastSelectionState;
+        bool sorted;
+        bool soloMode;
+        string[] ChildStateStrings = { "Visible", "Hidden" };
+        bool currentChildState;
 
-        //else
-        //GUILayout.Label("no selection");
-        if (chList == null || chList.Count == 0)
-
-            ReScan();
-
-
-        for (int i = 0; i < chList.Count; i++)
+        void OnGUI()
         {
-            if (chList[i] != null)
+            if (Selection.activeGameObject != null && Selection.activeGameObject.GetComponent<ChildrenHide>() == null)
             {
-                int crnmt = (int)chList[i].childrenVisbility;
                 GUILayout.BeginHorizontal();
+                GUILayout.Label("nr of direct children here: " + Selection.activeGameObject.transform.childCount);
 
-                int enn = GUILayout.Toolbar(crnmt, ChildStateStrings);
-                GUILayout.Label(chList[i].name);
-                GUILayout.EndHorizontal();
-                if (crnmt != enn) chList[i].childrenVisbility = (ChildrenHide.ChildVis)enn;
-            }
-        }
-    }
-
-    void ReScan()
-    {
-        //    currentChildState=false;
-        if (Selection.activeGameObject == null)
-        {
-            return;
-        }
-        else
-        {
-            //if (Selection.activeGameObject.GetComponent<ChildrenHide>() == null &&
-            chList = new List<ChildrenHide>();
-            foreach (object o in Selection.objects)
-
-            {
-                GameObject game = o as GameObject;
-                if (game != null)
+                if ((Selection.objects.Length > 1) && (GUILayout.Button("Add Hiders")))
                 {
-                    ChildrenHide[] chs = game.GetComponentsInParent<ChildrenHide>();
-                    chList.AddRange(chs);
+                    foreach (object o in Selection.objects)
+                    {
+                        GameObject g = o as GameObject;
+                        if (g != null && g.GetComponent<ChildrenHide>() == null)
+                        {
+                            // ChildrenHide ch =
+                            g.AddComponent<ChildrenHide>();
+
+                        }
+                    }
 
                 }
+                GUILayout.EndHorizontal();
             }
 
-            //            bool showing=true;
+            //else
+            //GUILayout.Label("no selection");
+            if (chList == null || chList.Count == 0)
+
+                ReScan();
+
+
             for (int i = 0; i < chList.Count; i++)
             {
-                if (chList[i].childrenVisbility == ChildrenHide.ChildVis.HIDE)
+                if (chList[i] != null)
                 {
-                    EditorGUIUtility.PingObject(chList[i]);
-                    i = chList.Count;
+                    int crnmt = (int)chList[i].childrenVisbility;
+                    GUILayout.BeginHorizontal();
+
+                    int enn = GUILayout.Toolbar(crnmt, ChildStateStrings);
+                    GUILayout.Label(chList[i].name);
+                    GUILayout.EndHorizontal();
+                    if (crnmt != enn) chList[i].childrenVisbility = (ChildrenHide.ChildVis)enn;
+                }
+            }
+        }
+
+        void ReScan()
+        {
+            //    currentChildState=false;
+            if (Selection.activeGameObject == null)
+            {
+                return;
+            }
+            else
+            {
+                //if (Selection.activeGameObject.GetComponent<ChildrenHide>() == null &&
+                chList = new List<ChildrenHide>();
+                foreach (object o in Selection.objects)
+
+                {
+                    GameObject game = o as GameObject;
+                    if (game != null)
+                    {
+                        ChildrenHide[] chs = game.GetComponentsInParent<ChildrenHide>();
+                        chList.AddRange(chs);
+
+                    }
                 }
 
+                //            bool showing=true;
+                for (int i = 0; i < chList.Count; i++)
+                {
+                    if (chList[i].childrenVisbility == ChildrenHide.ChildVis.HIDE)
+                    {
+                        EditorGUIUtility.PingObject(chList[i]);
+                        i = chList.Count;
+                    }
+
+
+                }
 
             }
-
+            Repaint();
         }
-        Repaint();
-    }
-    void OnSelectionChange()
-    {
-//        Debug.Log("isithc");
-        ReScan();
-    }
-    void OnHierarchyChange()
-    {
-        ReScan();
+        void OnSelectionChange()
+        {
+            //        Debug.Log("isithc");
+            ReScan();
+        }
+        void OnHierarchyChange()
+        {
+            ReScan();
+        }
     }
 }
