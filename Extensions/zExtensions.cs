@@ -59,52 +59,7 @@ using UnityEditor;
 #endif
 public static class zExt
 {
-#if ISHOWHIDE
-    public static void Show(this Transform obj)
-    {
-        if (obj != null) Show(obj.gameObject);
-    }
 
-    public static void Hide(this GameObject obj)
-    {
-        if (obj == null) return;
-        var showHide = obj.GetComponent<IShowHide>();
-        if (showHide != null)
-            showHide.Hide();
-        else
-            obj.SetActive(false);
-    }
-
-    public static void Hide(this Transform obj)
-    {
-        if (obj != null) Hide(obj.gameObject);
-    }
-
-    public static void Show(this GameObject obj)
-    {
-        if (obj == null) return;
-        var showHide = obj.GetComponent<IShowHide>();
-        if (showHide != null)
-            showHide.Show();
-        else
-            obj.SetActive(true);
-
-    }
-    public static void Hide(this MonoBehaviour obj)
-    {
-        if (obj != null) Hide(obj.gameObject);
-    }
-
-    public static void Show(this MonoBehaviour obj)
-    {
-        if (obj == null) return;
-        var showHide = obj.GetComponent<IShowHide>();
-        if (showHide != null)
-            showHide.Show();
-        else
-            obj.gameObject.SetActive(true);
-    }
-#endif
 
     public static string RandomString(int length)
     {
@@ -170,7 +125,7 @@ public static class zExt
     {
 #if UNITY_EDITOR
         EditorApplication.RepaintHierarchyWindow();
-        EditorApplication.DirtyHierarchyWindowSorting();
+//        EditorApplication.DirtyHierarchyWindowSorting();
 #endif
 
     }

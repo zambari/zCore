@@ -10,8 +10,7 @@ using UnityEditor;
 // simplified ver
 
 //[ExecuteInEditMode]
-namespace Z
-{
+using Z;
     public class ListItem : MonoBehaviour//, IPointerClickHandler
     {
         public Text textLabel;
@@ -42,4 +41,3 @@ namespace Z
         }
 #endif
     }
-}

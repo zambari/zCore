@@ -5,8 +5,8 @@ using UnityEngine.UI;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-namespace Z{
-    // v.0.05b barebones
+using Z;
+// v.0.05b barebones
 public class ListPopulator : MonoBehaviour
 {
 
@@ -16,25 +16,25 @@ public class ListPopulator : MonoBehaviour
     protected virtual void OnValidate()
     {
         if (itemTemplate == null) itemTemplate = GetComponentInChildren<ListItem>();
-        if (content == null) content = itemTemplate.transform.parent;
+        if (content == null && itemTemplate != null) content = itemTemplate.transform.parent;
     }
-  
+
     [ExposeMethodInEditor]
     protected virtual void ClearList()
-    {   
+    {
         if (itemTemplate == null) return;
-            itemTemplate.gameObject.SetActive(false);
+        itemTemplate.gameObject.SetActive(false);
         for (int i = content.childCount - 1; i >= 0; i--)
         {
             GameObject g = content.GetChild(i).gameObject;
-           if (( g != itemTemplate.gameObject/* || g.GetComponent<ListConstant>()!=null*/ )  && g.activeSelf)
+            if ((g != itemTemplate.gameObject/* || g.GetComponent<ListConstant>()!=null*/ ) && g.activeSelf)
             {
 #if UNITY_EDITOR
                 EditorApplication.delayCall += () => DestroyImmediate(g);
 #else
 			Destroy(g);
 #endif
-            } 
+            }
         }
         items = new List<ListItem>();
     }
@@ -49,7 +49,7 @@ public class ListPopulator : MonoBehaviour
     protected void SetListSize(int size)
     {
         if (itemTemplate == null) return;
-            itemTemplate.gameObject.SetActive(false);
+        itemTemplate.gameObject.SetActive(false);
         if (items == null) items = new List<ListItem>();
         while (items.Count > size)
         {
@@ -59,8 +59,8 @@ public class ListPopulator : MonoBehaviour
         }
         while (items.Count < size)
             CreateItem();
-     }
-   
+    }
+
 #if UNITY_EDITOR
     [ExposeMethodInEditor]
     protected void SelectTemplate()
@@ -71,6 +71,5 @@ public class ListPopulator : MonoBehaviour
     }
 
 #endif
-}
 }
 
