@@ -9,6 +9,7 @@ using UnityEditor;
 
 // v .0.2. addorgetcomponent<monobehaviour source> added
 // v. 0.3 nonrecursive components
+// v. 0.4 nonrecursive transform, gameobject, mono overloads 
 
 /// oeverrides zRectExtensions
 
@@ -28,10 +29,24 @@ public static class zExtensionsComponents // to useful to be in namespace1
         if (t == null) t = gameObject.AddComponent<T>();
         return t;
     }
+    public static T AddOrGetComponent<T>(this Transform transform) where T : Component
+    {
+        T t = transform.GetComponent<T>();
+        if (t == null) t = transform.gameObject.AddComponent<T>();
+        return t;
+    }
+
 
     public static T[] GetComponentsInDirectChildren<T>(this MonoBehaviour mono, bool includeDisabled = true) where T : Component
     {
-        Transform transform = mono.transform;
+        return zExtensionsComponents.GetComponentsInDirectChildren<T>(mono.transform, includeDisabled);
+    }
+    public static T[] GetComponentsInDirectChildren<T>(this GameObject game, bool includeDisabled = true) where T : Component
+    {
+        return zExtensionsComponents.GetComponentsInDirectChildren<T>(game.transform, includeDisabled);
+    }
+    public static T[] GetComponentsInDirectChildren<T>(this Transform transform, bool includeDisabled = true) where T : Component
+    {
         List<T> components = new List<T>();
         for (int i = 0; i < transform.childCount; i++)
         {
