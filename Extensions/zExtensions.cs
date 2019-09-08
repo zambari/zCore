@@ -54,12 +54,50 @@
 using UnityEngine;
 using System;
 using System.Text;
+using System.Collections;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 public static class zExt
 {
 
+    public static void Animate(this MonoBehaviour source, System.Action<float> Execute, float animTime, System.Action onComplete = null, bool unscaled = false)
+    {
+        source.StartCoroutine(Animator(Execute, animTime, onComplete, (x) => { return x; }, unscaled));
+    }
+
+    public static void Animate(this MonoBehaviour source, System.Action<float> Execute, System.Func<float, float> MappingFunction, float animTime, System.Action onComplete = null, bool unscaled = false)
+    {
+        source.StartCoroutine(Animator(Execute, animTime, onComplete, MappingFunction, unscaled));
+    }
+    static IEnumerator Animator(System.Action<float> Execute, float animTime, System.Action onComplete, System.Func<float, float> MappingFunction, bool unscaled = false)
+    {
+        float x = 0;
+        float startTime = unscaled ? Time.unscaledTime : Time.time;
+        if (animTime == 0) animTime = 1;
+        while (x < 1)
+        {
+            x = ((unscaled ? Time.unscaledTime : Time.time) - startTime) / animTime;
+            Execute(MappingFunction(x));
+            yield return null;
+        }
+        Execute(MappingFunction(1));
+        if (onComplete != null) onComplete();
+    }
+
+
+    public static void ExecuteAfter(this MonoBehaviour source, float delay, System.Action Execute, bool unscaled = false)
+    {
+        source.StartCoroutine(WaitRoutine(delay, Execute, unscaled));
+    }
+
+    static IEnumerator WaitRoutine(float wait, System.Action Execute, bool unscaled = false)
+    {
+        if (unscaled)
+            yield return new WaitForSecondsRealtime(wait);
+        else yield return new WaitForSeconds(wait);
+        if (Execute != null) Execute();
+    }
 
     public static string RandomString(int length)
     {
@@ -125,7 +163,7 @@ public static class zExt
     {
 #if UNITY_EDITOR
         EditorApplication.RepaintHierarchyWindow();
-//        EditorApplication.DirtyHierarchyWindowSorting();
+        //        EditorApplication.DirtyHierarchyWindowSorting();
 #endif
 
     }

@@ -30,6 +30,7 @@ public class AssetDefineManager : AssetPostprocessor
 			 new AssetDefine("ISHowHide.cs",destkop , "ISHOWHIDE"),
 			 new AssetDefine("IAnimateInOut.cs",destkop , "iAnimateInOut"),
 		    new AssetDefine("zLog.cs",destkop , "zLog"),
+			new AssetDefine("zExtensionsUI",destkop , "ZUI"),
 			new AssetDefine("zOSC.cs",destkop , "zOSC"),
 			new AssetDefine("PlayerPrefsX.cs",destkop , "PlayerPrefsX"),
 			new AssetDefine("MidiMaster.cs",destkop , "MIDI"),

@@ -8,7 +8,7 @@ using UnityEditor;
 #endif
 
 // v .0.2. addorgetcomponent<monobehaviour source> added
-
+// v. 0.3 nonrecursive components
 
 /// oeverrides zRectExtensions
 
@@ -27,6 +27,20 @@ public static class zExtensionsComponents // to useful to be in namespace1
         T t = gameObject.GetComponent<T>();
         if (t == null) t = gameObject.AddComponent<T>();
         return t;
+    }
+}
+
+
+    public static T[] GetComponentsInDirectChildren<T>(this MonoBehaviour mono, bool includeDisabled = true) where T : Component
+    {
+        Transform transform = mono.transform;
+        List<T> components = new List<T>();
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            T t = transform.GetChild(i).GetComponent<T>();
+            if (t != null && (includeDisabled || t.gameObject.activeSelf)) components.Add(t);
+        }
+        return components.ToArray();
     }
 }
 

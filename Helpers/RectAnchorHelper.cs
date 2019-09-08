@@ -2,58 +2,97 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+#if UNITY_EDITOR
+using UnityEditor;
 //v.0.2. symmetrical mode
 
-namespace Z
+//v.0.3 deactivation on assembly reload
+//v.0.4 margin control
+
+namespace zUI
 {
+    [ExecuteInEditMode]
     public class RectAnchorHelper : MonoBehaviour
     {
-
 
 
         public bool edit;
         public bool symmetricalXMode;
 
-        public bool symmetricalYMode;
-        RectTransform rect;
+        [SerializeField] bool edit;
+        [SerializeField] bool symmetricalXMode;
+
+        [SerializeField] bool symmetricalYMode;
+        [SerializeField] RectTransform rect;
         [Range(0, 1)]
-        public float xAnchorMin;
+        [SerializeField] float xAnchorMin;
         [Range(0, 1)]
-        public float xAnchorMax;
+        [SerializeField] float xAnchorMax;
         //public bool showSymmetrical {get { return _showSymmetrical}}
         //[SerializeField] bool _showSymmetrical;
         [Range(0, 1)]
-        public float yAnchorMin;
+        [SerializeField] float yAnchorMin;
         [Range(0, 1)]
-        public float yAnchorMax;
+        [SerializeField] float yAnchorMax;
+
+        [SerializeField][HideInInspector] Vector2 offsetMin;
+        [SerializeField][HideInInspector]  Vector2 offsetMax;
+        [Range(-1, 100)]
+        [SerializeField] float margin = -1;
+        void Reset()
+        {
+            GetValues();
+        }
         void OnValidate()
 
         {
             if (Application.isPlaying) return;
             if (rect == null) rect = GetComponent<RectTransform>();
-            // showSymmetrical=_showSymmetrical;
             if (symmetricalXMode) xAnchorMax = 1 - xAnchorMin;
             if (symmetricalYMode) yAnchorMax = 1 - yAnchorMin;
             if (edit)
             {
                 SetValues();
             }
-            else GetValues();
+            else
+                GetValues();
         }
 
         void SetValues()
         {
             rect.anchorMin = new Vector2(xAnchorMin, yAnchorMin);
             rect.anchorMax = new Vector2(xAnchorMax, yAnchorMax);
+            if (margin != -1)
+            {
+                rect.offsetMin = new Vector2(margin, margin);
+                rect.offsetMax = new Vector2(-margin, -margin);
+            }
         }
         void GetValues()
         {
+            if (rect == null) rect = GetComponent<RectTransform>();
             xAnchorMin = rect.anchorMin.x;
             xAnchorMax = rect.anchorMax.x;
             yAnchorMin = rect.anchorMin.y;
             yAnchorMax = rect.anchorMax.y;
+            offsetMin = rect.offsetMin;
+            offsetMax = rect.offsetMax;
         }
 
+        void OnEnable()
+        {
+            AssemblyReloadEvents.beforeAssemblyReload += OnBeforeAssemblyReload;
+        }
+
+        void OnDisable()
+        {
+            AssemblyReloadEvents.beforeAssemblyReload -= OnBeforeAssemblyReload;
+        }
+        public void OnBeforeAssemblyReload()
+        {
+            edit = false;
+        }
     }
 
 }
+#endif

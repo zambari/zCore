@@ -25,7 +25,7 @@ public class LayoutEditorUtilities
         else
         {
             GameObject c = new GameObject("Canvas", typeof(Canvas), typeof(GraphicRaycaster), typeof(CanvasScaler));
-            Undo.RegisterCreatedObjectUndo(c,"layouyt");
+            Undo.RegisterCreatedObjectUndo(c, "layouyt");
             c.AddComponent<Canvas>();
             c.AddComponent<GraphicRaycaster>();
             c.AddComponent<CanvasScaler>();
@@ -52,6 +52,19 @@ public class LayoutEditorUtilities
         Selection.activeObject = CreateHoritontalOrVertical(LayoutDirection.Vertical, 3);
     }
 
+
+    [MenuItem("GameObject/UI/Add Flexibel Spacer")]
+    static void AddFlexibleSpacer()
+    {
+        var img = Selection.activeGameObject.AddChildRectTransform();
+        var le = img.gameObject.AddComponent<LayoutElement>();
+        le.flexibleHeight = 1;
+        le.flexibleWidth = 1;
+        le.name = "spacer";
+        Undo.RegisterCreatedObjectUndo(le.gameObject, "SPACER");
+        Selection.activeGameObject = le.gameObject;
+        //Selection.activeObject = CreateHoritontalOrVertical(LayoutDirection.Horizontal, 3);
+    }
     static RectTransform CreateHoritontalOrVertical(LayoutDirection dir, int count)
     {
         RectTransform target = null;
@@ -78,7 +91,7 @@ public class LayoutEditorUtilities
             container = Selection.activeGameObject.GetComponent<RectTransform>();
 
             var newObj = new GameObject("Layout", typeof(RectTransform), typeof(Image));
-               Undo.RegisterCreatedObjectUndo(newObj,"Layout");
+            Undo.RegisterCreatedObjectUndo(newObj, "Layout");
 
             newObj.transform.SetParent(container);
             container = newObj.GetComponent<RectTransform>();
@@ -90,7 +103,7 @@ public class LayoutEditorUtilities
         {
             Debug.Log("no container");
             var newCont = new GameObject("RectContainer", typeof(RectTransform), typeof(Image));
-            Undo.RegisterCreatedObjectUndo(newCont,"Layout");
+            Undo.RegisterCreatedObjectUndo(newCont, "Layout");
             container = newCont.GetComponent<RectTransform>();
         }
 
@@ -112,7 +125,7 @@ public class LayoutEditorUtilities
         for (int i = 0; i < count; i++)
         {
             RectTransform child = container.AddChild();
-            Undo.RegisterCreatedObjectUndo(child,"layoutt");
+            Undo.RegisterCreatedObjectUndo(child, "layoutt");
             cretedObjects.Add(child.gameObject);
             child.anchorMin = new Vector2(0, 0);
             child.anchorMax = new Vector2(1, 1);
@@ -124,7 +137,7 @@ public class LayoutEditorUtilities
             LayoutElement le = child.gameObject.AddComponent<LayoutElement>();
             le.flexibleHeight = (vertical ? 1f / count : 1);
             le.flexibleWidth = (vertical ? 1 : 1f / count);
-            child.localScale=Vector3.one; //why do we need this
+            child.localScale = Vector3.one; //why do we need this
         }
         container.name = (vertical ? "VerticalLayout" : "HorizontalLayout");
         return container;

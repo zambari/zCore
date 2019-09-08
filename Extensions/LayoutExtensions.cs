@@ -231,14 +231,12 @@ namespace zUI
 
         public static Image AddImageChild(this GameObject g, float opacity = 0.3f)
         {
-            Image image = g.AddOrGetComponent<Image>();
+            Image image = g.AddChildRectTransform().gameObject.AddComponent<Image>();
             image.color = new Color(Random.value * 0.3f + 0.7f,
                                        Random.value * 0.3f + 0.7f,
                                        Random.value * 0.2f, opacity);
-
             image.sprite = Resources.Load("Background") as Sprite;
             image.name = "Image";
-            Debug.Log("added image to " + g.name, g);
             return image;
         }
 
