@@ -1,55 +1,60 @@
 ﻿using UnityEngine;
 
+// v.03. gameobject, trasform, name
 
-    public interface IShowHide
+
+public interface IShowHide
+{
+    void Show();
+    void Hide();
+    GameObject gameObject { get; } // free with monobehaviours
+    Transform transform { get; }  // free with monobehaviours
+    string name { get; } // free with monobehaviours
+}
+public static class ShowHideExetensions
+{
+    public static void Show(this Transform obj)
     {
-        void Show();
-        void Hide();
+        if (obj != null) Show(obj.gameObject);
     }
-    public static class ShowHideExetensions
+
+    public static void Hide(this GameObject obj)
     {
-        public static void Show(this Transform obj)
-        {
-            if (obj != null) Show(obj.gameObject);
-        }
-
-        public static void Hide(this GameObject obj)
-        {
-            if (obj == null) return;
-            var showHide = obj.GetComponent<IShowHide>();
-            if (showHide != null)
-                showHide.Hide();
-            else
-                obj.SetActive(false);
-        }
-
-        public static void Hide(this Transform obj)
-        {
-            if (obj != null) Hide(obj.gameObject);
-        }
-
-        public static void Show(this GameObject obj)
-        {
-            if (obj == null) return;
-            var showHide = obj.GetComponent<IShowHide>();
-            if (showHide != null)
-                showHide.Show();
-            else
-                obj.SetActive(true);
-
-        }
-        public static void Hide(this MonoBehaviour obj)
-        {
-            if (obj != null) Hide(obj.gameObject);
-        }
-
-        public static void Show(this MonoBehaviour obj)
-        {
-            if (obj == null) return;
-            var showHide = obj.GetComponent<IShowHide>();
-            if (showHide != null)
-                showHide.Show();
-            else
-                obj.gameObject.SetActive(true);
-        }
+        if (obj == null) return;
+        var showHide = obj.GetComponent<IShowHide>();
+        if (showHide != null)
+            showHide.Hide();
+        else
+            obj.SetActive(false);
     }
+
+    public static void Hide(this Transform obj)
+    {
+        if (obj != null) Hide(obj.gameObject);
+    }
+
+    public static void Show(this GameObject obj)
+    {
+        if (obj == null) return;
+        var showHide = obj.GetComponent<IShowHide>();
+        if (showHide != null)
+            showHide.Show();
+        else
+            obj.SetActive(true);
+
+    }
+    public static void Hide(this MonoBehaviour obj)
+    {
+        if (obj != null) Hide(obj.gameObject);
+    }
+
+    public static void Show(this MonoBehaviour obj)
+    {
+        if (obj == null) return;
+        var showHide = obj.GetComponent<IShowHide>();
+        if (showHide != null)
+            showHide.Show();
+        else
+            obj.gameObject.SetActive(true);
+    }
+}

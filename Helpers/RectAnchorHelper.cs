@@ -15,10 +15,6 @@ namespace zUI
     public class RectAnchorHelper : MonoBehaviour
     {
 
-
-        public bool edit;
-        public bool symmetricalXMode;
-
         [SerializeField] bool edit;
         [SerializeField] bool symmetricalXMode;
 

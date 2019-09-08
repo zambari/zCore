@@ -28,8 +28,6 @@ public static class zExtensionsComponents // to useful to be in namespace1
         if (t == null) t = gameObject.AddComponent<T>();
         return t;
     }
-}
-
 
     public static T[] GetComponentsInDirectChildren<T>(this MonoBehaviour mono, bool includeDisabled = true) where T : Component
     {
