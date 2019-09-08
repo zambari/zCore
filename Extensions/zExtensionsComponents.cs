@@ -15,7 +15,9 @@ using UnityEditor;
 
 public static class zExtensionsComponents // to useful to be in namespace1
 {
-
+    /// <summary>
+    /// Never returns null. If component cannot be found, it is added and instance is returned
+    /// </summary>
     public static T AddOrGetComponent<T>(this MonoBehaviour mono) where T : Component
     {
         T t = mono.gameObject.GetComponent<T>();
@@ -23,12 +25,19 @@ public static class zExtensionsComponents // to useful to be in namespace1
         return t;
     }
 
+    /// <summary>
+    /// Never returns null. If component cannot be found, it is added and instance is returned
+    /// </summary>
+
     public static T AddOrGetComponent<T>(this GameObject gameObject) where T : Component
     {
         T t = gameObject.GetComponent<T>();
         if (t == null) t = gameObject.AddComponent<T>();
         return t;
     }
+    /// <summary>
+    /// Never returns null. If component cannot be found, it is added and instance is returned
+    /// </summary>
     public static T AddOrGetComponent<T>(this Transform transform) where T : Component
     {
         T t = transform.GetComponent<T>();
@@ -36,15 +45,24 @@ public static class zExtensionsComponents // to useful to be in namespace1
         return t;
     }
 
-
+    /// <summary>
+    /// Rearches one level of transform (doesn't go deep)
+    /// </summary>
     public static T[] GetComponentsInDirectChildren<T>(this MonoBehaviour mono, bool includeDisabled = true) where T : Component
     {
         return zExtensionsComponents.GetComponentsInDirectChildren<T>(mono.transform, includeDisabled);
     }
+    /// <summary>
+    /// Rearches one level of transform (doesn't go deep)
+    /// </summary>
     public static T[] GetComponentsInDirectChildren<T>(this GameObject game, bool includeDisabled = true) where T : Component
     {
         return zExtensionsComponents.GetComponentsInDirectChildren<T>(game.transform, includeDisabled);
     }
+    /// <summary>
+    /// Rearches one level of transform (doesn't go deep)
+    /// </summary>
+    /// 
     public static T[] GetComponentsInDirectChildren<T>(this Transform transform, bool includeDisabled = true) where T : Component
     {
         List<T> components = new List<T>();

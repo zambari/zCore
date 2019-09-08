@@ -93,5 +93,5 @@ namespace Z
             Undo.DestroyObjectImmediate(gameObject);
         }
     }
-#endif
 }
+#endif
