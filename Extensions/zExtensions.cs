@@ -53,7 +53,6 @@
 /// 
 using UnityEngine;
 using System;
-using System.Text;
 using System.Collections;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -102,7 +101,7 @@ public static class zExt
     public static string RandomString(int length)
     {
         const string pool = "abcdefghijklmnopqrstuvwxyz0123456789";
-        var builder = new StringBuilder();
+        var builder = new System.Text.StringBuilder();
         for (var i = 0; i < length; i++)
         {
             var c = pool[UnityEngine.Random.Range(0, pool.Length - 1)];
@@ -244,7 +243,8 @@ public static class zExt
     /// </summary>
     public static void DumpKeys(this AnimationCurve a, string name = null)
     {
-        a.ListKeyFramesAsCode(name);
+        
+       // a.ListKeyFramesAsCode(name);
     }
     public static void ListKeyFramesAsCode(this AnimationCurve a, string name = null)
     {

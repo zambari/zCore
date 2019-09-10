@@ -1,62 +1,48 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
-[RequireComponent(typeof(Text))]
 
-public class FPSDisplay : MonoBehaviour
+namespace ZUI
 {
-    int fpscount;
-    float timeStrated;
-    void OnValidate()
+    [RequireComponent(typeof(Text))]
+    public class FPSDisplay : MonoBehaviour
     {
-        if (!name.Contains("FPS")) name += "FPS";
-    }
-
-    string averageFpstString;
-
-    IEnumerator Start()
-    {
-         Text text = GetComponent<Text>();
-        while (true)
+        int fpscount;
+        float started;
+        int countBeforeDisplaying = 60;
+        void OnValidate()
         {
+            if (!name.Contains("FPS")) name += "FPS";
+        }
 
-            fpscount=0;
-            timeStrated = Time.time;
-            while (fpscount < 50)
+        string averageFpstString;
+        void Reset()
+        {
+            Text text = GetComponent<Text>();
+            text.text = "120 FPS";
+            text.raycastTarget = false;
+            text.color = Color.white;
+        }
+
+        IEnumerator Start()
+        {
+            Text text = GetComponent<Text>();
+            while (true)
             {
-                fpscount++;
-                yield return null;
+
+                countBeforeDisplaying = 0;
+                started = Time.unscaledTime;
+                while (countBeforeDisplaying < 50)
+                {
+                    countBeforeDisplaying++;
+                    yield return null;
+                }
+
+                float time = Time.unscaledTime - started;
+                averageFpstString = ((float)countBeforeDisplaying / time).ToShortString();
+                text.text = averageFpstString + " FPS";
 
             }
-
-            float time = Time.time - timeStrated;
-            //            if (fpscount >= 100)
-            //          {
-            //fpscount = 0;
-            //float time = Time.time - timeStrated;
-            //timeStrated = Time.time;
-            averageFpstString = ((float)fpscount / time).ToShortString();
-            text.text = averageFpstString+" FPS";
-            /*    }
-                stringBuilder = new StringBuilder();
-
-                stringBuilder.Append(s ? ">" : " ");
-                stringBuilder.Append(averageFpstString);
-
-                s = !s;
-                try
-                {
-                    oculusfpsString = OVRPlugin.GetAppFramerate().ToShortString() + (" FPS");
-                    stringBuilder.Append(" fps\n");
-                    stringBuilder.Append(oculusfpsString);
-                }
-                catch { };
-                text.text = stringBuilder.ToString();
-
-
-                yield return new WaitForSeconds(.4f);*/
         }
     }
 }

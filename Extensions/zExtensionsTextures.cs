@@ -30,10 +30,6 @@ public static class zExtensionsTextures
     }
 
 
-    public static void SetAlpha(this Color c, float a)
-    {
-        c.Alpha(a);
-    }
     public static Color Alpha(this Color c, float a)
     {
         Color m = new Color(c.r, c.g, c.b, a);
