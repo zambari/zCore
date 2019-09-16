@@ -105,7 +105,7 @@ namespace Z
             }
             if (isDragging)
             {
-                if (Input.GetMouseButtonUp(2) || Input.GetMouseButtonUp(0) || Input.GetKeyUp(KeyCode.LeftShift))
+                if (Input.GetMouseButtonUp(2) || Input.GetMouseButtonUp(0) || Input.GetKeyUp(KeyCode.LeftControl))
                 {
                     isDragging = false;
                     return;
@@ -117,7 +117,7 @@ namespace Z
                     Vector3 distance = (dragStarted - Input.mousePosition) * panScalar;
                     target.position = posWhenMidStarted + target.right * distance.x + target.up * distance.y;//+correction;
                 }
-                if (Input.GetMouseButton(0) && Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.LeftShift))
+                if (Input.GetMouseButton(0) && Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.LeftControl))
                 {
                     Vector3 distance = (Input.mousePosition - dragStarted);
                     target.rotation = Quaternion.Euler(eulerWhenDragStarted + new Vector3(distance.y * lookScalarX, distance.x * lookScalarY, 0));

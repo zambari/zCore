@@ -1,6 +1,4 @@
-﻿
-
-using UnityEngine;
+﻿using UnityEngine;
 using System;
 using System.Collections.Generic;
 #if UNITY_EDITOR
@@ -10,6 +8,8 @@ using UnityEditor;
 // v .0.2. addorgetcomponent<monobehaviour source> added
 // v. 0.3 nonrecursive components
 // v. 0.4 nonrecursive transform, gameobject, mono overloads 
+// v. 0.5 compon
+// v. 0.6 undo support on addorgetcomponent
 
 /// oeverrides zRectExtensions
 
@@ -32,7 +32,13 @@ public static class zExtensionsComponents // to useful to be in namespace1
     public static T AddOrGetComponent<T>(this GameObject gameObject) where T : Component
     {
         T t = gameObject.GetComponent<T>();
-        if (t == null) t = gameObject.AddComponent<T>();
+        if (t == null)
+        {
+            t = gameObject.AddComponent<T>();
+#if UNITY_EDITOR
+            Undo.RegisterCreatedObjectUndo(t, "Added component");
+#endif
+        }
         return t;
     }
     /// <summary>
@@ -40,9 +46,7 @@ public static class zExtensionsComponents // to useful to be in namespace1
     /// </summary>
     public static T AddOrGetComponent<T>(this Transform transform) where T : Component
     {
-        T t = transform.GetComponent<T>();
-        if (t == null) t = transform.gameObject.AddComponent<T>();
-        return t;
+        return transform.gameObject.AddOrGetComponent<T>();
     }
 
     /// <summary>
@@ -82,6 +86,43 @@ namespace Z
     {
 
 
+
+        public static void MoveComponentToPosition(this Component component, int desiredPosition)// : where T:Component
+        {
+#if UNITY_EDITOR
+            if (component == null) return;
+
+            var components = component.gameObject.GetComponents<Component>();
+            int currentPosition = 0;
+            for (int i = 0; i < components.Length; i++)
+            {
+                Debug.Log("components [" + i + "] " + components[i].GetType().ToString());
+                if (components[i] == component) currentPosition = i;
+            }
+            int offset = desiredPosition - currentPosition;
+            if (offset < 0)
+                for (int i = 0; i < -offset; i++)
+                    UnityEditorInternal.ComponentUtility.MoveComponentUp(component);
+            else
+                for (int i = 0; i < offset; i++)
+                    UnityEditorInternal.ComponentUtility.MoveComponentDown(component);
+#endif
+
+        }
+
+        public static void MoveComponent(this Component component, int offset)// : where T:Component
+        {
+#if UNITY_EDITOR
+            if (component == null) return;
+            if (offset < 0)
+                for (int i = 0; i < -offset; i++)
+                    UnityEditorInternal.ComponentUtility.MoveComponentUp(component);
+            else
+                for (int i = 0; i < offset; i++)
+                    UnityEditorInternal.ComponentUtility.MoveComponentDown(component);
+#endif
+
+        }
 
 
         public static void RemoveAllComponentsExcluding(this GameObject obj, params Type[] types)
