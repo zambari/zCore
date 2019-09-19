@@ -13,7 +13,7 @@ public static class zExtensionsTextures
 
 
 
-    public static string DumpToJPGBase64(this RenderTexture rt, int quality = 90)
+    public static string DumpToJPGBase64(this RenderTexture rt, int quality = 70)
     {
         var oldRT = RenderTexture.active;
 
@@ -29,6 +29,18 @@ public static class zExtensionsTextures
 
     }
 
+    public static Texture2D TextureFromBase64(this string base64string)
+    {
+
+        byte[] bytes= Convert.FromBase64String(base64string);
+        var tex = new Texture2D(1,1);
+        tex.LoadImage(bytes);
+        
+        // convert.frombase64string
+        
+        return tex;
+
+    }
 
     public static Color Alpha(this Color c, float a)
     {
