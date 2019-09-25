@@ -3,14 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-namespace Z
+namespace zUI
 {
+
     public class DebugShowUnderCursor : MonoBehaviour
     {
         Text text;
         void Start()
         {
             text = GetComponent<Text>();
+        }
+        void Reset()
+        {
+            text = GetComponent<Text>();
+            text.text = "EventSystem.current.RaycastAl()\n\n\n";
+            var rect = text.GetComponent<RectTransform>();
+            text.raycastTarget = false;
+            text.color = Color.white;
+            var cnt = text.gameObject.AddOrGetComponent<ContentSizeFitter>();
+            cnt.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            cnt.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
         }
 
         public List<RaycastResult> RaycastMouse()

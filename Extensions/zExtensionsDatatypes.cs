@@ -2,140 +2,262 @@
 
 using UnityEngine;
 using System;
+using System.Runtime.InteropServices;
 
 /// oeverrides zRectExtensions
-
-public static class zExtensionDatatypes
+/// v.02 endian swaps, memory map struct to byte
+namespace Z
 {
-    public static byte[] ToByteArray(this int[] intz)// 2017.08.18
+    public interface IEndianReverse
     {
-        byte[] byteArray = new byte[intz.Length];
-        for (int i = 0; i < intz.Length; i++)
-            byteArray[i] = (byte)intz[i];
-        return byteArray;
+        void ReverseEndian();
     }
+    
+    public static class zExtensionDatatypes
+    {
 
-    public static byte[] ToByteArray(this string s)// 2017.08.18
-    {
-        byte[] byteArray = new byte[s.Length];
-        for (int i = 0; i < s.Length; i++)
-            byteArray[i] = (byte)s[i];
-        return byteArray;
-    }
-    public static string ByteArrayToString(this byte[] b, int startIndex = 0) // 2017.08.18
-
-    {
-        return b.ArrayToString(startIndex);
-    }
-    public static string ByteArrayToStringAsHex(this byte[] b, int startIndex = 0) // 2017.08.18
-    {
-        string s = "";
-        if (b[0] == 0) return s;
-        for (int i = startIndex; i < b.Length; i++)
-            s += "[" + (b[i]).ToHex() + "]";
-        return s;
-
-    }
-    public static string ArrayToString(this byte[] b, int startIndex = 0) // 2017.08.18
-    {
-        string s = "";
-        if (b[0] == 0) return s;
-        for (int i = startIndex; i < b.Length; i++)
+        public static UInt32 SwapEndian(this UInt32 source)
         {
-            char c = (char)b[i];
-            if (!char.IsControl(c))
+            var bt = BitConverter.GetBytes(source);
+            var t = bt[0];
+            bt[0] = bt[3];
+            bt[3] = t;
+            t = bt[2];
+            bt[2] = bt[1];
+            bt[1] = t;
+            return BitConverter.ToUInt32(bt, 0);
+        }
+
+        public static Int32 SwapEndian(this Int32 source)
+        {
+            var bt = BitConverter.GetBytes(source);
+            var t = bt[0];
+            bt[0] = bt[3];
+            bt[3] = t;
+            t = bt[2];
+            bt[2] = bt[1];
+            bt[1] = t;
+            return BitConverter.ToInt32(bt, 0);
+        }
+        public static UInt16 SwapEndian(this UInt16 source)
+        {
+            var bt = BitConverter.GetBytes(source);
+            var t = bt[0];
+            bt[0] = bt[1];
+            bt[1] = t;
+            return BitConverter.ToUInt16(bt, 0);
+        }
+        public static Int16 SwapEndian(this Int16 source)
+        {
+            var bt = BitConverter.GetBytes(source);
+            var t = bt[0];
+            bt[0] = bt[1];
+            bt[1] = t;
+            return BitConverter.ToInt16(bt, 0);
+        }
+        public static UInt64 SwapEndian(this UInt64 source)
+        {
+            var bt = BitConverter.GetBytes(source);
+            Debug.Log("warning, probably wrong result");
+            var t = bt[0];
+            bt[0] = bt[1];
+            bt[1] = t;
+
+            var t2 = bt[2];
+            bt[2] = bt[3];
+            bt[3] = t2;
+
+            var t3 = bt[4];
+            bt[4] = bt[5];
+            bt[5] = t3;
+
+            var t4 = bt[6];
+            bt[6] = bt[7];
+            bt[7] = t4;
+            return BitConverter.ToUInt64(bt, 0);
+        }
+
+        public static T[] SubArray<T>(this T[] data, int index, int length)
+        {
+            T[] result = new T[length];
+            Array.Copy(data, index, result, 0, length);
+            return result;
+        }
+
+        // via https://forum.unity.com/threads/packing-a-class-into-a-byte-array-prime31s-gamekit-stuff.119218/
+        public static Byte[] Pack<T>(this T val) where T : class
+        {
+            Int32 len = Marshal.SizeOf(val);
+            var rev = val as IEndianReverse;
+            if (rev != null) rev.ReverseEndian();
+            Byte[] arr = new Byte[len];
+            IntPtr ptr = Marshal.AllocHGlobal(len);
+            Marshal.StructureToPtr(val, ptr, true);
+            Marshal.Copy(ptr, arr, 0, len);
+            Marshal.FreeHGlobal(ptr);
+            if (rev != null) rev.ReverseEndian();
+            return arr;
+        }
+
+        /// <summary>
+        /// Unpack a struct from an array. The struct must be a primitive type or implement only primitive types.
+        /// </summary>
+        /// <typeparam name="T">A primitive type T.</typeparam>
+        /// <param name="bytearray">The array containing struct data.</param>
+        /// <returns>A struct of type T.</returns>
+        public static T Unpack<T>(this Byte[] bytearray) where T : class
+        {
+            try
             {
-                s += c;
+                Int32 len = bytearray.Length;
+                IntPtr i = Marshal.AllocHGlobal(len);
+                Marshal.Copy(bytearray, 0, i, len);
+                var val = (T)Marshal.PtrToStructure(i, typeof(T));
+                Marshal.FreeHGlobal(i);
+
+                var rev = val as IEndianReverse;
+                if (rev != null) rev.ReverseEndian();
+
+                return val;
+            }
+            catch
+            {
+                return default(T);
             }
         }
-        return s;
-    }
-    public static string ArrayToString(this byte[] b) // 2017.08.18
-    {
-        return System.Text.Encoding.UTF8.GetString(b);
-        /*string s = "";
-        for (int i = 0; i < b.Length; i++)
+
+
+        public static byte[] ToByteArray(this int[] intz)// 2017.08.18
         {
+            byte[] byteArray = new byte[intz.Length];
+            for (int i = 0; i < intz.Length; i++)
+                byteArray[i] = (byte)intz[i];
+            return byteArray;
+        }
+
+        public static byte[] ToByteArray(this string s)// 2017.08.18
+        {
+            byte[] byteArray = new byte[s.Length];
+            for (int i = 0; i < s.Length; i++)
+                byteArray[i] = (byte)s[i];
+            return byteArray;
+        }
+        public static string ByteArrayToString(this byte[] b, int startIndex = 0) // 2017.08.18
+
+        {
+            return b.ArrayToString(startIndex);
+        }
+        public static string ByteArrayToStringAsHex(this byte[] b, int startIndex = 0) // 2017.08.18
+        {
+            string s = "";
+
+            if (b.Length == 0) return s;
+            for (int i = startIndex; i < b.Length; i++)
+                s += "[" + (b[i]).ToHex() + "]";
+            return s;
+
+        }
+        public static string ArrayToString(this byte[] b, int startIndex = 0) // 2017.08.18
+        {
+            string s = "";
             if (b[0] == 0) return s;
-            s += (char)b[i];
-        }
-        return s;*/
-    }
-    public static byte[] ToByteArrayFromHex(this string s)
-    {
-        // Debug.Log("Warning, string should consist of pairs of hex characters, separated by space !");
-
-        string[] hexStrings = s.Trim().Split(' ');
-
-
-        byte[] bytes = new byte[hexStrings.Length];
-        for (int i = 0; i < bytes.Length; i++)
-        {
-            //Debug.Log(" stirng 1 "+hexStrings[i]);
-            int conv = (int)Convert.ToUInt32(hexStrings[i], 16);
-            bytes[i] = (byte)conv;
-        }
-        return bytes;
-    }
-
-    public static char[] ToCharArray(this byte[] b, int len = 0) // 2017.08.18
-    {
-        if (len == 0) len = b.Length;
-        if (len == -1) return new char[1];
-        Debug.Log(len);
-        char[] c = new char[len];
-        for (int i = 0; i < len; i++)
-            c[i] = (char)b[i];
-        return c;
-    }
-
-    public static string ToHex(this byte b)
-    {
-        return ((int)b).ToString("x2");
-    }
-    public static string ToHex(this int i)
-    {
-        return i.ToString("x2");
-    }
-    public static byte BinaryToByte(this string input)
-    {
-        int temp = 0;
-        if (input.Length != 8) Debug.Log("invalid input string len " + input.Length + " please use 8 chars");
-        int endIndex = input.Length - 1;
-        int pos = input.Length - 1 - 8;
-        if (pos < 0) pos = 0;
-        int current2 = 1;
-        for (int i = endIndex; i >= pos; i--)
-        {
-            if (input[i] == '1')
-                temp = temp + current2;
-            current2 = current2 * 2;
-        }
-
-        return (byte)temp;
-    }
-
-    public static string ByteToBinaryString(this byte inputByte)
-    {
-        char[] b = new char[8];
-        int pos = b.Length - 1;
-        int i = 0;
-
-        while (i < 8)
-        {
-            if ((inputByte & (1 << i)) != 0)
+            for (int i = startIndex; i < b.Length; i++)
             {
-                b[pos] = '1';
+                char c = (char)b[i];
+                if (!char.IsControl(c))
+                {
+                    s += c;
+                }
             }
-            else
-            {
-                b[pos] = '0';
-            }
-            pos--;
-            i++;
+            return s;
         }
-        return new string(b) + " ";
+        public static string ArrayToString(this byte[] b) // 2017.08.18
+        {
+            return System.Text.Encoding.UTF8.GetString(b);
+            /*string s = "";
+            for (int i = 0; i < b.Length; i++)
+            {
+                if (b[0] == 0) return s;
+                s += (char)b[i];
+            }
+            return s;*/
+        }
+        public static byte[] ToByteArrayFromHex(this string s)
+        {
+            // Debug.Log("Warning, string should consist of pairs of hex characters, separated by space !");
+
+            string[] hexStrings = s.Trim().Split(' ');
+
+
+            byte[] bytes = new byte[hexStrings.Length];
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                //Debug.Log(" stirng 1 "+hexStrings[i]);
+                int conv = (int)Convert.ToUInt32(hexStrings[i], 16);
+                bytes[i] = (byte)conv;
+            }
+            return bytes;
+        }
+
+        public static char[] ToCharArray(this byte[] b, int len = 0) // 2017.08.18
+        {
+            if (len == 0) len = b.Length;
+            if (len == -1) return new char[1];
+            Debug.Log(len);
+            char[] c = new char[len];
+            for (int i = 0; i < len; i++)
+                c[i] = (char)b[i];
+            return c;
+        }
+
+        public static string ToHex(this byte b)
+        {
+            return ((int)b).ToString("x2");
+        }
+        public static string ToHex(this int i)
+        {
+            return i.ToString("x2");
+        }
+        public static byte BinaryToByte(this string input)
+        {
+            int temp = 0;
+            if (input.Length != 8) Debug.Log("invalid input string len " + input.Length + " please use 8 chars");
+            int endIndex = input.Length - 1;
+            int pos = input.Length - 1 - 8;
+            if (pos < 0) pos = 0;
+            int current2 = 1;
+            for (int i = endIndex; i >= pos; i--)
+            {
+                if (input[i] == '1')
+                    temp = temp + current2;
+                current2 = current2 * 2;
+            }
+
+            return (byte)temp;
+        }
+
+        public static string ByteToBinaryString(this byte inputByte)
+        {
+            char[] b = new char[8];
+            int pos = b.Length - 1;
+            int i = 0;
+
+            while (i < 8)
+            {
+                if ((inputByte & (1 << i)) != 0)
+                {
+                    b[pos] = '1';
+                }
+                else
+                {
+                    b[pos] = '0';
+                }
+                pos--;
+                i++;
+            }
+            return new string(b) + " ";
+        }
+
+
     }
-
-
 }

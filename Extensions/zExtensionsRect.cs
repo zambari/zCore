@@ -7,7 +7,7 @@ using System.IO;
 #endif
 
 //v0.2 rect row split
-
+//v0.3 setpivot now accepts vector2
 
 public static class zExtensionsRect
 {
@@ -91,6 +91,7 @@ public static class zExtensionsRect
         rect.offsetMin = new Vector2(5, 5);
         rect.offsetMax = new Vector2(-5, -5);
         rect.localPosition = Vector2.zero;
+        rect.localScale = Vector3.one;
         //Debug.Log(" added child to ",parentRect.gameObject);
         //	Debug.Log("new object is",rect.gameObject);
 
@@ -328,6 +329,14 @@ public static class zExtensionsRect
         float deltaPivoty = rect.pivot.y - y;
         Vector2 temp = rect.localPosition;
         rect.pivot = new Vector2(x, y);
+        rect.localPosition = temp - new Vector2(deltaPivotx * rect.rect.width * rect.localScale.x, deltaPivoty * rect.rect.height * rect.localScale.y);
+    }
+    public static void SetPivot(this RectTransform rect, Vector2 pivot)
+    {
+        float deltaPivotx = rect.pivot.x - pivot.x;
+        float deltaPivoty = rect.pivot.y - pivot.y;
+        Vector2 temp = rect.localPosition;
+        rect.pivot = pivot;
         rect.localPosition = temp - new Vector2(deltaPivotx * rect.rect.width * rect.localScale.x, deltaPivoty * rect.rect.height * rect.localScale.y);
     }
 

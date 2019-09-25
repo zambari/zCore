@@ -160,7 +160,7 @@ namespace Z
         }
 
 
-        static void CreatePallet(string name, float mettalic, float smoothness, float emmission, float randomizeColor = 0, bool black = true)
+        static void CreatePalette(string name, float mettalic, float smoothness, float emmission, float randomizeColor = 0, bool black = true)
         {
             CreateMaterial("Red " + name, Color.red.Randomize(randomizeColor), mettalic, smoothness, emmission);
             CreateMaterial("Green " + name, Color.green, mettalic, smoothness, emmission);
@@ -171,22 +171,22 @@ namespace Z
 
         }
 
-        static void CreateSMPallet(string name, float mettalic)
+        static void CreateSMPalette(string name, float mettalic)
         {
             float randomAmount = 0.1f;
-            CreatePallet(name + " SM10", mettalic, 1, 0, randomAmount);
-            CreatePallet(name + " SM09", mettalic, .9f, 0, randomAmount);
-            //   CreatePallet( name+" SM08",  mettalic, .8f,0);
-            CreatePallet(name + " SM05", mettalic, .5f, 0, randomAmount);
-            //   CreatePallet( name+" SM03",  mettalic, .3f,0);
-            CreatePallet(name + " SM00", mettalic, 0, 0, randomAmount);
+            CreatePalette(name + " SM10", mettalic, 1, 0, randomAmount);
+            CreatePalette(name + " SM09", mettalic, .9f, 0, randomAmount);
+            //   CreatePalette( name+" SM08",  mettalic, .8f,0);
+            CreatePalette(name + " SM05", mettalic, .5f, 0, randomAmount);
+            //   CreatePalette( name+" SM03",  mettalic, .3f,0);
+            CreatePalette(name + " SM00", mettalic, 0, 0, randomAmount);
 
         }
         [MenuItem("Tools/Create/BasicMaterialSet (Lights)")]
         private static void CreateBasicMaterialsLights()
         {
             path = "/Lights/";
-            CreatePallet("LightMaterial ", 0, 0, 1, 0, false);
+            CreatePalette("LightMaterial ", 0, 0, 1, 0, false);
             Material mat = new Material(Shader.Find("Unlit/Color"));
             mat.color = Color.black;
             AssetDatabase.CreateAsset(mat, "Assets/Materials/BasicMaterials/Lights/Black Matte.mat");
@@ -210,7 +210,7 @@ namespace Z
         private static void CreateBasicMaterialsMettalics()
         {
             path = "/Metallic/";
-            CreateSMPallet("Mettalic ", 1);
+            CreateSMPalette("Mettalic ", 1);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
@@ -220,7 +220,7 @@ namespace Z
         private static void CreateBasicMaterialsNonMettalics()
         {
             path = "/NonMetallic/";
-            CreateSMPallet("NonMettalic ", 1);
+            CreateSMPalette("NonMettalic ", 1);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
