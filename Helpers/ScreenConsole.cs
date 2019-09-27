@@ -12,7 +12,7 @@ namespace Z
 {
 
     [RequireComponent(typeof(Text))]
-    public class ScreenConsole : MonoBehaviour
+    public class ScreenConsole : MonoBehaviour, IRequestInit
     {
         Text text;
         public Color color = Color.white;
@@ -36,6 +36,10 @@ namespace Z
         public bool captureMainExceptions = true;
         static StringBuilder sb;
         public int maxLines = 10;
+        public bool ActiveAndEnabled()
+        {
+            return gameObject.activeInHierarchy && enabled;
+        }
         /* IEnumerator Fader()
          {
              if (faderRunning || canvasGroup == null) yield break; ;
@@ -100,14 +104,22 @@ namespace Z
                 yield return null;
             }
         }
-
+        bool wasInit;
+        public void Init(MonoBehaviour awakenSource)
+        {
+            if (wasInit) return;
+            Debug.Log("console awaken");
+            wasInit = true;
+            Application.logMessageReceived += HandleLog;
+        }
         void OnEnable()
         {
-            Application.logMessageReceived += HandleLog;
+            Init(this);
+            //Application.logMessageReceived += HandleLog;
         }
         void OnDisable()
         {
-            Application.logMessageReceived -= HandleLog;
+            //  Application.logMessageReceived -= HandleLog;
         }
         bool antiFeedback;
         void HandleLog(string logString, string stackTrace, LogType type)
