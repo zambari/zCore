@@ -14,6 +14,8 @@ public class zKeyMap : MonoBehaviour
     static List<Action> onUpList;
     static List<Action> onDownList;
     static zKeyMap _instance;
+    public bool forwardToInavtiveObjects = true;
+
     void Awake()
     {
         if (_instance != null) Debug.Log("more than one keymap on scene", gameObject);
@@ -24,14 +26,17 @@ public class zKeyMap : MonoBehaviour
         }
     }
 
-
     static void createLists()
 
     {
         if (_instance == null)
         {
-            GameObject g = new GameObject("keymap");
-            g.AddComponent<zKeyMap>();
+            _instance = GameObject.FindObjectOfType<zKeyMap>();
+            if (_instance == null)
+            {
+                GameObject g = new GameObject("keymap");
+                g.AddComponent<zKeyMap>();
+            }
         }
         k = new List<KeyCode>();
         m = new List<MonoBehaviour>();
@@ -79,14 +84,13 @@ public class zKeyMap : MonoBehaviour
           return map(mono, actionOnDown, key);
         }*/
 
-
     void Update()
     {
         for (int i = 0; i < k.Count; i++)
             if (Input.GetKeyDown(k[i]))
 
             {
-                if (m[i].isActiveAndEnabled)
+                if (forwardToInavtiveObjects || m[i].isActiveAndEnabled)
                 {
                     if (onDownList[i] != null)
                         onDownList[i]();
@@ -96,7 +100,7 @@ public class zKeyMap : MonoBehaviour
             else
            if (Input.GetKeyUp(k[i]))
             {
-                if (m[i].isActiveAndEnabled)
+                if (forwardToInavtiveObjects || m[i].isActiveAndEnabled)
                 {
                     if (onUpList[i] != null)
                         onUpList[i]();

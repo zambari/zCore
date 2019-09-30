@@ -3,6 +3,7 @@
 using UnityEngine;
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 /// oeverrides zRectExtensions
 /// v.02 endian swaps, memory map struct to byte
@@ -12,10 +13,23 @@ namespace Z
     {
         void ReverseEndian();
     }
-    
+
+
     public static class zExtensionDatatypes
     {
 
+        public static ulong GetHashFromString(string s)
+        {
+            byte[] bytes;
+
+            using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
+            {
+                md5.Initialize();
+                md5.ComputeHash(Encoding.UTF8.GetBytes(s));
+                bytes = md5.Hash;
+                return (ulong)BitConverter.ToUInt64(bytes, 0);
+            }
+        }
         public static UInt32 SwapEndian(this UInt32 source)
         {
             var bt = BitConverter.GetBytes(source);

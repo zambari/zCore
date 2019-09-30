@@ -39,6 +39,7 @@ namespace Z
                 DestroyImmediate(this);
             }
             light = GetComponentInChildren<Light>();
+            OnValidate();
         }
         public
          float a;

@@ -30,7 +30,7 @@ public static class zExtensionsJson
         {
             Debug.Log("saved : " + path);
 #if UNITY_EDITOR
-            AssetDatabase.Refresh();
+       //     AssetDatabase.Refresh();
 #endif
         }
         else

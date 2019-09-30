@@ -10,6 +10,7 @@ using UnityEditor;
 // v. 0.4 nonrecursive transform, gameobject, mono overloads 
 // v. 0.5 compon
 // v. 0.6 undo support on addorgetcomponent
+// v. 0.7 getcompinf notnull
 
 /// oeverrides zRectExtensions
 
@@ -49,6 +50,22 @@ public static class zExtensionsComponents // to useful to be in namespace1
         return transform.gameObject.AddOrGetComponent<T>();
     }
 
+    /// <summary>
+    /// Performs anull check before getcomponent
+    /// </summary>
+    
+   public static T GetComponentIfNotNull<T>(this Component component) where T : Component
+    {
+        if (component==null) return null;
+
+        return component.GetComponent<T>();
+    }
+     public static T GetComponentIfNotNull<T>(this GameObject component) where T : Component
+    {
+        if (component==null) return null;
+
+        return component.GetComponent<T>();
+    }
     /// <summary>
     /// Rearches one level of transform (doesn't go deep)
     /// </summary>

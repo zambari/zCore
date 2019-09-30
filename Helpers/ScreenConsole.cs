@@ -108,7 +108,6 @@ namespace Z
         public void Init(MonoBehaviour awakenSource)
         {
             if (wasInit) return;
-            Debug.Log("console awaken");
             wasInit = true;
             Application.logMessageReceived += HandleLog;
         }
@@ -122,6 +121,15 @@ namespace Z
             //  Application.logMessageReceived -= HandleLog;
         }
         bool antiFeedback;
+
+        bool IRequestInit.wasInit
+        {
+            get
+            {
+               return wasInit;
+            }
+        }
+
         void HandleLog(string logString, string stackTrace, LogType type)
         {
             if (antiFeedback) return;

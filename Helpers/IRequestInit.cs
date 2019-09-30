@@ -8,7 +8,9 @@ using UnityEngine.UI;
 public interface IRequestInit
 {
     void Init(MonoBehaviour awakenSource);
+    bool wasInit{get;}
     GameObject gameObject { get; }
+
     bool enabled { get; }
     string name { get; }
 
