@@ -1,7 +1,5 @@
 ﻿
-
 using UnityEngine;
-using System;
 using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -18,7 +16,7 @@ public static class zExtensionsComponents // to useful to be in namespace1
     /// <summary>
     /// Never returns null. If component cannot be found, it is added and instance is returned
     /// </summary>
-    public static T AddOrGetComponent<T>(this MonoBehaviour mono) where T : Component
+    public static T AddOrGetComponent<T>(this MonoBehaviour mono) where T : UnityEngine.Component
     {
         T t = mono.gameObject.GetComponent<T>();
         if (t == null) t = mono.gameObject.AddComponent<T>();
@@ -29,7 +27,7 @@ public static class zExtensionsComponents // to useful to be in namespace1
     /// Never returns null. If component cannot be found, it is added and instance is returned
     /// </summary>
 
-    public static T AddOrGetComponent<T>(this GameObject gameObject) where T : Component
+    public static T AddOrGetComponent<T>(this GameObject gameObject) where T : UnityEngine.Component
     {
         T t = gameObject.GetComponent<T>();
         if (t == null) t = gameObject.AddComponent<T>();
@@ -38,7 +36,7 @@ public static class zExtensionsComponents // to useful to be in namespace1
     /// <summary>
     /// Never returns null. If component cannot be found, it is added and instance is returned
     /// </summary>
-    public static T AddOrGetComponent<T>(this Transform transform) where T : Component
+    public static T AddOrGetComponent<T>(this Transform transform) where T : UnityEngine.Component
     {
         T t = transform.GetComponent<T>();
         if (t == null) t = transform.gameObject.AddComponent<T>();
@@ -48,14 +46,14 @@ public static class zExtensionsComponents // to useful to be in namespace1
     /// <summary>
     /// Rearches one level of transform (doesn't go deep)
     /// </summary>
-    public static T[] GetComponentsInDirectChildren<T>(this MonoBehaviour mono, bool includeDisabled = true) where T : Component
+    public static T[] GetComponentsInDirectChildren<T>(this MonoBehaviour mono, bool includeDisabled = true) where T : UnityEngine.Component
     {
         return zExtensionsComponents.GetComponentsInDirectChildren<T>(mono.transform, includeDisabled);
     }
     /// <summary>
     /// Rearches one level of transform (doesn't go deep)
     /// </summary>
-    public static T[] GetComponentsInDirectChildren<T>(this GameObject game, bool includeDisabled = true) where T : Component
+    public static T[] GetComponentsInDirectChildren<T>(this GameObject game, bool includeDisabled = true) where T : UnityEngine.Component
     {
         return zExtensionsComponents.GetComponentsInDirectChildren<T>(game.transform, includeDisabled);
     }
@@ -63,7 +61,7 @@ public static class zExtensionsComponents // to useful to be in namespace1
     /// Rearches one level of transform (doesn't go deep)
     /// </summary>
     /// 
-    public static T[] GetComponentsInDirectChildren<T>(this Transform transform, bool includeDisabled = true) where T : Component
+    public static T[] GetComponentsInDirectChildren<T>(this Transform transform, bool includeDisabled = true) where T : UnityEngine.Component
     {
         List<T> components = new List<T>();
         for (int i = 0; i < transform.childCount; i++)
@@ -84,14 +82,14 @@ namespace Z
 
 
 
-        public static void RemoveAllComponentsExcluding(this GameObject obj, params Type[] types)
+        public static void RemoveAllComponentsExcluding(this GameObject obj, params System.Type[] types)
         {
-            Component[] c = obj.GetComponents<Component>();
+            UnityEngine.Component[] c = obj.GetComponents<UnityEngine.Component>();
             for (int i = c.Length - 1; i > 1; i--)
                 GameObject.DestroyImmediate(c[i]);
 
         }
-        public static GameObject[] GetGameObjectsWithComponent<T>() where T : Component
+        public static GameObject[] GetGameObjectsWithComponent<T>() where T : UnityEngine.Component
         {
             T[] foundObjects = GameObject.FindObjectsOfType<T>();
             GameObject[] g = new GameObject[foundObjects.Length];
@@ -122,7 +120,7 @@ namespace Z
         }
 
 
-        public static void DestroySmart(this Component c)
+        public static void DestroySmart(this UnityEngine.Component c)
         {
 
             if (Application.isPlaying)
@@ -141,7 +139,7 @@ namespace Z
 
 
 
-        public static void CollapseComponent(this MonoBehaviour mono, Component c, bool expanded = false)
+        public static void CollapseComponent(this MonoBehaviour mono, UnityEngine.Component c, bool expanded = false)
         {
 #if UNITY_EDITOR
             if (c != null)
@@ -152,14 +150,14 @@ namespace Z
         {
 
 #if UNITY_EDITOR
-            Component c = mono;
+            UnityEngine.Component c = mono;
             if (c != null)
                 UnityEditorInternal.InternalEditorUtility.SetIsInspectorExpanded(c, false);
 #endif
         }
 
 
-        public static void CollapseComponent(this Component c, bool expanded = false)
+        public static void CollapseComponent(this UnityEngine.Component c, bool expanded = false)
         {
 #if UNITY_EDITOR
             if (c != null)

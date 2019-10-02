@@ -1,18 +1,19 @@
 ﻿
-
-using UnityEngine;
 using System;
 using System.Runtime.InteropServices;
 
 /// oeverrides zRectExtensions
 /// v.02 endian swaps, memory map struct to byte
+/// v.03 bytearray to string length
+/// 
+/// 
 namespace Z
 {
     public interface IEndianReverse
     {
         void ReverseEndian();
     }
-    
+
     public static class zExtensionDatatypes
     {
 
@@ -58,7 +59,6 @@ namespace Z
         public static UInt64 SwapEndian(this UInt64 source)
         {
             var bt = BitConverter.GetBytes(source);
-            Debug.Log("warning, probably wrong result");
             var t = bt[0];
             bt[0] = bt[1];
             bt[1] = t;
@@ -137,15 +137,16 @@ namespace Z
 
         public static byte[] ToByteArray(this string s)// 2017.08.18
         {
+            if (string.IsNullOrEmpty(s)) return new byte[0];
             byte[] byteArray = new byte[s.Length];
             for (int i = 0; i < s.Length; i++)
                 byteArray[i] = (byte)s[i];
             return byteArray;
         }
-        public static string ByteArrayToString(this byte[] b, int startIndex = 0) // 2017.08.18
+        public static string ByteArrayToString(this byte[] b, int startIndex = 0, int length = 0) // 2019.09.25
 
         {
-            return b.ArrayToString(startIndex);
+            return b.ArrayToString(startIndex, length);
         }
         public static string ByteArrayToStringAsHex(this byte[] b, int startIndex = 0) // 2017.08.18
         {
@@ -157,11 +158,12 @@ namespace Z
             return s;
 
         }
-        public static string ArrayToString(this byte[] b, int startIndex = 0) // 2017.08.18
+        public static string ArrayToString(this byte[] b, int startIndex = 0, int length=0) /// 2019.09.25
         {
             string s = "";
-            if (b[0] == 0) return s;
-            for (int i = startIndex; i < b.Length; i++)
+            if (b == null || b.Length == 0 || b[0] == 0) return s;
+            if (length == 0) length = b.Length;
+            for (int i = startIndex; i < length; i++)
             {
                 char c = (char)b[i];
                 if (!char.IsControl(c))
@@ -171,6 +173,7 @@ namespace Z
             }
             return s;
         }
+    
         public static string ArrayToString(this byte[] b) // 2017.08.18
         {
             return System.Text.Encoding.UTF8.GetString(b);
@@ -184,7 +187,7 @@ namespace Z
         }
         public static byte[] ToByteArrayFromHex(this string s)
         {
-            // Debug.Log("Warning, string should consist of pairs of hex characters, separated by space !");
+            // Dbg.Log("Warning, string should consist of pairs of hex characters, separated by space !");
 
             string[] hexStrings = s.Trim().Split(' ');
 
@@ -192,7 +195,7 @@ namespace Z
             byte[] bytes = new byte[hexStrings.Length];
             for (int i = 0; i < bytes.Length; i++)
             {
-                //Debug.Log(" stirng 1 "+hexStrings[i]);
+                //Dbg.Log(" stirng 1 "+hexStrings[i]);
                 int conv = (int)Convert.ToUInt32(hexStrings[i], 16);
                 bytes[i] = (byte)conv;
             }
@@ -203,7 +206,6 @@ namespace Z
         {
             if (len == 0) len = b.Length;
             if (len == -1) return new char[1];
-            Debug.Log(len);
             char[] c = new char[len];
             for (int i = 0; i < len; i++)
                 c[i] = (char)b[i];
@@ -221,7 +223,6 @@ namespace Z
         public static byte BinaryToByte(this string input)
         {
             int temp = 0;
-            if (input.Length != 8) Debug.Log("invalid input string len " + input.Length + " please use 8 chars");
             int endIndex = input.Length - 1;
             int pos = input.Length - 1 - 8;
             if (pos < 0) pos = 0;

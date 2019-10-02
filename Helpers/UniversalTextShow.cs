@@ -43,7 +43,7 @@ public class UniversalTextShow : MonoBehaviour
     GameObject _targetGameObject;
     [SerializeField]
     [HideInInspector]
-    Component _targetComponent;
+    UnityEngine.Component _targetComponent;
 
     [SerializeField]
    // [HideInInspector]
@@ -159,7 +159,7 @@ void OnEnable()
     }
 
 
-    public Component sourceComponent
+    public UnityEngine.Component sourceComponent
     {
         get { return _targetComponent; }
         set
