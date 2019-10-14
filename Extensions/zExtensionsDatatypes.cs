@@ -18,8 +18,14 @@ namespace Z
     public static class zExtensionDatatypes
     {
 
+        public static ulong GetHash(this string s)
+        {
+           return GetHashFromString(s);
+        }
+        
         public static ulong GetHashFromString(string s)
         {
+            if (string.IsNullOrEmpty(s)) return 0; // invalid hash
             byte[] bytes;
 
             using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
@@ -29,6 +35,7 @@ namespace Z
                 bytes = md5.Hash;
                 return (ulong)BitConverter.ToUInt64(bytes, 0);
             }
+            
         }
         public static UInt32 SwapEndian(this UInt32 source)
         {

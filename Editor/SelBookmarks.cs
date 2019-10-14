@@ -23,7 +23,7 @@ namespace Z
     public class SelBookmarks : EditorWindow
     {
         [MenuItem("Tools/Open Selection Bookmarks")]
-        static void Init()
+        static void InitLate()
         {
 #pragma warning disable 219
             SelBookmarks window =

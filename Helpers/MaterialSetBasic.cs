@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 //v0.2
 //v0.3 gets material on rest
+//v0.4 interactive (onvaldiate) mode
 [ExecuteInEditMode]
 public class MaterialSetBasic : MonoBehaviour
 {
@@ -13,8 +14,8 @@ public class MaterialSetBasic : MonoBehaviour
     void SetMaterial(Material m)
     {
         if (materialToSet == null) return;
-       // if (mrends == null)
-            mrends = GetComponentsInChildren<MeshRenderer>();
+        // if (mrends == null)
+        mrends = GetComponentsInChildren<MeshRenderer>();
 
         Material[] oneMat = new Material[1];
         Material[] twoMats = new Material[2];
@@ -24,14 +25,28 @@ public class MaterialSetBasic : MonoBehaviour
 
         for (int i = 0; i < mrends.Length; i++)
         {
-                if (mrends[i].sharedMaterials.Length == 1)
+            if (mrends[i].sharedMaterials.Length == 1)
 
-                    mrends[i].sharedMaterials = oneMat;
-                else
-                    mrends[i].sharedMaterials = twoMats;
+                mrends[i].sharedMaterials = oneMat;
+            else
+                mrends[i].sharedMaterials = twoMats;
         }
 
     }
+    [SerializeField] bool autoUpdate;
+    void OnValidate()
+    {
+#if UNITY_EDITOR
+        if (autoUpdate && UnityEditor.Selection.activeGameObject == gameObject && materialToSet != null)
+        {
+            SetMaterialNow();
+
+        }
+
+#endif
+
+    }
+
     [ExposeMethodInEditor]
     void SetMaterialNow()
     {
@@ -58,7 +73,7 @@ public class MaterialSetBasic : MonoBehaviour
     void Reset()
     {
         GetMaterial();
-        materialToSetAlt=materialToSet;
-        materialToSetOrg=materialToSet;
+        materialToSetAlt = materialToSet;
+        materialToSetOrg = materialToSet;
     }
 }

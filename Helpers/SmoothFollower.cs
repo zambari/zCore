@@ -4,53 +4,43 @@ using UnityEngine;
 using UnityEngine.UI;
 namespace Z
 {
-    [System.Serializable]
-    public class SmoothVector3Follower
-    {
-        [SerializeField]
-        Vector3 currentValue;
-        public Vector3 target;
-        float velx, vely, velz;
-        [Range(0, 3)]
-        public float smoothTime = 0.2f;
+    // v.02 switched to using Damper and TRS class
 
-        public void jumpToTarget()
-        {
-            currentValue = target;
-            velx = 0;
-            vely = 0;
-            velz = 0;
-        }
-        public Vector3 getUpdated()
-        {
-            currentValue.x = Mathf.SmoothDamp(currentValue.x, target.x, ref velx, smoothTime);
-            currentValue.y = Mathf.SmoothDamp(currentValue.y, target.y, ref vely, smoothTime);
-            currentValue.z = Mathf.SmoothDamp(currentValue.z, target.z, ref velz, smoothTime);
-            return currentValue;
-        }
-
-    }
     public class SmoothFollower : MonoBehaviour
     {
 
-        public SmoothVector3Follower follower;
+        public Damper3D damperPos;
+        public Damper3DAngle damperAngle;
         public Transform positionSource;
+        TRS sourceTransformParams;
+        [Range(2,0)]
+        public float smoothTime=0.4f;
+      //  public 
+        void OnValidate()
+
+        {
+            if (damperPos!=null) damperPos.smoothTime=smoothTime;
+            if (damperAngle!=null) damperAngle.smoothTime=smoothTime;
+        }
 
         public bool useLocalSpace = true;
-
-        Vector3 GetTargetPosition()
+      
+        void Start()
         {
-            if (useLocalSpace) return positionSource.localPosition; else return positionSource.position;
+            if (positionSource.position == null) enabled = false;
+            damperPos.smoothTime=smoothTime;
+            damperAngle.smoothTime=smoothTime;
         }
-        void SetMyPosition(Vector3 pos)
-        {
-            if (useLocalSpace) transform.localPosition = pos; else transform.position = pos;
-        }
-
         void Update()
         {
-            follower.target = GetTargetPosition();
-            SetMyPosition(follower.getUpdated());
+            sourceTransformParams = new TRS(positionSource, useLocalSpace);
+            damperPos.targetValue = sourceTransformParams.position;
+            damperAngle.targetValue = positionSource.eulerAngles;
+            sourceTransformParams.position = damperPos.UpdatedValue();
+            sourceTransformParams.position = damperPos.UpdatedValue();
+            sourceTransformParams.rotation=Quaternion.Euler(damperAngle.UpdatedValue());
+            sourceTransformParams.ApplyNoScale(transform,useLocalSpace); // noscale verion
+            
         }
     }
 }

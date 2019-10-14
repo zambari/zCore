@@ -5,12 +5,19 @@ using UnityEngine.UI;
 
 // Can be used to initialize objects that are not active on scene start
 
-public interface IRequestInit
+public interface IRequestInitLate
 {
     void Init(MonoBehaviour awakenSource);
-    bool wasInit{get;}
     GameObject gameObject { get; }
+    bool enabled { get; }
+    string name { get; }
 
+}
+
+public interface IRequestInitEarly
+{
+    void Init(MonoBehaviour awakenSource);
+    GameObject gameObject { get; }
     bool enabled { get; }
     string name { get; }
 
