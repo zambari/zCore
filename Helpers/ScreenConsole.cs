@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -105,6 +105,8 @@ namespace Z
             }
         }
         bool wasInit;
+        bool antiFeedback;
+
         public void Init(MonoBehaviour awakenSource)
         {
             if (wasInit) return;
@@ -119,15 +121,6 @@ namespace Z
         void OnDisable()
         {
             //  Application.logMessageReceived -= HandleLog;
-        }
-        bool antiFeedback;
-
-        bool IRequestInit.wasInit
-        {
-            get
-            {
-               return wasInit;
-            }
         }
 
         void HandleLog(string logString, string stackTrace, LogType type)
