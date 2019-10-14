@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -12,7 +12,7 @@ namespace Z
 {
 
     [RequireComponent(typeof(Text))]
-    public class ScreenConsole : MonoBehaviour, IRequestInit
+    public class ScreenConsole : MonoBehaviour, IRequestInitEarly
     {
         Text text;
         public Color color = Color.white;
