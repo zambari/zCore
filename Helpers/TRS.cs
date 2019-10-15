@@ -32,6 +32,10 @@ namespace Z
         }
         public TRS(Transform transform, bool useLocal = true)
         {
+            if (transform==null)
+            {
+                Debug.LogException(new System.NullReferenceException("no source transform"));
+            }
             if (useLocal)
             {
                 scale = transform.localScale;

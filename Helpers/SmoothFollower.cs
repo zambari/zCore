@@ -5,6 +5,7 @@ using UnityEngine.UI;
 namespace Z
 {
     // v.02 switched to using Damper and TRS class
+    // v.03 instnt mode
 
     public class SmoothFollower : MonoBehaviour
     {
@@ -12,12 +13,12 @@ namespace Z
         public Damper3D damperPos;
         public Damper3DAngle damperAngle;
         public Transform positionSource;
+        public bool instantMode;
         TRS sourceTransformParams;
         [Range(2,0)]
         public float smoothTime=0.4f;
       //  public 
         void OnValidate()
-
         {
             if (damperPos!=null) damperPos.smoothTime=smoothTime;
             if (damperAngle!=null) damperAngle.smoothTime=smoothTime;
@@ -34,12 +35,19 @@ namespace Z
         void Update()
         {
             sourceTransformParams = new TRS(positionSource, useLocalSpace);
-            damperPos.targetValue = sourceTransformParams.position;
-            damperAngle.targetValue = positionSource.eulerAngles;
-            sourceTransformParams.position = damperPos.UpdatedValue();
-            sourceTransformParams.position = damperPos.UpdatedValue();
-            sourceTransformParams.rotation=Quaternion.Euler(damperAngle.UpdatedValue());
-            sourceTransformParams.ApplyNoScale(transform,useLocalSpace); // noscale verion
+            if (instantMode)
+            {
+                 sourceTransformParams.ApplyNoScale(transform,useLocalSpace);
+            }
+            else 
+            {
+                damperPos.targetValue = sourceTransformParams.position;
+                damperAngle.targetValue = positionSource.eulerAngles;
+                sourceTransformParams.position = damperPos.UpdatedValue();
+                sourceTransformParams.position = damperPos.UpdatedValue();
+                sourceTransformParams.rotation=Quaternion.Euler(damperAngle.UpdatedValue());
+                sourceTransformParams.ApplyNoScale(transform,useLocalSpace); // noscale verion
+            }
             
         }
     }
