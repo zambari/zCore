@@ -15,7 +15,7 @@ namespace Z
         public Transform positionSource;
         public bool instantMode;
         TRS sourceTransformParams;
-        [Range(2,0)]
+        [Range(4,0)]
         public float smoothTime=0.4f;
       //  public 
         void OnValidate()
