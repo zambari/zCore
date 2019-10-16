@@ -14,7 +14,7 @@ namespace Z
     {
         void ReverseEndian();
     }
-    
+
     public static class zExtensionDatatypes
     {
 

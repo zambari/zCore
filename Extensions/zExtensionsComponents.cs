@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System;
 using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -104,12 +103,12 @@ namespace Z
 
 
 
-        public static void MoveComponentToPosition(this Component component, int desiredPosition)// : where T:Component
+        public static void MoveComponentToPosition(this UnityEngine.Component component, int desiredPosition)// : where T:UnityEngine.Component
         {
 #if UNITY_EDITOR
             if (component == null) return;
 
-            var components = component.gameObject.GetComponents<Component>();
+            var components = component.gameObject.GetComponents<UnityEngine.Component>();
             int currentPosition = 0;
             for (int i = 0; i < components.Length; i++)
             {
@@ -127,7 +126,7 @@ namespace Z
 
         }
 
-        public static void MoveComponent(this Component component, int offset)// : where T:Component
+        public static void MoveComponent(this UnityEngine.Component component, int offset)// : where T:UnityEngine.Component
         {
 #if UNITY_EDITOR
             if (component == null) return;
@@ -142,7 +141,7 @@ namespace Z
         }
 
 
-        public static void RemoveAllComponentsExcluding(this GameObject obj, params Type[] types)
+        public static void RemoveAllComponentsExcluding(this GameObject obj, params System.Type[] types)
         {
             UnityEngine.Component[] c = obj.GetComponents<UnityEngine.Component>();
             for (int i = c.Length - 1; i > 1; i--)
