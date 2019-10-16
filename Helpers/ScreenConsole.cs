@@ -7,6 +7,7 @@ using UnityEngine.UI;
 // v.03 // simpleconeolse replacemnet
 // v.04 // new fades
 // v.05 // back to manual line count
+// v.06 // clear made public
 
 namespace Z
 {
@@ -68,7 +69,7 @@ namespace Z
         void OnValidate()
         {
             if (text == null) text = GetComponent<Text>();
-            text.supportRichText = useFades;
+            //    text.supportRichText = useFades;
             text.color = color;
             waiter = new WaitForSeconds(refreshTime);
             string temp = "Log:";
@@ -136,7 +137,7 @@ namespace Z
                 Log(useFades ? "<color=#ff2020>" + logString + "</color>" : logString);
         }
 
-        void Clear()
+        public void Clear()
         {
             logList = new List<string>();
             times = new List<float>();
