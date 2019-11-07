@@ -15,9 +15,8 @@ namespace Z
         public Transform positionSource;
         public bool instantMode;
         TRS sourceTransformParams;
-        [Range(4,0)]
+        [Range(0,6)]
         public float smoothTime=0.4f;
-      //  public 
         void OnValidate()
         {
             if (damperPos!=null) damperPos.smoothTime=smoothTime;
