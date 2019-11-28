@@ -10,10 +10,11 @@ using UnityEditor;
 /// oeverrides zRectExtensions
 
 // v .3 silent mode
+// v. 4 creates directory chain
 
 public static class zExtensionsJson
 {
-      /// <summary>
+    /// <summary>
     ///  Saves this object as Json file
     /// </summary>
     /// 
@@ -21,8 +22,19 @@ public static class zExtensionsJson
 
     public static void ToJson(this object obj, string path, bool silent = false) // different naming conventino
     {
-        if (!Directory.Exists(Application.streamingAssetsPath)) Directory.CreateDirectory(Application.streamingAssetsPath);
-        // obj.SaveJson(Application.streamingAssetsPath + "/" + path);
+        path = path.Replace('\\', '/');
+        if (!path.Contains(":\'") && !path.Contains("StreamingAssets"))
+            path = Path.Combine(Application.streamingAssetsPath, path);
+        var split = path.Split('/');
+        string directory = "";
+        for (int i = 0; i < split.Length - 1; i++)
+        {
+            directory += split[i] + '/';
+            bool exists = Directory.Exists(directory);
+            if (!exists)
+                Directory.CreateDirectory(directory);
+            Debug.Log("Creted directory " + directory + " to create json save path");
+        }
         string dataAsJson = JsonUtility.ToJson(obj, true);
         if (!path.Contains(".json")) path += ".json";
         File.WriteAllText(path, dataAsJson);
@@ -41,7 +53,7 @@ public static class zExtensionsJson
 
     }
 
-  
+
 
     /// <summary>
     /// Loads an object from json. usage: newObject= newObject.FromJson &lt;typeOfNewObject&gt;(path)
