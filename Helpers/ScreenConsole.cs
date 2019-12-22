@@ -7,12 +7,13 @@ using UnityEngine.UI;
 // v.03 // simpleconeolse replacemnet
 // v.04 // new fades
 // v.05 // back to manual line count
+// v.06 // clear made public
 
 namespace Z
 {
 
     [RequireComponent(typeof(Text))]
-    public class ScreenConsole : MonoBehaviour, IRequestInit
+    public class ScreenConsole : MonoBehaviour, IRequestInitEarly
     {
         Text text;
         public Color color = Color.white;
@@ -68,7 +69,7 @@ namespace Z
         void OnValidate()
         {
             if (text == null) text = GetComponent<Text>();
-            text.supportRichText = useFades;
+            //    text.supportRichText = useFades;
             text.color = color;
             waiter = new WaitForSeconds(refreshTime);
             string temp = "Log:";
@@ -105,6 +106,8 @@ namespace Z
             }
         }
         bool wasInit;
+        bool antiFeedback;
+
         public void Init(MonoBehaviour awakenSource)
         {
             if (wasInit) return;
@@ -120,15 +123,6 @@ namespace Z
         {
             //  Application.logMessageReceived -= HandleLog;
         }
-        bool antiFeedback;
-
-        bool IRequestInit.wasInit
-        {
-            get
-            {
-               return wasInit;
-            }
-        }
 
         void HandleLog(string logString, string stackTrace, LogType type)
         {
@@ -143,7 +137,7 @@ namespace Z
                 Log(useFades ? "<color=#ff2020>" + logString + "</color>" : logString);
         }
 
-        void Clear()
+        public void Clear()
         {
             logList = new List<string>();
             times = new List<float>();

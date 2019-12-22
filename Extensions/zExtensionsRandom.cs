@@ -12,6 +12,8 @@ using UnityEditor;
 #endif
 
 
+// v.02 vector random
+
 public static class zExtensionsRandom
 {
     public static Color Randomize(this Color c, float howMuchHue = 0.15f, float howMuchSat = 0.3f, float howMuchL = 0.2f)
@@ -40,6 +42,15 @@ public static class zExtensionsRandom
         return new Vector3(x, y, r.z);
 
     }
+    public static float RandomFromRange(this Vector2 range)
+    {
+        return UnityEngine.Random.Range(range.x, range.y);
+    }
+    public static float RandomFromRange(this Vector2Int range)
+    {
+        return UnityEngine.Random.Range(range.x, range.y);
+    }
+
     public static Vector2 Randomize(this Vector2 r, float range = 300, bool allowNegatives = true)
     {
         float x = r.x + UnityEngine.Random.value * range;

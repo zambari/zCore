@@ -10,3 +10,5 @@ pause
 RMDIR ".git" /S /Q
 del .gitignore
 del gitmoduleexample.zip
+del removeSubRepo.bat.meta
+del removeSubRepo.bat 

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 namespace Z
 {
     // v0.2 unit field
+    // v0.21.whole numbers
 
     [RequireComponent(typeof(Text))]
     [ExecuteInEditMode]
@@ -16,6 +17,7 @@ namespace Z
         Text text;
         Slider slider;
         public string unit;
+        public bool wholeNumbers;
         // Use this for initialization
         void Start()
         {
@@ -26,12 +28,13 @@ namespace Z
         }
         void OnSliderValueChanged(float f)
         {
+            string val = wholeNumbers ? ((int)f).ToString() : f.ToShortString();
             if (string.IsNullOrEmpty(unit))
             {
-                text.text = f.ToShortString();
+                text.text = val;
             }
             else
-                text.text = f.ToShortString() + " " + unit;
+                text.text = val + " " + unit;
         }
         void Reset()
         {

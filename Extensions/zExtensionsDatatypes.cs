@@ -1,11 +1,15 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
+using UnityEngine;
 
 /// oeverrides zRectExtensions
 /// v.02 endian swaps, memory map struct to byte
 /// v.03 bytearray to string length
+/// v.04 lastitem, randomitem
+/// v.05 suqrebracketstring
 /// 
 /// 
 namespace Z
@@ -14,12 +18,18 @@ namespace Z
     {
         void ReverseEndian();
     }
-    
+
     public static class zExtensionDatatypes
     {
 
+        public static ulong GetHash(this string s)
+        {
+            return GetHashFromString(s);
+        }
+
         public static ulong GetHashFromString(string s)
         {
+            if (string.IsNullOrEmpty(s)) return 0; // invalid hash
             byte[] bytes;
 
             using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
@@ -29,6 +39,7 @@ namespace Z
                 bytes = md5.Hash;
                 return (ulong)BitConverter.ToUInt64(bytes, 0);
             }
+
         }
         public static UInt32 SwapEndian(this UInt32 source)
         {
@@ -41,7 +52,26 @@ namespace Z
             bt[1] = t;
             return BitConverter.ToUInt32(bt, 0);
         }
-
+        public static T LastItem<T>(this T[] src)
+        {
+            if (src == null || src.Length == 0) return default(T);
+            return src[src.Length - 1];
+        }
+        public static T LastItem<T>(this List<T> src)
+        {
+            if (src == null || src.Count == 0) return default(T);
+            return src[src.Count - 1];
+        }
+        public static T RandomItem<T>(this T[] src)
+        {
+            if (src == null || src.Length == 0) return default(T);
+            return src[UnityEngine.Random.Range(0, src.Length)];
+        }
+        public static T RandomItem<T>(this List<T> src)
+        {
+            if (src == null || src.Count == 0) return default(T);
+            return src[UnityEngine.Random.Range(0, src.Count)];
+        }
         public static Int32 SwapEndian(this Int32 source)
         {
             var bt = BitConverter.GetBytes(source);
@@ -171,7 +201,7 @@ namespace Z
             return s;
 
         }
-        public static string ArrayToString(this byte[] b, int startIndex = 0, int length=0) /// 2019.09.25
+        public static string ArrayToString(this byte[] b, int startIndex = 0, int length = 0) /// 2019.09.25
         {
             string s = "";
             if (b == null || b.Length == 0 || b[0] == 0) return s;
@@ -186,7 +216,7 @@ namespace Z
             }
             return s;
         }
-    
+
         public static string ArrayToString(this byte[] b) // 2017.08.18
         {
             return System.Text.Encoding.UTF8.GetString(b);
@@ -271,7 +301,10 @@ namespace Z
             }
             return new string(b) + " ";
         }
-
+        public static string ToSquareBracketString(this Vector2Int vector)
+        {
+            return "[" + vector.x + ":" + vector.y + "]";
+        }
 
     }
 }

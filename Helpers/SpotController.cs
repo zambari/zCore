@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace Z
 {
+
+    // v.0.2 spotlight creation
     public class SpotController : MonoBehaviour
     {
+
         [SerializeField] new Light light;
         public enum MyLightType { spot, directional }
         public MyLightType type;
@@ -18,6 +21,8 @@ namespace Z
         public float verticalAngle = 45;
         public float radius = 2;
         public float intensity = 1;
+        public float a;
+
 
         void OnDrawGizmosSelected()
         {
@@ -25,24 +30,46 @@ namespace Z
                 Gizmos.DrawWireSphere(transform.position, radius);
         }
 
+        readonly static string objectName = "SpotlightController";
+#if UNITY_EDITOR
+        [UnityEditor.MenuItem("GameObject/Light/Spotlight Controller")]
+        static void CreateNewGameObject()
+        {
+            GameObject g = new GameObject(objectName);
+            if (UnityEditor.Selection.activeGameObject != null)
+            {
+                g.transform.SetParent(UnityEditor.Selection.activeGameObject.transform);
+            }
+            g.AddComponent<SpotController>();
+            UnityEditor.Selection.activeGameObject = g;
+        }
+#endif
         void Reset()
         {
+            if (name == "GameObject") name = objectName;
 
-            light = GetComponent<Light>();
+            light = GetComponentInChildren<Light>();
             if (light != null)
             {
-                GameObject g = new GameObject("LightController");
+                GameObject g = new GameObject();
                 g.transform.SetParent(transform.parent);
                 g.transform.SetPositionAndRotation(transform.position, transform.rotation);
                 g.AddComponent<SpotController>();
                 transform.SetParent(g.transform);
                 DestroyImmediate(this);
+                return;
+            }
+            else
+            {
+                GameObject g = new GameObject("SpotLight");
+                g.transform.SetParent(transform);
+                g.transform.SetPositionAndRotation(transform.position, transform.rotation);
+                light = g.AddComponent<Light>();
+                light.type = LightType.Spot;
             }
             light = GetComponentInChildren<Light>();
             OnValidate();
         }
-        public
-         float a;
         void OnValidate()
         {
             if (!isActiveAndEnabled) return;
