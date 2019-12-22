@@ -40,8 +40,8 @@ namespace zUI
 
         public float yAnchorMax { get { return _yAnchorMax; } set { _yAnchorMax = value; CheckAndSet(); } }
 
-        [SerializeField] [HideInInspector] Vector2 offsetMin;
-        [SerializeField] [HideInInspector] Vector2 offsetMax;
+        // [SerializeField] [HideInInspector] Vector2 offsetMin;
+        // [SerializeField] [HideInInspector] Vector2 offsetMax;
         [Range(-1, 100)]
         [SerializeField] float margin = -1;
 
@@ -87,8 +87,8 @@ namespace zUI
             _xAnchorMax = rect.anchorMax.x;
             _yAnchorMin = rect.anchorMin.y;
             _yAnchorMax = rect.anchorMax.y;
-            offsetMin = rect.offsetMin;
-            offsetMax = rect.offsetMax;
+            // offsetMin = rect.offsetMin;
+            // offsetMax = rect.offsetMax;
         }
 #if UNITY_EDITOR
         void OnEnable()

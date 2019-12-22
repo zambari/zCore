@@ -27,7 +27,7 @@ namespace Z
       
         void Start()
         {
-            if (positionSource.position == null) enabled = false;
+            if (positionSource == null) enabled = false;
             damperPos.smoothTime=smoothTime;
             damperAngle.smoothTime=smoothTime;
         }

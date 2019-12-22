@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace Z
 {
-
+#pragma warning disable 414 
     [System.Serializable]
     public class PrimitiveSelector
     {
-        [SerializeField]
-        [HideInInspector]
-        MonoBehaviour source;
+       
         [SerializeField] GameObject addByDraggingHere;
         [SerializeField] GameObject removeByDroppingHere;
         [Header("Drag to edit list")]
@@ -18,7 +16,7 @@ namespace Z
         public List<GameObject> selectedGameObjects = new List<GameObject>();
         public void OnValidate(MonoBehaviour source)
         {
-            this.source = source;
+            // this.source = source;
             if (addByDraggingHere != null && selectedGameObjects != null)
             {
                 if (selectedGameObjects.Contains(addByDraggingHere)) Debug.Log("Already has this, sorry");

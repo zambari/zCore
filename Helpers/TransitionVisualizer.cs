@@ -11,15 +11,9 @@ using UnityEngine.UI;
 [RequireComponent(typeof(RectTransform))]
 public class TransitionVisualizer : MonoBehaviour
 {
-
     RectTransform thisRect;
     public RectTransform otherRect { get { return _otherRect; } set { _otherRect = value; RecalculteLine(); } }
-
-    [Header("xxxxxxxxxxxxxxxxxxxxxxxxxxx")]
     [SerializeField] RectTransform _otherRect;
-
-
-    int steps = 20;
     Vector3 forward = new Vector3(0, 0, -110);
     Vector3[] ThisRectPoints = new Vector3[4];
     Vector3[] OtherRectPoints = new Vector3[4];
@@ -28,9 +22,9 @@ public class TransitionVisualizer : MonoBehaviour
     Vector3[] OtherRectBorders = new Vector3[4];
     List<Vector3> computedPoints = new List<Vector3>();
     Vector2Int selectedFaces;
-    static readonly Color color1 = new Color(1, 0.5f, 0, 0.5f);
-    static readonly Color color2 = new Color(0.6f, 0.7f, 0, 0.2f);
-    public Color color = color1;
+    // static readonly Color color1 = new Color(1, 0.5f, 0, 0.5f);
+    // static readonly Color color2 = new Color(0.6f, 0.7f, 0, 0.2f);
+    public Color color = new Color(1, 0.5f, 0, 0.8f);
 
     float bezierAmount = 1f;
     Vector3[] arrow = new Vector3[2];
@@ -76,8 +70,6 @@ public class TransitionVisualizer : MonoBehaviour
         Vector3 startVect = startPos + bezierAmount * (startPos - thisRect.position);
         Vector3 endVect = endPos + bezierAmount * (endPos - otherRect.position);
 
-        Vector3 thisPos = startPos;
-        Vector3 lastPos = startPos;
         for (float i = 0; i <= 1; i += 0.05f)
         {
             computedPoints.Add(Bezier.Calculate(i, startPos, startVect, endVect, endPos) + forward);

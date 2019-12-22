@@ -78,7 +78,7 @@ public static class zExtensionsJson
 
     /// <summary>
     /// Checks all directories in path for existance, tries to create each sub directory if it doesnt
-    /// </summary>
+    /// /// </summary>
     public static bool CreateFolderIfDoesNotExist(this string path)
     {
         try
