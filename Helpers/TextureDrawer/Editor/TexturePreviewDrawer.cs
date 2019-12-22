@@ -23,7 +23,7 @@ public class TexturePreviewDrawer : PropertyDrawer
             // Rect rectA = new Rect(rect);
             if (texture == null)
             {
-                GUILayout.Label("No texture present");
+                GUI.Label(rect,"No texture present");
             }
             else
             {
