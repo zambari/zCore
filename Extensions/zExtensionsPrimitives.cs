@@ -6,7 +6,9 @@ using System.Text;
 
 /// 
 /// zExtensionPrimitives-  Extensions to string, float etc
-/// 
+/// /
+/// v.02 float to vector3 
+/// v.03 float randomize with easier to undestand arithmetic
 
 public static class zExtensionPrimitives
 {
@@ -40,10 +42,10 @@ public static class zExtensionPrimitives
     {
         return "<color=green>" + s + "</color>";
     }
-    
-    public static string MakeColor(this string s, float r, float g, float b, float a =1 )
+
+    public static string MakeColor(this string s, float r, float g, float b, float a = 1)
     {
-        Color c = new Color (r,g,b,a);
+        Color c = new Color(r, g, b, a);
         return s.MakeColor(c);
     }
 
@@ -92,15 +94,15 @@ public static class zExtensionPrimitives
         return n;
 
     }
-    public static float Randomize(this float f, float howMuch)
+    public static float Randomize(this float f, float howMuch) // warning this methos has chaned the parameter scaling
     {
-        float n = f + UnityEngine.Random.value * howMuch - howMuch / 2;
-       
+        float n = f * UnityEngine.Random.Range(1 - howMuch, 1 + howMuch);
+
         return n;
 
     }
 
-       public static bool CheckFloat(this float f)
+    public static bool CheckFloat(this float f)
     {
         if (Single.IsNaN(f))
         {
@@ -111,7 +113,10 @@ public static class zExtensionPrimitives
     }
 
 
-
+    public static Vector3 ToVector3(this float value)
+    {
+        return new Vector3(value, value, value);
+    }
 
 
     public static string RandomString(int length)
@@ -128,14 +133,14 @@ public static class zExtensionPrimitives
         return builder.ToString();
     }
 
-        public static bool ToBool(this int b)
-        {
-            return (b == 1);
-        }
-        public static int ToInt(this bool b)
-        {
-            return (b ? 1 : 0);
-        }
+    public static bool ToBool(this int b)
+    {
+        return (b == 1);
+    }
+    public static int ToInt(this bool b)
+    {
+        return (b ? 1 : 0);
+    }
 
     public static string PadString(this string s, int len)
     {

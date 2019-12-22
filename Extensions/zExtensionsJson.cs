@@ -19,7 +19,6 @@ public static class zExtensionsJson
     /// </summary>
     /// 
 
-
     public static void ToJson(this object obj, string path, bool silent = false) // different naming conventino
     {
         path = path.Replace('\\', '/');
@@ -77,11 +76,33 @@ public static class zExtensionsJson
         return obj;
     }
 
-
-
     /// <summary>
-    /// Loads an object from json. usage: newObject= newObject.FromJson&lt;typeOfNewObject&gt;(path)
+    /// Checks all directories in path for existance, tries to create each sub directory if it doesnt
     /// </summary>
+    public static bool CreateFolderIfDoesNotExist(this string path)
+    {
+        try
+        {
+            path = path.Replace('\\', '/');
+            if (!path.Contains(Application.dataPath))
+                path = Application.dataPath + "/" + path;
+            var splitPath = path.Split('/');
+            var thisPath = splitPath[0];
+            for (int i = 1; i < splitPath.Length; i++)
+            {
+                // Debug.Log("checking: " + thisPath);
+                if (!Directory.Exists(thisPath))
+                    Directory.CreateDirectory(thisPath);
+                thisPath += '/' + splitPath[i];
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.Log("Exception occured when trying to check " + path + " : " + e.Message);
+            return false;
+        }
+        return true;
+    }
 
 
 }
