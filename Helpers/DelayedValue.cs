@@ -10,7 +10,7 @@ namespace Z
         [Range(0, 5)]
         public float delay = 0.5f;
         [SerializeField]
-        [HideInInspector]
+        // [HideInInspector]
         public MonoBehaviour mono;
         List<Vector2> timesAndValues;
         public FloatEvent delayedOutput;
@@ -23,6 +23,12 @@ namespace Z
         public DelayedValue(MonoBehaviour monoBehaviour)
         {
             mono = monoBehaviour;
+            timesAndValues = new List<Vector2>();
+        }
+         public DelayedValue(MonoBehaviour monoBehaviour, float delayLen)
+        {
+            mono = monoBehaviour;
+            delay=delayLen;
             timesAndValues = new List<Vector2>();
         }
         Coroutine replayRoutine;

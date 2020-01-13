@@ -7,6 +7,7 @@ namespace Z
 {
     // v0.2 unit field
     // v0.21.whole numbers
+	// v0.22 multiplier v1
 
     [RequireComponent(typeof(Text))]
     [ExecuteInEditMode]
@@ -18,6 +19,7 @@ namespace Z
         Slider slider;
         public string unit;
         public bool wholeNumbers;
+        public int multiplier = 1;
         // Use this for initialization
         void Start()
         {
@@ -28,6 +30,7 @@ namespace Z
         }
         void OnSliderValueChanged(float f)
         {
+            f *= multiplier;
             string val = wholeNumbers ? ((int)f).ToString() : f.ToShortString();
             if (string.IsNullOrEmpty(unit))
             {

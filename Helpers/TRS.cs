@@ -5,7 +5,9 @@ using UnityEngine.UI;
 namespace Z
 {
     // v.0.2, apply method, transform taking constructor
-    // vv .0.3 global switch with apply and constructor
+    // v.0.3 global switch with apply and constructor
+    // v.0.4 setScale accepting float (for easier scaling)
+    
     /// <summary>
     /// This class is container for position rotation and scale
     /// </summary>
@@ -17,6 +19,10 @@ namespace Z
         public Vector3 position;
         public Quaternion rotation;
         public Vector3 scale;
+        public void SetScale(float f)
+        {
+            scale = new Vector3(f, f, f);
+        }
         public TRS(Vector3 pos, Quaternion rot, Vector3 sca)
         {
             scale = sca;
@@ -32,7 +38,7 @@ namespace Z
         }
         public TRS(Transform transform, bool useLocal = true)
         {
-            if (transform==null)
+            if (transform == null)
             {
                 Debug.LogException(new System.NullReferenceException("no source transform"));
             }

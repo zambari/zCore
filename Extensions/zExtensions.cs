@@ -35,6 +35,8 @@
 // v0.69 moved to layoutextentins
 // v0.70 showhide on monobehaviour, randomize uppercase
 // v0.71 vector2.Contains(float) 71b clamp
+// v0.72 dumpkeyframes update
+
 
 
 
@@ -243,21 +245,48 @@ public static class zExt
     /// </summary>
     public static void DumpKeys(this AnimationCurve a, string name = null)
     {
-        
-       // a.ListKeyFramesAsCode(name);
-    }
-    public static void ListKeyFramesAsCode(this AnimationCurve a, string name = null)
-    {
         int i = 0;
-        string s = "Listing AnimationCurve keyframes\nClick to see full output (multiline) " + (name == null ? " (you can add name too !)" : "") + "  \n\n";
-
-        s += "\n// Begin AnimationCurve dump (copy from here)\n";
+        string s = "=new AnimationCurve(";
         foreach (Keyframe k in a.keys)
         {
-            s += name + ".AddKey(new Keyframe(" + k.time + "f," + k.value + "f," + k.inTangent + "f," + k.outTangent + "f));\n";
+            s += name + "new Keyframe(" + k.time + "f," + k.value + "f," + k.inTangent + "f," + k.outTangent + "f),";
             i++;
         }
-        Debug.Log(s + "// end keyframe dump (created using zExtensions)\n\n");
+        s = s.Substring(0, s.Length - 1);
+        s += ");";
+        Debug.Log(s);
+    }
+
+    /// <summary>
+    /// Creates an animation curve that contains pre-zero full range step, and ones in the normal range
+    /// </summary>
+    /// <returns></returns>
+
+    public static AnimationCurve StepCurve()
+    {
+        return new AnimationCurve(new Keyframe(-0.02f, 1f, 0, 0), new Keyframe(-0.01f, 0.0f, 0, 0), new Keyframe(0f, 1f, 0f, 0f), new Keyframe(1f, 1f, 0f, 0f));
+    }
+    public static AnimationCurve OneCurve()
+    {
+        return new AnimationCurve(new Keyframe(0, 1), new Keyframe(1, 1));
+    }
+    /// <summary>
+    /// Creates an (0-1) animation curve S
+    /// </summary>
+    /// <returns></returns>
+
+    public static AnimationCurve SweepCurve()
+    {
+        return new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
+    }
+
+        /// <summary>
+    /// Creates an (0-1) animation curve Linear
+    /// </summary>
+    /// <returns></returns>
+    public static AnimationCurve LinearCurve()
+    {
+        return new AnimationCurve(new Keyframe(0, 0, 1, 1), new Keyframe(1, 1, 1, 1));
     }
 
 
