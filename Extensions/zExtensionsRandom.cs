@@ -62,6 +62,22 @@ public static class zExtensionsRandom
         }
         return new Vector2(x, y);
     }
+		
+    public static float RandomizeClamped(this float f, float howMuch)
+    {
+        float n = f.Randomize(howMuch);
+        if (n < 0) n = 0;
+        if (n > 1) n = 1;
+        return n;
+
+    }
+    public static float Randomize(this float f, float howMuch) // warning this methos has chaned the parameter scaling
+    {
+        float n = f * UnityEngine.Random.Range(1 - howMuch, 1 + howMuch);
+
+        return n;
+
+    }
 
     public static Color Random(this Color c)
     {
