@@ -238,7 +238,32 @@ public static class zExt
         deriv.w = (Result.w - rot.w) * dtInv;
         return new Quaternion(Result.x, Result.y, Result.z, Result.w);
     }
+    /// <summary>
+    /// prints a list of keyframes, 
+    /// </summary>
+    public static void DumpKeys(this Gradient a, string name = null)
+    {
+        string s = " GradientColorKey[] colorKey= new GradientColorKey[]{";
+        GradientColorKey[] colorKey = a.colorKeys;
+        foreach (GradientColorKey k in colorKey)
+        {
+            s += "new GradientColorKey(" + k.color.ToConstructorString() + "," + k.time + "f),";
+        }
+        //ToConstructorString
 
+        s = s.Substring(0, s.Length - 1);
+        s += "};";
+        Debug.Log(s);
+        s = " GradientAlphaKey[] alphaKey= new GradientAlphaKey[]{";
+        GradientAlphaKey[] alphaKey = a.alphaKeys;
+        foreach (GradientAlphaKey k in alphaKey)
+        {
+            s += "new GradientAlphaKey(" + k.alpha + "," + k.time + "),";
+        }
+        s = s.Substring(0, s.Length - 1);
+        s += "};";
+        Debug.Log(s);
+    }
     /// <summary>
     /// prints a list of keyframes, in a formsuitable for copy and pasting back to the code to recreate
     /// add a name for it to be present in the output
@@ -280,7 +305,7 @@ public static class zExt
         return new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
     }
 
-        /// <summary>
+    /// <summary>
     /// Creates an (0-1) animation curve Linear
     /// </summary>
     /// <returns></returns>
@@ -288,6 +313,15 @@ public static class zExt
     {
         return new AnimationCurve(new Keyframe(0, 0, 1, 1), new Keyframe(1, 1, 1, 1));
     }
+    public static AnimationCurve LinearCurveDown()
+    {
+        return new AnimationCurve(new Keyframe(1, 1, 1, 1), new Keyframe(0, 0, 1, 1));
+    }
+    public static string ToConstructorString(this Color c)
+    {
+        return "new Color(" + c.r + "f," + c.g + "f," + c.b + "f," + c.a + "f)";
+    }
+
 
 
 
@@ -301,10 +335,25 @@ public static class zExt
     {
         return (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift));
     }
-    // LAYOUT HELPER
 
+    /// <summary>
+    /// Creates a heat type gradient
+    /// </summary>
+    /// <returns></returns>
+    public static Gradient HeatGradient()
+    {
+        Gradient g = new Gradient();
+        GradientColorKey[] colorKey = new GradientColorKey[] { new GradientColorKey(new Color(0.1172414f, 0f, 1f, 1f), 0f), new GradientColorKey(new Color(1f, 0.1397059f, 0.1397059f, 1f), 0.7171741f), new GradientColorKey(new Color(0.9448276f, 1f, 0f, 1f), 0.9356833f), new GradientColorKey(new Color(1f, 1f, 1f, 1f), 1f) };
+        GradientAlphaKey[] alphaKey = new GradientAlphaKey[] { new GradientAlphaKey(1, 0), new GradientAlphaKey(1, 1) };
+        g.colorKeys = colorKey;
+        g.alphaKeys = alphaKey;
+        return g;
+    }
 
-
+    public static string NameOrNull(this MonoBehaviour source)
+    {
+        return (source == null ? "null" : source.name);
+    }
     /* 
         #if UNITY_EDITOR
     public static void SetTextureImporterFormat( this Texture2D texture, bool isReadable)

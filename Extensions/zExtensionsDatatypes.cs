@@ -305,6 +305,14 @@ namespace Z
         {
             return "[" + vector.x + ":" + vector.y + "]";
         }
+        // public static string PadString(this string s, int len)
+        // {
+        //     if (string.IsNullOrEmpty(s)) s = "";
+
+        //     for (int i = s.Length; i < len; i++) s += ' ';
+        //     return s;
+        // }
+
 
     }
 }
