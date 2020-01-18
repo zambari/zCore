@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+#if UNITY_EDITOR
 using UnityEditor;
+//v.02.#if
 
 
 public class DistributeTool : EditorWindow
@@ -83,3 +85,4 @@ public class DistributeTool : EditorWindow
     }
 }
 
+#endif

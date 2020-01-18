@@ -3,6 +3,7 @@
 //v.03 smoothtime3d
 //v.04 dampedTargeter
 //v.04 b smoothing constructor
+//v.04 c detlacutfof smaller
 
 /// <summary>
 /// A collection of Mathf.SmoothDamp wrappers
@@ -12,7 +13,7 @@
 [System.Serializable]
 public class Damper
 {
-    public float deltaCutoff = 0.015f;
+    public float deltaCutoff = 0.001f;
     public float currentValue;
     [SerializeField] protected float _targetValue;
     public Damper(float smoothing, float deltaCutoffPoint)
