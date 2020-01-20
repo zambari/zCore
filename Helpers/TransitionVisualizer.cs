@@ -9,12 +9,16 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Serialization;
 
+
+// v.02 source transform gets rect transform
+
 [ExecuteInEditMode]
 [RequireComponent(typeof(RectTransform))]
 public class TransitionVisualizer : MonoBehaviour
 {
     RectTransform thisRect;
     public RectTransform source { get { return _source; } set { _source = value; RecalculteLine(); } }
+    public Transform sourceTransform { get { return source; } set { if (value==null) _source=null; else source = value.GetComponent<RectTransform>(); } }
     [FormerlySerializedAs("_source")]
     [SerializeField] [HideInInspector] RectTransform _source;
     Vector3 forward = new Vector3(0, 0, -110);
