@@ -2,6 +2,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+// v.0.2 show resolutoni
+
 namespace ZUI
 {
     [RequireComponent(typeof(Text))]
@@ -10,6 +12,8 @@ namespace ZUI
         int fpscount;
         float started;
         int countBeforeDisplaying = 60;
+        public bool showResolution;
+        public bool splitWithNewLine;
         void OnValidate()
         {
             if (!name.Contains("FPS")) name += "FPS";
@@ -19,7 +23,8 @@ namespace ZUI
         void Reset()
         {
             Text text = GetComponent<Text>();
-            text.text = "120 FPS";
+            text.text = "00 FPS";
+
             text.raycastTarget = false;
             text.color = Color.white;
         }
@@ -39,8 +44,12 @@ namespace ZUI
                 }
 
                 float time = Time.unscaledTime - started;
-                averageFpstString = ((float)countBeforeDisplaying / time).ToShortString();
-                text.text = averageFpstString + " FPS";
+                averageFpstString = ((float)countBeforeDisplaying / time).ToShortString() + " FPS";
+                if (showResolution)
+                {
+                    averageFpstString += splitWithNewLine ? "\n(" : " (" + Screen.width + "x" + Screen.height + ")";
+                }
+                text.text = averageFpstString;
 
             }
         }

@@ -146,6 +146,14 @@ namespace Z
             f += minMax.x;
             return f;
         }
+        
+        public static float MapInversed(this Vector2 minMax, float f)
+        {
+            f/= (minMax.y - minMax.x);
+            
+            f -= minMax.x;
+            return f;
+        }
         public static void SetScale(this Transform transform, float scale)
         {
             if (transform != null) transform.localScale = new Vector3(scale, scale, scale);

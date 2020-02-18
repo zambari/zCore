@@ -36,6 +36,7 @@
 // v0.70 showhide on monobehaviour, randomize uppercase
 // v0.71 vector2.Contains(float) 71b clamp
 // v0.72 dumpkeyframes update
+// v0.73 swap
 
 
 
@@ -111,6 +112,20 @@ public static class zExt
         }
         return builder.ToString();
     }
+
+    public static void Swap(ref Vector3 a, ref Vector3 b)
+    {
+        Vector3 temp = b;
+        b = a;
+        a = temp;
+    }
+    public static void Swap(ref float a, ref float b)
+    {
+        float temp = b;
+        b = a;
+        a = temp;
+    }
+
     public static bool Contains(this Vector2 range, float parameter)
     {
         return (parameter >= range.x && parameter <= range.y);
