@@ -10,7 +10,7 @@ using UnityEngine.UI;
 using UnityEngine.Serialization;
 using Z;
 
-// v.02 source transform gets rect transform
+// v.02 target transform gets rect transform
 // v.03 inverse, color caching
 
 [ExecuteInEditMode]
@@ -18,21 +18,26 @@ using Z;
 public class TransitionVisualizer : MonoBehaviour
 {
     RectTransform thisRect;
-    public RectTransform source { get { return _source; } set { _source = value; RecalculteLine(); } }
-    public Transform sourceTransform { get { return source; } set { if (value == null) _source = null; else source = value.GetComponent<RectTransform>(); } }
-    public Color color = new Color(1, 0.5f, 0, 0.8f);
+    public RectTransform target { get { return _target; } set { _target = value; RecalculteLine(); } }
+    [System.Obsolete("use 'Target' instead")]
+    public RectTransform source { get { return _target; } set { _target = value; RecalculteLine(); } }
+    public Transform targetTransform { get { return target; } set { if (value == null) _target = null; else target = value.GetComponent<RectTransform>(); } }
+    public Transform sourceTransform { get { return target; } set { if (value == null) _target = null; else target = value.GetComponent<RectTransform>(); } }
 
+
+    [Header("Drag another object here")]
+    [FormerlySerializedAs("_source")]
+    [SerializeField] RectTransform _target;
+    public Color color = new Color(1, 0.5f, 0, 0.8f);
 #if UNITY_EDITOR
 
-    [FormerlySerializedAs("_source")]
-    [SerializeField] RectTransform _source;
 
-    Vector3[] ThisRectPoints = new Vector3[4];
-    Vector3[] sourcePoints = new Vector3[4];
-    Vector3[] thisRectBordersCenters = new Vector3[4];
-    Vector3[] sourceBorderCenters = new Vector3[4];
+    Vector3[] thisRectPoints = new Vector3[4];
+    Vector3[] targetPoints = new Vector3[4];
+    Vector2[] thisRectBordersCenters = new Vector2[4];
+    Vector2[] sourceBorderCenters = new Vector2[4];
     List<Vector3> computedPoints = new List<Vector3>();
-    public Vector2Int selectedFaces;
+    Vector2Int selectedFaces;
     float bezierAmount = 1f;
     public bool inverse;
     Color[] colors = new Color[0];
@@ -43,10 +48,10 @@ public class TransitionVisualizer : MonoBehaviour
         if (Application.isPlaying) return;
         //RecalculteLine();
         if (thisRect == null) thisRect = GetComponent<RectTransform>();
-        if (source != null && isActiveAndEnabled)
+        if (target != null && isActiveAndEnabled)
         {
-            if (!thisRect.gameObject.activeInHierarchy && !source.gameObject.activeInHierarchy) return;
-            if (thisRect.hasChanged || source.hasChanged || computedPoints == null)
+            if (!thisRect.gameObject.activeInHierarchy && !target.gameObject.activeInHierarchy) return;
+            if (thisRect.hasChanged || target.hasChanged || computedPoints == null)
             {
                 RecalculteLine();
                 EditorApplication.delayCall += ResetHasChangedFlag;
@@ -98,17 +103,23 @@ public class TransitionVisualizer : MonoBehaviour
 
     void RecalculteLine()
     {
-        if (source == null) return;
+        if (target == null) return;
         if (thisRect == null) thisRect = GetComponent<RectTransform>();
-        thisRect.GetWorldCorners(ThisRectPoints);
-        source.GetWorldCorners(sourcePoints);
+        thisRect.GetWorldCorners(thisRectPoints);
+        target.GetWorldCorners(targetPoints);
+        Vector2 thisCenter = Vector3.zero;
+        Vector2 targetCenter = Vector3.zero;
         for (int i = 0; i < 4; i++)
         {
-            thisRectBordersCenters[i] = (ThisRectPoints[i] + ThisRectPoints[(i + 1) % 4]) / 2;
-            sourceBorderCenters[i] = (sourcePoints[i] + sourcePoints[(i + 1) % 4]) / 2;
+            thisRectBordersCenters[i] = Vector2.Lerp((Vector2)thisRectPoints[i], (Vector2)thisRectPoints[(i + 1) % 4], lineDetails.attachPointThis);
+            sourceBorderCenters[i] = Vector2.Lerp((Vector2)targetPoints[i], (Vector2)targetPoints[(i + 1) % 4], lineDetails.attachPoint);
+            thisCenter += thisRectBordersCenters[i];
+            targetCenter += sourceBorderCenters[i];
         }
-        float edgeLen = inverse ? (ThisRectPoints[0] - ThisRectPoints[2]).magnitude : (sourcePoints[0] - sourcePoints[2]).magnitude;
+        float edgeLen = inverse ? (thisRectPoints[0] - thisRectPoints[2]).magnitude : (targetPoints[0] - targetPoints[2]).magnitude;
         edgeLen /= 4;
+        thisCenter /= 4;
+        targetCenter /= 4;
         float minDistnace = System.Single.MaxValue;
 
         for (int i = 0; i < 4; i++)
@@ -121,24 +132,31 @@ public class TransitionVisualizer : MonoBehaviour
                     selectedFaces = new Vector2Int(i, j);
                 }
             }
-        bezierAmount = minDistnace / Mathf.Max(thisRect.rect.width, source.rect.width, thisRect.rect.height, source.rect.height);
+        bezierAmount = minDistnace / Mathf.Max(thisRect.rect.width, target.rect.width, thisRect.rect.height, target.rect.height);
         computedPoints.Clear();
-
-        Vector3 startPos = thisRectBordersCenters[selectedFaces.x] + arrowInfo.marginStart * .1f * edgeLen * GetOffset(selectedFaces.x);
-        Vector3 endPos = sourceBorderCenters[selectedFaces.y] + arrowInfo.marginEnd * .1f * edgeLen * GetOffset(selectedFaces.y);
-        Vector3 startVect = startPos + bezierAmount * (startPos - thisRect.position);
-        Vector3 endVect = endPos + bezierAmount * (endPos - source.position);
+        Vector3 sOfs = arrowInfo.marginStart * .1f * edgeLen * GetOffset(selectedFaces.x);
+        Vector3 eOfs = arrowInfo.marginEnd * .1f * edgeLen * GetOffset(selectedFaces.y);
+        Vector3 startPos = (Vector3)thisRectBordersCenters[selectedFaces.x] + sOfs;
+        Vector3 endPos = (Vector3)sourceBorderCenters[selectedFaces.y] + eOfs;
+        Vector3 sTan1 = (lineDetails.useAnchorPoint ? thisRect.position : (Vector3)thisCenter) + sOfs;
+        Vector3 eTan1 = (lineDetails.useAnchorPoint ? target.position : (Vector3)targetCenter) + eOfs;
+        Vector3 startTangent = startPos + bezierAmount * (startPos - sTan1) * lineDetails.bezierMultiplier;
+        Vector3 endTangent = endPos + bezierAmount * (endPos - eTan1) * lineDetails.bezierMultiplier;
 
         if (inverse)
         {
             zExt.Swap(ref startPos, ref endPos);
-            zExt.Swap(ref startVect, ref endVect);
+            zExt.Swap(ref startTangent, ref endTangent);
         }
         lineDetails.distance = ((Vector2)endPos - (Vector2)startPos).magnitude;
 
         float step = lineDetails.GetStep();
-        for (float i = 0; i <= 1; i += step)
-            computedPoints.Add(Bezier.Calculate(i, startPos, startVect, endVect, endPos));
+        if (lineDetails.bezierMultiplier > 0)
+            for (float i = 0; i <= 1; i += step)
+                computedPoints.Add(Bezier.Calculate(i, startPos, startTangent, endTangent, endPos));
+        else
+            for (float i = 0; i <= 1; i += step)
+                computedPoints.Add(Vector3.Lerp(startPos, endPos, i));
 
         computedPoints.Add(endPos);
         if (colors == null || colors.Length != computedPoints.Count)
@@ -148,8 +166,8 @@ public class TransitionVisualizer : MonoBehaviour
             float lerpStep = 1f / colors.Length;
             Color startColor = color;
             Color fadeColor = color;
-            fadeColor.a *= !inverse ? lineDetails.fadeStartAlpha : lineDetails.fadeEndAlpha;
-            startColor.a *= inverse ? lineDetails.fadeStartAlpha : lineDetails.fadeEndAlpha; ;
+            fadeColor.a *= inverse ? lineDetails.fadeStartAlpha : lineDetails.fadeEndAlpha;
+            startColor.a *= !inverse ? lineDetails.fadeStartAlpha : lineDetails.fadeEndAlpha; ;
             for (int i = 0; i < colors.Length; i++)
                 colors[i] = Color.Lerp(startColor, fadeColor, (inverse ? (colors.Length - i) : i) * lerpStep);
             arrowInfo.SetPoints(computedPoints, edgeLen);
@@ -163,13 +181,13 @@ public class TransitionVisualizer : MonoBehaviour
         if (arrowInfo.marginStart < 0) arrowInfo.marginStart = 0;
         if (lineDetails.dottedRate.x < 1) lineDetails.dottedRate.x = 1;
         if (lineDetails.dottedRate.y < 1) lineDetails.dottedRate.y = 1;
-        source = _source;
+        target = _target;
 
     }
     void ResetHasChangedFlag()
     {
         if (thisRect != null) thisRect.hasChanged = false;
-        if (source != null) source.hasChanged = false;
+        if (target != null) target.hasChanged = false;
 
     }
     void Reset()
@@ -186,19 +204,26 @@ public class TransitionVisualizer : MonoBehaviour
     [System.Serializable]
     public class LineDetails
     {
-        [Range(0.01f, 1)]
-        public float detailLevel = .3f;
+        [Range(0.1f, 2)]
+        public float detailLevel = .5f;
         [ReadOnly] public int currentStepCount;
         [ReadOnly] public float distance;
-
+        [Range(0, 1)]
+        public float attachPointThis = 0.5f;
+        [Range(0, 1)]
+        public float attachPoint = 0.5f;
         public bool dotted;
         public Vector2Int dottedRate = new Vector2Int(2, 2);
         [Range(0, 1)]
-        public float fadeEndAlpha = .3f;
+        public float fadeStartAlpha = .3f;
         [Range(0, 1)]
-        public float fadeStartAlpha = 1;
-        float step;
+        public float fadeEndAlpha = .8f;
+        [ReadOnly] [SerializeField] float step;
         float detailMulti = 0.1f;
+        float maxStep = .1f;
+        [Range(0f, 1.5f)]
+        public float bezierMultiplier = 1;
+        public bool useAnchorPoint = false;
         public float GetStep()
         {
 
@@ -208,8 +233,8 @@ public class TransitionVisualizer : MonoBehaviour
             if (thisDist > 2000) thisDist = 2000;
             if (detailLevel <= 0) detailLevel = 0.001f;
             if (detailMulti < 0) detailMulti = 0.01f;
-            step = (dotted ? 1 : 2) / (thisDist * detailMulti * detailLevel);
-
+            step = (dotted ? 1 : 4) / (thisDist * detailMulti * detailLevel * detailLevel);
+            if (step > maxStep) step = maxStep;
             return step;
         }
     }
@@ -229,8 +254,9 @@ public class TransitionVisualizer : MonoBehaviour
         List<Vector3> points;
         [Range(0.05f, 0.5f)]
         public float arrowLengthRatio = .25f;
-        public float marginStart = 1f;
-        public float marginEnd = 1f;
+        public float marginStart = 2f;
+        public float marginEnd = 2f;
+        public bool straightenEndArrows;
         public void DrawArrows()
         {
             for (int i = 0; i < arrowsStart.Length; i++)
@@ -257,7 +283,7 @@ public class TransitionVisualizer : MonoBehaviour
             Vector3 pointA = points[index - 1];
             Vector3 pointB = points[index];
             Vector3 delta = (pointB - pointA);
-            if (f == 0 || f == 1)
+            if (straightenEndArrows && (f == 0 || f == 1))
                 if (Mathf.Abs(delta.x) < Mathf.Abs(delta.y)) delta.x = 0; else delta.y = 0;
             return delta;
         }
