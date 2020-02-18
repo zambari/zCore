@@ -2,7 +2,7 @@ using UnityEngine;
 // zambari 2019
 // v.02 squared, formatting
 // v.03 renadmed, directions
-
+// v.04 perperniduclar
 
 namespace Z
 {
@@ -180,6 +180,15 @@ namespace Z
 
             return v;
 
+        }
+        public static Vector2 PerpendicularClockwise(this Vector2 vector2)
+        {
+            return new Vector2(vector2.y, -vector2.x);
+        }
+
+        public static Vector2 PerpendicularCounterClockwise(this Vector2 vector2)
+        {
+            return new Vector2(-vector2.y, vector2.x);
         }
     }
 }
