@@ -181,6 +181,8 @@ namespace Z
             return v;
 
         }
+
+
         public static Vector2 PerpendicularClockwise(this Vector2 vector2)
         {
             return new Vector2(vector2.y, -vector2.x);
@@ -189,6 +191,57 @@ namespace Z
         public static Vector2 PerpendicularCounterClockwise(this Vector2 vector2)
         {
             return new Vector2(-vector2.y, vector2.x);
+        }
+
+
+
+        public static float Map(this Vector2 minMax, float f)
+        {
+            f *= (minMax.y - minMax.x);
+            f += minMax.x;
+            return f;
+        }
+
+        public static float MapInversed(this Vector2 minMax, float f)
+        {
+            f /= (minMax.y - minMax.x);
+
+            f -= minMax.x;
+            return f;
+        }
+        public static void SetScale(this Transform transform, float scale)
+        {
+            if (transform != null) transform.localScale = new Vector3(scale, scale, scale);
+        }
+
+        public static float Lerp(this Vector2 vector, float f)
+        {
+            return Mathf.LerpUnclamped(vector.x, vector.y, f);
+        }
+        public static float LerpClamped(this Vector2 vector, float f)
+        {
+            return Mathf.Lerp(vector.x, vector.y, f);
+        }
+
+        public static float SmoothStep(this Vector2 vector, float f)
+        {
+            return Mathf.SmoothStep(vector.x, vector.y, f);
+        }
+        public static Vector3 SwapXY(this Vector3 v)
+        {
+            return new Vector3(v.y, v.x, v.z);
+        }
+        public static Vector2 SwapXY(this Vector2 v)
+        {
+            return new Vector2(v.y, v.x);
+        }
+        public static Vector3 ToVector3(this float f)
+        {
+            return new Vector3(f,f,f);
+        }
+          public static Vector3 ToVector3FromInt(this int f)
+        {
+            return new Vector3(f,f,f);
         }
     }
 }
