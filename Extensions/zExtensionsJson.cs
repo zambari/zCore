@@ -32,7 +32,7 @@ public static class zExtensionsJson
             bool exists = Directory.Exists(directory);
             if (!exists)
                 Directory.CreateDirectory(directory);
-            Debug.Log("Creted directory " + directory + " to create json save path");
+//            Debug.Log("Creted directory " + directory + " to create json save path");
         }
         string dataAsJson = JsonUtility.ToJson(obj, true);
         if (!path.Contains(".json")) path += ".json";
