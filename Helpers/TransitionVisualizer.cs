@@ -1,7 +1,4 @@
 ﻿
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 using System.Collections;
 using System.Collections.Generic;
 
@@ -9,18 +6,41 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Serialization;
 using Z;
-
 // v.02 target transform gets rect transform
 // v.03 inverse, color caching
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 [ExecuteInEditMode]
 [RequireComponent(typeof(RectTransform))]
 public class TransitionVisualizer : MonoBehaviour
 {
     RectTransform thisRect;
-    public RectTransform target { get { return _target; } set { _target = value; RecalculteLine(); } }
+    public RectTransform target
+    {
+        get { return _target; }
+        set
+        {
+            _target = value;
+#if UNITY_EDITOR
+            RecalculteLine();
+#endif
+        }
+    }
     [System.Obsolete("use 'Target' instead")]
-    public RectTransform source { get { return _target; } set { _target = value; RecalculteLine(); } }
+    public RectTransform source
+    {
+        get { return _target; }
+        set
+        {
+            _target = value;
+#if UNITY_EDITOR
+            RecalculteLine();
+
+#endif
+        }
+    }
     public Transform targetTransform { get { return target; } set { if (value == null) _target = null; else target = value.GetComponent<RectTransform>(); } }
     public Transform sourceTransform { get { return target; } set { if (value == null) _target = null; else target = value.GetComponent<RectTransform>(); } }
 
