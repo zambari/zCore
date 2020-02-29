@@ -86,6 +86,7 @@ public static class zExtensionPrimitives
 
 
 
+
     public static bool CheckFloat(this float f)
     {
         if (Single.IsNaN(f))

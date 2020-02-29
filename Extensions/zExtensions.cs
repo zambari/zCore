@@ -36,9 +36,11 @@
 // v0.70 showhide on monobehaviour, randomize uppercase
 // v0.71 vector2.Contains(float) 71b clamp
 // v0.72 dumpkeyframes update
-// v0.73 swap
+// v0.73 bellcurve
+// v0.74 datetimenow formatting
+// v0.75 swap agai
 
-
+/// 
 
 
 
@@ -91,6 +93,11 @@ public static class zExt
     public static void ExecuteAfter(this MonoBehaviour source, float delay, System.Action Execute, bool unscaled = false)
     {
         source.StartCoroutine(WaitRoutine(delay, Execute, unscaled));
+    }
+    public static string GetDateTimeString()
+    {
+        var dt = System.DateTime.Now;
+        return dt.Year.ToString("0000") + "-" + dt.Month.ToString("00") + "-" + dt.Day.ToString("00") + " " + dt.Hour.ToString("00") + "-" + dt.Minute.ToString("00") + "-" + dt.Second.ToString("00");
     }
 
     static IEnumerator WaitRoutine(float wait, System.Action Execute, bool unscaled = false)
@@ -328,10 +335,20 @@ public static class zExt
     {
         return new AnimationCurve(new Keyframe(0, 0, 1, 1), new Keyframe(1, 1, 1, 1));
     }
+
+
     public static AnimationCurve LinearCurveDown()
     {
         return new AnimationCurve(new Keyframe(1, 1, 1, 1), new Keyframe(0, 0, 1, 1));
     }
+
+    public static AnimationCurve BellCurve()
+    {
+        return new AnimationCurve(new Keyframe(0, 0, -1, -1), new Keyframe(0.5f, 1f, 0, 0), new Keyframe(1, 0, 0, 0));
+
+    }
+
+
     public static string ToConstructorString(this Color c)
     {
         return "new Color(" + c.r + "f," + c.g + "f," + c.b + "f," + c.a + "f)";

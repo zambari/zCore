@@ -7,7 +7,8 @@ namespace Z
 {
     // v0.2 unit field
     // v0.21.whole numbers
-	// v0.22 multiplier v1
+    // v0.22 multiplier v1
+    // v0.22a getslider
 
     [RequireComponent(typeof(Text))]
     [ExecuteInEditMode]
@@ -21,12 +22,21 @@ namespace Z
         public bool wholeNumbers;
         public int multiplier = 1;
         // Use this for initialization
+        void OnValidate()
+        {
+            Start();
+        }
+        void OnEnable()
+        {
+            slider = GetComponentInParent<Slider>();
+            // if (slider == null) { enabled = false; return; }
+            text = GetComponent<Text>();
+        }
         void Start()
         {
             slider = GetComponentInParent<Slider>();
-            if (slider == null) { Destroy(this); return; }
-            text = GetComponent<Text>();
-            slider.onValueChanged.AddListener(OnSliderValueChanged);
+            if (slider != null)
+                slider.onValueChanged.AddListener(OnSliderValueChanged);
         }
         void OnSliderValueChanged(float f)
         {
