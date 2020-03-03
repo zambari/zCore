@@ -1,4 +1,7 @@
 ﻿
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using System.Collections;
 using System.Collections.Generic;
 
@@ -6,41 +9,18 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Serialization;
 using Z;
+
 // v.02 target transform gets rect transform
 // v.03 inverse, color caching
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 [ExecuteInEditMode]
 [RequireComponent(typeof(RectTransform))]
 public class TransitionVisualizer : MonoBehaviour
 {
     RectTransform thisRect;
-    public RectTransform target
-    {
-        get { return _target; }
-        set
-        {
-            _target = value;
-#if UNITY_EDITOR
-            RecalculteLine();
-#endif
-        }
-    }
+    public RectTransform target { get { return _target; } set { _target = value; RecalculteLine(); } }
     [System.Obsolete("use 'Target' instead")]
-    public RectTransform source
-    {
-        get { return _target; }
-        set
-        {
-            _target = value;
-#if UNITY_EDITOR
-            RecalculteLine();
-
-#endif
-        }
-    }
+    public RectTransform source { get { return _target; } set { _target = value; RecalculteLine(); } }
     public Transform targetTransform { get { return target; } set { if (value == null) _target = null; else target = value.GetComponent<RectTransform>(); } }
     public Transform sourceTransform { get { return target; } set { if (value == null) _target = null; else target = value.GetComponent<RectTransform>(); } }
 
@@ -120,9 +100,11 @@ public class TransitionVisualizer : MonoBehaviour
             case 3: return new Vector3(0, -1);
         }
     }
+#endif
 
     void RecalculteLine()
     {
+#if UNITY_EDITOR
         if (target == null) return;
         if (thisRect == null) thisRect = GetComponent<RectTransform>();
         thisRect.GetWorldCorners(thisRectPoints);
@@ -160,8 +142,8 @@ public class TransitionVisualizer : MonoBehaviour
         Vector3 endPos = (Vector3)sourceBorderCenters[selectedFaces.y] + eOfs;
         Vector3 sTan1 = (lineDetails.useAnchorPoint ? thisRect.position : (Vector3)thisCenter) + sOfs;
         Vector3 eTan1 = (lineDetails.useAnchorPoint ? target.position : (Vector3)targetCenter) + eOfs;
-        Vector3 startTangent = startPos + bezierAmount * (startPos - sTan1) * lineDetails.bezierMultiplier;
-        Vector3 endTangent = endPos + bezierAmount * (endPos - eTan1) * lineDetails.bezierMultiplier;
+        Vector3 startTangent = startPos + bezierAmount * (startPos - sTan1) * lineDetails.bezierMultiplier * lineDetails.bezierMultiplier;
+        Vector3 endTangent = endPos + bezierAmount * (endPos - eTan1) * lineDetails.bezierMultiplier * lineDetails.bezierMultiplier;
 
         if (inverse)
         {
@@ -193,8 +175,10 @@ public class TransitionVisualizer : MonoBehaviour
             arrowInfo.SetPoints(computedPoints, edgeLen);
         }
         lineDetails.currentStepCount = computedPoints.Count;
+#endif
     }
 
+#if UNITY_EDITOR
     void OnValidate()
     {
         if (arrowInfo.marginEnd < 0) arrowInfo.marginEnd = 0;
@@ -213,6 +197,15 @@ public class TransitionVisualizer : MonoBehaviour
     void Reset()
     {
         color = color.Randomize(1f, 0.3f, 0.2f);
+        var st = GetComponent<StateTransitionVisualizer>();
+        if (st != null)
+        {
+            color = st.color;
+            target = st.otherRect;
+#if UNITY_EDITOR
+            Undo.DestroyObjectImmediate(st);
+#endif
+        }
     }
     void OnEnable()
     {
@@ -225,7 +218,7 @@ public class TransitionVisualizer : MonoBehaviour
     public class LineDetails
     {
         [Range(0.1f, 2)]
-        public float detailLevel = .5f;
+        public float detailLevel = .8f;
         [ReadOnly] public int currentStepCount;
         [ReadOnly] public float distance;
         [Range(0, 1)]
@@ -241,7 +234,7 @@ public class TransitionVisualizer : MonoBehaviour
         [ReadOnly] [SerializeField] float step;
         float detailMulti = 0.1f;
         float maxStep = .1f;
-        [Range(0f, 1.5f)]
+        [Range(0f, 2.5f)]
         public float bezierMultiplier = 1;
         public bool useAnchorPoint = false;
         public float GetStep()
@@ -274,8 +267,8 @@ public class TransitionVisualizer : MonoBehaviour
         List<Vector3> points;
         [Range(0.05f, 0.5f)]
         public float arrowLengthRatio = .25f;
-        public float marginStart = 2f;
-        public float marginEnd = 2f;
+        public float marginStart = .4f;
+        public float marginEnd = .4f;
         public bool straightenEndArrows;
         public void DrawArrows()
         {

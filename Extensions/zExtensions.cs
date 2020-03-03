@@ -38,7 +38,9 @@
 // v0.72 dumpkeyframes update
 // v0.73 bellcurve
 // v0.74 datetimenow formatting
-// v0.75 swap agai
+// v0.76 swap agai
+// v0.77 swap
+// v0.78 randomstringletter
 
 /// 
 
@@ -107,7 +109,18 @@ public static class zExt
         else yield return new WaitForSeconds(wait);
         if (Execute != null) Execute();
     }
-
+    public static string RandomStringLetters(int length, float upperToLowerRatio)
+    {
+        var builder = new System.Text.StringBuilder();
+        for (var i = 0; i < length; i++)
+        {
+            var c = poolLetters[UnityEngine.Random.Range(0, poolLetters.Length - 1)];
+            string s = c + "";
+            if (UnityEngine.Random.value > upperToLowerRatio) s = s.ToLower(); else s = s.ToUpper();
+            builder.Append(c);
+        }
+        return builder.ToString();
+    }
     public static string RandomString(int length)
     {
         const string pool = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -119,6 +132,22 @@ public static class zExt
         }
         return builder.ToString();
     }
+
+    public static string RandomString(int length, float upperToLowerRatio)
+    {
+        var builder = new System.Text.StringBuilder();
+        for (var i = 0; i < length; i++)
+        {
+            var c = pool[UnityEngine.Random.Range(0, pool.Length - 1)];
+            string s = c + "";
+            if (UnityEngine.Random.value > upperToLowerRatio) s = s.ToLower(); else s = s.ToUpper();
+            builder.Append(c);
+        }
+        return builder.ToString();
+    }
+    static readonly string pool = "abcdefghijklmnopqrstuvwxyz0123456789";
+    static readonly string poolLetters = "abcdefghijklmnopqrstuvwxyz";
+
 
     public static void Swap(ref Vector3 a, ref Vector3 b)
     {
