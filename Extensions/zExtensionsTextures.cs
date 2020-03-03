@@ -28,6 +28,23 @@ public static class zExtensionsTextures
         return encoded;
 
     }
+
+
+    public static Texture2D CreateAndFill(this Texture2D t, Color c, int x = 1, int y = 1) //, bool apply=true
+    {
+        if (t == null) t = new Texture2D(x, y);
+        t.Clear(c);
+        return t;
+    }
+
+
+    public static void SetAlpha(this Color c, float a)
+    {
+        c.Alpha(a);
+    }
+
+
+   
     public static bool CheckDimensions(this Texture texture, Vector2Int targetDimensions)
     {
         if (texture == null) return false;
