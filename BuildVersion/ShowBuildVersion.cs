@@ -17,7 +17,7 @@ public class ShowBuildVersion : MonoBehaviour
         ReadVersionOffline();
     }
 #endif
-
+    public bool addUntiyVersion = true;
     [System.Serializable]
     public class BuildVersion
     {
@@ -43,7 +43,7 @@ public class ShowBuildVersion : MonoBehaviour
 #if UNITY_ANDROID && !UNITY_EDITOR
         string url = "jar:file://" + Application.dataPath + "!/assets/" + IncrementBuildVersion.fileName;
 #else
-        string url = "file://" + System.IO.Path.Combine(Application.streamingAssetsPath,  IncrementBuildVersion.fileName);
+        string url = "file://" + System.IO.Path.Combine(Application.streamingAssetsPath, IncrementBuildVersion.fileName);
 #endif
         //             Debug.Log("reading buildver from   " + url);
         var www = new WWW(url);
@@ -52,7 +52,7 @@ public class ShowBuildVersion : MonoBehaviour
         if (www.error != null)
         {
 
-            Debug.Log("error " + www.error);
+            Debug.Log("error " + www.error + " build at least once please");
         }
         else
         {
@@ -68,13 +68,15 @@ public class ShowBuildVersion : MonoBehaviour
     }
     void ReadVersionOffline()
     {
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         Text text = GetComponent<Text>();
         ShowBuildVersion.BuildVersion buildVersion = null;
         buildVersion = buildVersion.FromJson(IncrementBuildVersion.fileName);
 
         if (buildVersion != null)
-            text.text = "Build " + (buildVersion.buildNr + 1); // gets incremented after succesful build
-        #endif
+            text.text = "Build " + (buildVersion.buildNr + 1); // gets incremented after succesful build\
+        if (addUntiyVersion)
+            text.text += " Unity: " + Application.unityVersion;
+#endif
     }
 }

@@ -41,7 +41,7 @@
 // v0.76 swap agai
 // v0.77 swap
 // v0.78 randomstringletter
-
+// v0.79 int and string swaps
 /// 
 
 
@@ -157,11 +157,22 @@ public static class zExt
     }
     public static void Swap(ref float a, ref float b)
     {
-        float temp = b;
+        var temp = b;
         b = a;
         a = temp;
     }
-
+    public static void Swap(ref int a, ref int b)
+    {
+        var temp = b;
+        b = a;
+        a = temp;
+    }
+    public static void Swap(ref string a, ref string b)
+    {
+        var temp = b;
+        b = a;
+        a = temp;
+    }
     public static bool Contains(this Vector2 range, float parameter)
     {
         return (parameter >= range.x && parameter <= range.y);
