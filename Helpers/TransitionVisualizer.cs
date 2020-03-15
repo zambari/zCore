@@ -197,15 +197,15 @@ public class TransitionVisualizer : MonoBehaviour
     void Reset()
     {
         color = color.Randomize(1f, 0.3f, 0.2f);
-        var st = GetComponent<StateTransitionVisualizer>();
-        if (st != null)
-        {
-            color = st.color;
-            target = st.otherRect;
-#if UNITY_EDITOR
-            Undo.DestroyObjectImmediate(st);
-#endif
-        }
+        //         var st = GetComponent<StateTransitionVisualizer>();
+        //         if (st != null)
+        //         {
+        //             color = st.color;
+        //             target = st.otherRect;
+        // #if UNITY_EDITOR
+        //             Undo.DestroyObjectImmediate(st);
+        // #endif
+        //  }
     }
     void OnEnable()
     {
