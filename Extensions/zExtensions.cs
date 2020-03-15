@@ -123,7 +123,6 @@ public static class zExt
     }
     public static string RandomString(int length)
     {
-        const string pool = "abcdefghijklmnopqrstuvwxyz0123456789";
         var builder = new System.Text.StringBuilder();
         for (var i = 0; i < length; i++)
         {

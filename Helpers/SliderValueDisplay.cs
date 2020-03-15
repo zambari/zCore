@@ -9,6 +9,7 @@ namespace Z
     // v0.21.whole numbers
     // v0.22 multiplier v1
     // v0.22a getslider
+    // v0.22b nullchek
 
     [RequireComponent(typeof(Text))]
     [ExecuteInEditMode]
@@ -42,12 +43,15 @@ namespace Z
         {
             f *= multiplier;
             string val = wholeNumbers ? ((int)f).ToString() : f.ToShortString();
-            if (string.IsNullOrEmpty(unit))
+            if (text != null)
             {
-                text.text = val;
+                if (string.IsNullOrEmpty(unit))
+                {
+                    text.text = val;
+                }
+                else
+                    text.text = val + " " + unit;
             }
-            else
-                text.text = val + " " + unit;
         }
         void Reset()
         {

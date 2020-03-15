@@ -6,6 +6,7 @@ using System;
 // v.02 check dimeniosn
 // v.02b check dimeniosn update
 // v.03 testpattern, circle
+// v.04  create and fill
 public static class zExtensionsTextures
 {
 
