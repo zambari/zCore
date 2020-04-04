@@ -5,6 +5,7 @@
 // v.0.5 - filename now a variable
 // v.0.6 - version lag fixed
 // v.0.7 - disables raycast target
+// v.0.8 - creates streamingassets
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -25,6 +26,11 @@ namespace Z
         [PostProcessBuild]
         public static void OnPostProcessBuild(BuildTarget target, string buildPath)
         {
+            if (!System.IO.Directory.Exists(Application.streamingAssetsPath))
+            {
+                 System.IO.Directory.CreateDirectory(Application.streamingAssetsPath);
+                 Debug.Log("Created streaming assets directory");
+            }
             var b = new ShowBuildVersion.BuildVersion();
             try
             {

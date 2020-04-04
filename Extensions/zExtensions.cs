@@ -42,7 +42,7 @@
 // v0.77 swap
 // v0.78 randomstringletter
 // v0.79 int and string swaps
-/// 
+// v0.80 bellcurve fix
 
 
 
@@ -383,7 +383,7 @@ public static class zExt
 
     public static AnimationCurve BellCurve()
     {
-        return new AnimationCurve(new Keyframe(0, 0, -1, -1), new Keyframe(0.5f, 1f, 0, 0), new Keyframe(1, 0, 0, 0));
+        return new AnimationCurve(new Keyframe(0, 0, 1,0 ), new Keyframe(0.5f, 1f, 0, 0), new Keyframe(1, 0, 0, 0));
 
     }
 
