@@ -4,11 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 namespace Z
 {
+// v.02 more syntax shortcus
 
-    public enum TransformType { none, TransformPoint, TransformVector, TransformDirection, InverseTransformPoint, InverseTransformVector, InverseTransformDirection }
+    public enum TransformType { none, TransformVector, InverseTransformVector, TransformDirection, InverseTransformDirection, TransformPoint, InverseTransformPoint }
     public enum TransformAxis { none, X, Y, Z }
 
-    public static class TransformationHelper
+    public static class zExtensionsTransform
     {
         public static Vector3 Mirror(this Vector3 source, TransformAxis axis)
         {
@@ -40,6 +41,15 @@ namespace Z
                     return TransformType.none;
             }
         }
+        public static Vector3 GetTransformation(this Vector3 source, Transform transform, TransformType type)
+        {
+            return GetTransformation(transform, type, source);
+        }
+
+        //  public static Vector3 GetTransformation(this Vector3 source, TransformType type, Transform transform)
+        // {
+        //     return GetTransformation(transform, type, source);
+        // }
         public static Vector3 GetTransformation(this Transform transform, TransformType type, Vector3 source)
         {
 

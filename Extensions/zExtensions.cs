@@ -43,9 +43,8 @@
 // v0.78 randomstringletter
 // v0.79 int and string swaps
 // v0.80 bellcurve fix
-
-
-
+// v0.81 scurve, symmetrical evaluation
+// v0.82 name or null on gameobjects
 
 
 /// zExtensionsRandom - randomizin floats, strings etc
@@ -383,8 +382,19 @@ public static class zExt
 
     public static AnimationCurve BellCurve()
     {
-        return new AnimationCurve(new Keyframe(0, 0, 1,0 ), new Keyframe(0.5f, 1f, 0, 0), new Keyframe(1, 0, 0, 0));
+        return new AnimationCurve(new Keyframe(0, 0, 1, 0), new Keyframe(0.5f, 1f, 0, 0), new Keyframe(1, 0, 0, 0));
 
+    }
+    public static AnimationCurve SCurve()
+    {
+        return new AnimationCurve(new Keyframe(0, 0, 1, 0), new Keyframe(1f, 1f, 0, 0));
+
+    }
+    public static float EvaluateSymmetrical(this AnimationCurve animationCurve, float t)
+    {
+        t = t * 2;
+        if (t > 1) t = 2 - t;
+        return animationCurve.Evaluate(t);
     }
 
 
@@ -420,8 +430,32 @@ public static class zExt
         g.alphaKeys = alphaKey;
         return g;
     }
+    /// <summary>
+    /// If object exists, it will return its .name if the object does not exist, it will return "null"
+    /// </summary>
+    /// <param name="source">Transform to check against null</param>
+    /// <returns></returns>
+    public static string NameOrNull(this Transform source)
+    {
+        return (source == null ? "null" : source.name);
+    }
+    /// <summary>
+    /// If object exists, it will return its .name if the object does not exist, it will return "null"
+    /// </summary>
+    /// <param name="source">Component to check against null</param>
+    /// <returns></returns>
+    public static string NameOrNull(this Component source)
+    {
+        return (source == null ? "null" : source.name);
+    }
 
-    public static string NameOrNull(this MonoBehaviour source)
+    /// <summary>
+    /// If object exists, it will return its .name if the object does not exist, it will return "null"
+    /// </summary>
+    /// <param name="source">Gameobject to check against null</param>
+    /// <returns></returns>
+
+    public static string NameOrNull(this GameObject source)
     {
         return (source == null ? "null" : source.name);
     }

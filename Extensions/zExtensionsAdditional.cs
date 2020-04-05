@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+// v.02 EvaluateSymmetrical
 
 // too broad methods moved to namespace
 namespace Z.Extras
@@ -27,26 +27,25 @@ namespace Z.Extras
             }
             return target;
         }
-
-
+      
         public static bool IsNullOrEmpty<T>(this List<T> source)
         {
             return (source == null || source.Count == 0);
         }
-    
-    public static T IfChanges<T>(this T currentValue, T oldValue, Action callbackWhenChanged)
-    {
-        if (!currentValue.Equals(oldValue))
-            callbackWhenChanged.Invoke();
-        return currentValue;
-    }
 
-    public static T IfChanges<T>(this T currentValue, T oldValue, Action<T> callbackWhenChanged)
-    {
-        if (!currentValue.Equals(oldValue))
-            callbackWhenChanged.Invoke(currentValue);
-        return currentValue;
-    }
+        public static T IfChanges<T>(this T currentValue, T oldValue, Action callbackWhenChanged)
+        {
+            if (!currentValue.Equals(oldValue))
+                callbackWhenChanged.Invoke();
+            return currentValue;
+        }
+
+        public static T IfChanges<T>(this T currentValue, T oldValue, Action<T> callbackWhenChanged)
+        {
+            if (!currentValue.Equals(oldValue))
+                callbackWhenChanged.Invoke(currentValue);
+            return currentValue;
+        }
         public static void IfChanged<T>(ref T currentValue, T newValue, Action whenDifferent)
         {
             if (newValue == null && currentValue != null)
@@ -123,7 +122,7 @@ namespace Z.Extras
         /// Have in mind that the assignment will only happen after the callback u
         /// </summary>
         /* */
-      
+
         public static string AsByteSize(this float byteCount)
         {
 
@@ -144,6 +143,6 @@ namespace Z.Extras
             return (b ? 1 : 0);
         }
     }
-	
-	
+
+
 }
