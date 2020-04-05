@@ -7,16 +7,19 @@ using UnityEditor;
 #endif
 using Z;
 // v.0.05b barebones
+// v.0.06 better template handling
 public class ListPopulator : MonoBehaviour
 {
 
     public ListItem itemTemplate;
-    public Transform content;
+    // public Transform content;
     protected List<ListItem> items;
+    
     protected virtual void OnValidate()
     {
         if (itemTemplate == null) itemTemplate = GetComponentInChildren<ListItem>();
-        if (content == null && itemTemplate != null) content = itemTemplate.transform.parent;
+        
+        // if (content == null && itemTemplate != null) content = itemTemplate.transform.parent;
     }
 
     [ExposeMethodInEditor]
@@ -24,9 +27,9 @@ public class ListPopulator : MonoBehaviour
     {
         if (itemTemplate == null) return;
         itemTemplate.gameObject.SetActive(false);
-        for (int i = content.childCount - 1; i >= 0; i--)
+        for (int i = itemTemplate.transform.parent.childCount - 1; i >= 0; i--)
         {
-            GameObject g = content.GetChild(i).gameObject;
+            GameObject g = itemTemplate.transform.parent.GetChild(i).gameObject;
             if ((g != itemTemplate.gameObject/* || g.GetComponent<ListConstant>()!=null*/ ) && g.activeSelf)
             {
 #if UNITY_EDITOR
@@ -41,7 +44,7 @@ public class ListPopulator : MonoBehaviour
     protected ListItem CreateItem()
     {
         if (items == null) items = new List<ListItem>();
-        var item = Instantiate(itemTemplate, content);
+        var item = Instantiate(itemTemplate, itemTemplate.transform.parent);
         items.Add(item);
         item.gameObject.SetActive(true);
         return item;

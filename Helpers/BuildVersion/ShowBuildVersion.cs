@@ -51,8 +51,7 @@ public class ShowBuildVersion : MonoBehaviour
         text.text = "Build unknown";
         if (www.error != null)
         {
-
-            Debug.Log("error " + www.error + " build at least once please");
+                text.text = "Build unknown, assuming 0 "; // gets incremented after succesful build
         }
         else
         {
@@ -63,7 +62,7 @@ public class ShowBuildVersion : MonoBehaviour
     }
     void Reset()
     {
-        ReadVersionOffline();
+     //   ReadVersionOffline();
         GetComponent<Text>().raycastTarget = false;
     }
     void ReadVersionOffline()

@@ -167,7 +167,8 @@ public class DistributeTool : EditorWindow
                 colorables.Add(t.gameObject);
         }
         GUILayout.Label("Found " + colorables.Count + " objects tan can be colored using current settings");
-        EditorGUILayout.GradientField(gradient);
+        GUILayout.Label("Gradientfiled lives here, but was removed due to 2017.incompatibility");
+        //EditorGUILayout.GradientField(gradient);
 
 
         GUILayout.BeginHorizontal();
