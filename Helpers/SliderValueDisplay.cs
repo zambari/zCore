@@ -7,6 +7,9 @@ namespace Z
 {
     // v0.2 unit field
     // v0.21.whole numbers
+    // v0.22 multiplier v1
+    // v0.22a getslider
+    // v0.22b nullchek
 
     [RequireComponent(typeof(Text))]
     [ExecuteInEditMode]
@@ -18,23 +21,37 @@ namespace Z
         Slider slider;
         public string unit;
         public bool wholeNumbers;
+        public int multiplier = 1;
         // Use this for initialization
+        void OnValidate()
+        {
+            Start();
+        }
+        void OnEnable()
+        {
+            slider = GetComponentInParent<Slider>();
+            // if (slider == null) { enabled = false; return; }
+            text = GetComponent<Text>();
+        }
         void Start()
         {
             slider = GetComponentInParent<Slider>();
-            if (slider == null) { Destroy(this); return; }
-            text = GetComponent<Text>();
-            slider.onValueChanged.AddListener(OnSliderValueChanged);
+            if (slider != null)
+                slider.onValueChanged.AddListener(OnSliderValueChanged);
         }
         void OnSliderValueChanged(float f)
         {
+            f *= multiplier;
             string val = wholeNumbers ? ((int)f).ToString() : f.ToShortString();
-            if (string.IsNullOrEmpty(unit))
+            if (text != null)
             {
-                text.text = val;
+                if (string.IsNullOrEmpty(unit))
+                {
+                    text.text = val;
+                }
+                else
+                    text.text = val + " " + unit;
             }
-            else
-                text.text = val + " " + unit;
         }
         void Reset()
         {

@@ -432,13 +432,10 @@ namespace zUI
                 Debug.Log("no parent");
                 return;
             }
-            RectTransform parentRect = rect.parent.GetComponent<RectTransform>();
             rect.anchorMin = new Vector2(margin, margin);
             rect.anchorMax = new Vector2(1 - margin, 1 - margin);
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
-
-
         }
         public static bool isCanvas(this GameObject g)
         {

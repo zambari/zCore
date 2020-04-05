@@ -1,11 +1,14 @@
-﻿using System.Collections;
+﻿#if UNITY_EDITOR
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
 // v0.02 favourite object added
 // v0.03/02 UNDO
-// v0.04  namespac
+// v0.04 namespac
+// v0.05 UNITYEDITOR FFS
 namespace Z
 {
     public static class ObjectEnableToggle
@@ -70,3 +73,5 @@ namespace Z
         }
     }
 }
+
+#endif

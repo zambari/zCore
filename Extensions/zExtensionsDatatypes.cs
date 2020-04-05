@@ -10,7 +10,7 @@ using UnityEngine;
 /// v.03 bytearray to string length
 /// v.04 lastitem, randomitem
 /// v.05 suqrebracketstring
-/// 
+/// v.05 firstitem, middleitem
 /// 
 namespace Z
 {
@@ -52,6 +52,16 @@ namespace Z
             bt[1] = t;
             return BitConverter.ToUInt32(bt, 0);
         }
+        public static T FirstItem<T>(this List<T> src)
+        {
+            if (src == null || src.Count == 0) return default(T);
+            return src[0];
+        }
+        public static T FirstItem<T>(this T[] src)
+        {
+            if (src == null || src.Length == 0) return default(T);
+            return src[0];
+        }
         public static T LastItem<T>(this T[] src)
         {
             if (src == null || src.Length == 0) return default(T);
@@ -61,6 +71,16 @@ namespace Z
         {
             if (src == null || src.Count == 0) return default(T);
             return src[src.Count - 1];
+        }
+        public static T MiddleItem<T>(this List<T> src)
+        {
+            if (src == null || src.Count == 0) return default(T);
+            return src[src.Count / 2];
+        }
+        public static T MiddleItem<T>(this T[] src)
+        {
+            if (src == null || src.Length == 0) return default(T);
+            return src[src.Length / 2];
         }
         public static T RandomItem<T>(this T[] src)
         {
@@ -305,6 +325,14 @@ namespace Z
         {
             return "[" + vector.x + ":" + vector.y + "]";
         }
+        // public static string PadString(this string s, int len)
+        // {
+        //     if (string.IsNullOrEmpty(s)) s = "";
+
+        //     for (int i = s.Length; i < len; i++) s += ' ';
+        //     return s;
+        // }
+
 
     }
 }

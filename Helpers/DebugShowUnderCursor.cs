@@ -17,7 +17,6 @@ namespace zUI
         {
             text = GetComponent<Text>();
             text.text = "EventSystem.current.RaycastAl()\n\n\n";
-            var rect = text.GetComponent<RectTransform>();
             text.raycastTarget = false;
             text.color = Color.white;
             var cnt = text.gameObject.AddOrGetComponent<ContentSizeFitter>();

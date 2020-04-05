@@ -3,10 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 // v.2 logs returns
+// v.3 log null
+// v.35 logfalse
+
 
 public static class Dbg
 {
     static bool doDebug { get { return true; } }
+    public static Object LogNull(string msg)
+    {
+        if (doDebug) Debug.Log("[null object]: " + msg);
+        return null;
+    }
+    public static Object LogNull(string whatWasNull, string msg = null, UnityEngine.Object game = null)
+    {
+        if (doDebug) Debug.Log("[" + whatWasNull + "] was null  " + msg, game);
+        return null;
+    }
     public static void Log(string msg, UnityEngine.Object game = null)
     {
         if (doDebug) Debug.Log(msg, game);
@@ -15,6 +28,16 @@ public static class Dbg
     {
         if (doDebug) Debug.Log(msg);
         return result;
+    }
+    public static bool LogFalse(string msg, UnityEngine.Object g = null)
+    {
+        if (doDebug) Debug.Log(msg, g);
+        return false;
+    }
+    public static bool LogTrue(string msg, UnityEngine.Object g = null)
+    {
+        if (doDebug) Debug.Log(msg, g);
+        return true;
     }
     public static bool LogReturn(string msg, UnityEngine.Object g, bool result = false)
     {

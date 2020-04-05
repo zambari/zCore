@@ -13,6 +13,7 @@ using UnityEditor;
 
 
 // v.02 vector random
+// v.03 color random tweak
 
 public static class zExtensionsRandom
 {
@@ -20,7 +21,8 @@ public static class zExtensionsRandom
     {
         float H, S, L;
         Color.RGBToHSV(c, out H, out S, out L);
-        H = H.RandomizeClamped(howMuchHue);
+        H = H.Randomize(howMuchHue);
+        H = H % 1;
         S = S.RandomizeClamped(howMuchSat);
         L = L.RandomizeClamped(howMuchL);
         Color newCol = Color.HSVToRGB(H, S, L);
@@ -61,6 +63,22 @@ public static class zExtensionsRandom
             if (y < 0) y = y * -1;
         }
         return new Vector2(x, y);
+    }
+
+    public static float RandomizeClamped(this float f, float howMuch)
+    {
+        float n = f.Randomize(howMuch);
+        if (n < 0) n = 0;
+        if (n > 1) n = 1;
+        return n;
+
+    }
+    public static float Randomize(this float f, float howMuch) // warning this methos has chaned the parameter scaling
+    {
+        float n = f * UnityEngine.Random.Range(1 - howMuch, 1 + howMuch);
+
+        return n;
+
     }
 
     public static Color Random(this Color c)

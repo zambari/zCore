@@ -35,10 +35,16 @@
 // v0.69 moved to layoutextentins
 // v0.70 showhide on monobehaviour, randomize uppercase
 // v0.71 vector2.Contains(float) 71b clamp
-
-
-
-
+// v0.72 dumpkeyframes update
+// v0.73 bellcurve
+// v0.74 datetimenow formatting
+// v0.76 swap agai
+// v0.77 swap
+// v0.78 randomstringletter
+// v0.79 int and string swaps
+// v0.80 bellcurve fix
+// v0.81 scurve, symmetrical evaluation
+// v0.82 name or null on gameobjects
 
 
 /// zExtensionsRandom - randomizin floats, strings etc
@@ -89,6 +95,11 @@ public static class zExt
     {
         source.StartCoroutine(WaitRoutine(delay, Execute, unscaled));
     }
+    public static string GetDateTimeString()
+    {
+        var dt = System.DateTime.Now;
+        return dt.Year.ToString("0000") + "-" + dt.Month.ToString("00") + "-" + dt.Day.ToString("00") + " " + dt.Hour.ToString("00") + "-" + dt.Minute.ToString("00") + "-" + dt.Second.ToString("00");
+    }
 
     static IEnumerator WaitRoutine(float wait, System.Action Execute, bool unscaled = false)
     {
@@ -97,10 +108,20 @@ public static class zExt
         else yield return new WaitForSeconds(wait);
         if (Execute != null) Execute();
     }
-
+    public static string RandomStringLetters(int length, float upperToLowerRatio)
+    {
+        var builder = new System.Text.StringBuilder();
+        for (var i = 0; i < length; i++)
+        {
+            var c = poolLetters[UnityEngine.Random.Range(0, poolLetters.Length - 1)];
+            string s = c + "";
+            if (UnityEngine.Random.value > upperToLowerRatio) s = s.ToLower(); else s = s.ToUpper();
+            builder.Append(c);
+        }
+        return builder.ToString();
+    }
     public static string RandomString(int length)
     {
-        const string pool = "abcdefghijklmnopqrstuvwxyz0123456789";
         var builder = new System.Text.StringBuilder();
         for (var i = 0; i < length; i++)
         {
@@ -108,6 +129,47 @@ public static class zExt
             builder.Append(c);
         }
         return builder.ToString();
+    }
+
+    public static string RandomString(int length, float upperToLowerRatio)
+    {
+        var builder = new System.Text.StringBuilder();
+        for (var i = 0; i < length; i++)
+        {
+            var c = pool[UnityEngine.Random.Range(0, pool.Length - 1)];
+            string s = c + "";
+            if (UnityEngine.Random.value > upperToLowerRatio) s = s.ToLower(); else s = s.ToUpper();
+            builder.Append(c);
+        }
+        return builder.ToString();
+    }
+    static readonly string pool = "abcdefghijklmnopqrstuvwxyz0123456789";
+    static readonly string poolLetters = "abcdefghijklmnopqrstuvwxyz";
+
+
+    public static void Swap(ref Vector3 a, ref Vector3 b)
+    {
+        Vector3 temp = b;
+        b = a;
+        a = temp;
+    }
+    public static void Swap(ref float a, ref float b)
+    {
+        var temp = b;
+        b = a;
+        a = temp;
+    }
+    public static void Swap(ref int a, ref int b)
+    {
+        var temp = b;
+        b = a;
+        a = temp;
+    }
+    public static void Swap(ref string a, ref string b)
+    {
+        var temp = b;
+        b = a;
+        a = temp;
     }
     public static bool Contains(this Vector2 range, float parameter)
     {
@@ -236,29 +298,111 @@ public static class zExt
         deriv.w = (Result.w - rot.w) * dtInv;
         return new Quaternion(Result.x, Result.y, Result.z, Result.w);
     }
+    /// <summary>
+    /// prints a list of keyframes, 
+    /// </summary>
+    public static void DumpKeys(this Gradient a, string name = null)
+    {
+        string s = " GradientColorKey[] colorKey= new GradientColorKey[]{";
+        GradientColorKey[] colorKey = a.colorKeys;
+        foreach (GradientColorKey k in colorKey)
+        {
+            s += "new GradientColorKey(" + k.color.ToConstructorString() + "," + k.time + "f),";
+        }
+        //ToConstructorString
 
+        s = s.Substring(0, s.Length - 1);
+        s += "};";
+        Debug.Log(s);
+        s = " GradientAlphaKey[] alphaKey= new GradientAlphaKey[]{";
+        GradientAlphaKey[] alphaKey = a.alphaKeys;
+        foreach (GradientAlphaKey k in alphaKey)
+        {
+            s += "new GradientAlphaKey(" + k.alpha + "," + k.time + "),";
+        }
+        s = s.Substring(0, s.Length - 1);
+        s += "};";
+        Debug.Log(s);
+    }
     /// <summary>
     /// prints a list of keyframes, in a formsuitable for copy and pasting back to the code to recreate
     /// add a name for it to be present in the output
     /// </summary>
     public static void DumpKeys(this AnimationCurve a, string name = null)
     {
-        
-       // a.ListKeyFramesAsCode(name);
-    }
-    public static void ListKeyFramesAsCode(this AnimationCurve a, string name = null)
-    {
         int i = 0;
-        string s = "Listing AnimationCurve keyframes\nClick to see full output (multiline) " + (name == null ? " (you can add name too !)" : "") + "  \n\n";
-
-        s += "\n// Begin AnimationCurve dump (copy from here)\n";
+        string s = "=new AnimationCurve(";
         foreach (Keyframe k in a.keys)
         {
-            s += name + ".AddKey(new Keyframe(" + k.time + "f," + k.value + "f," + k.inTangent + "f," + k.outTangent + "f));\n";
+            s += name + "new Keyframe(" + k.time + "f," + k.value + "f," + k.inTangent + "f," + k.outTangent + "f),";
             i++;
         }
-        Debug.Log(s + "// end keyframe dump (created using zExtensions)\n\n");
+        s = s.Substring(0, s.Length - 1);
+        s += ");";
+        Debug.Log(s);
     }
+
+    /// <summary>
+    /// Creates an animation curve that contains pre-zero full range step, and ones in the normal range
+    /// </summary>
+    /// <returns></returns>
+
+    public static AnimationCurve StepCurve()
+    {
+        return new AnimationCurve(new Keyframe(-0.02f, 1f, 0, 0), new Keyframe(-0.01f, 0.0f, 0, 0), new Keyframe(0f, 1f, 0f, 0f), new Keyframe(1f, 1f, 0f, 0f));
+    }
+    public static AnimationCurve OneCurve()
+    {
+        return new AnimationCurve(new Keyframe(0, 1), new Keyframe(1, 1));
+    }
+    /// <summary>
+    /// Creates an (0-1) animation curve S
+    /// </summary>
+    /// <returns></returns>
+
+    public static AnimationCurve SweepCurve()
+    {
+        return new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
+    }
+
+    /// <summary>
+    /// Creates an (0-1) animation curve Linear
+    /// </summary>
+    /// <returns></returns>
+    public static AnimationCurve LinearCurve()
+    {
+        return new AnimationCurve(new Keyframe(0, 0, 1, 1), new Keyframe(1, 1, 1, 1));
+    }
+
+
+    public static AnimationCurve LinearCurveDown()
+    {
+        return new AnimationCurve(new Keyframe(1, 1, 1, 1), new Keyframe(0, 0, 1, 1));
+    }
+
+    public static AnimationCurve BellCurve()
+    {
+        return new AnimationCurve(new Keyframe(0, 0, 1, 0), new Keyframe(0.5f, 1f, 0, 0), new Keyframe(1, 0, 0, 0));
+
+    }
+    public static AnimationCurve SCurve()
+    {
+        return new AnimationCurve(new Keyframe(0, 0, 1, 0), new Keyframe(1f, 1f, 0, 0));
+
+    }
+    public static float EvaluateSymmetrical(this AnimationCurve animationCurve, float t)
+    {
+        t = t * 2;
+        if (t > 1) t = 2 - t;
+        return animationCurve.Evaluate(t);
+    }
+
+
+    public static string ToConstructorString(this Color c)
+    {
+        return "new Color(" + c.r + "f," + c.g + "f," + c.b + "f," + c.a + "f)";
+    }
+
 
 
 
@@ -272,10 +416,49 @@ public static class zExt
     {
         return (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift));
     }
-    // LAYOUT HELPER
 
+    /// <summary>
+    /// Creates a heat type gradient
+    /// </summary>
+    /// <returns></returns>
+    public static Gradient HeatGradient()
+    {
+        Gradient g = new Gradient();
+        GradientColorKey[] colorKey = new GradientColorKey[] { new GradientColorKey(new Color(0.1172414f, 0f, 1f, 1f), 0f), new GradientColorKey(new Color(1f, 0.1397059f, 0.1397059f, 1f), 0.7171741f), new GradientColorKey(new Color(0.9448276f, 1f, 0f, 1f), 0.9356833f), new GradientColorKey(new Color(1f, 1f, 1f, 1f), 1f) };
+        GradientAlphaKey[] alphaKey = new GradientAlphaKey[] { new GradientAlphaKey(1, 0), new GradientAlphaKey(1, 1) };
+        g.colorKeys = colorKey;
+        g.alphaKeys = alphaKey;
+        return g;
+    }
+    /// <summary>
+    /// If object exists, it will return its .name if the object does not exist, it will return "null"
+    /// </summary>
+    /// <param name="source">Transform to check against null</param>
+    /// <returns></returns>
+    public static string NameOrNull(this Transform source)
+    {
+        return (source == null ? "null" : source.name);
+    }
+    /// <summary>
+    /// If object exists, it will return its .name if the object does not exist, it will return "null"
+    /// </summary>
+    /// <param name="source">Component to check against null</param>
+    /// <returns></returns>
+    public static string NameOrNull(this Component source)
+    {
+        return (source == null ? "null" : source.name);
+    }
 
+    /// <summary>
+    /// If object exists, it will return its .name if the object does not exist, it will return "null"
+    /// </summary>
+    /// <param name="source">Gameobject to check against null</param>
+    /// <returns></returns>
 
+    public static string NameOrNull(this GameObject source)
+    {
+        return (source == null ? "null" : source.name);
+    }
     /* 
         #if UNITY_EDITOR
     public static void SetTextureImporterFormat( this Texture2D texture, bool isReadable)

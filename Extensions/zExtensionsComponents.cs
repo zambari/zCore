@@ -10,6 +10,7 @@ using UnityEditor;
 // v. 0.5 compon
 // v. 0.6 undo support on addorgetcomponent
 // v. 0.7 getcompinf notnull
+// v. 0.8 transform localreset
 
 /// oeverrides zRectExtensions
 
@@ -52,16 +53,16 @@ public static class zExtensionsComponents // to useful to be in namespace1
     /// <summary>
     /// Performs anull check before getcomponent
     /// </summary>
-    
-   public static T GetComponentIfNotNull<T>(this Component component) where T : Component
+
+    public static T GetComponentIfNotNull<T>(this Component component) where T : Component
     {
-        if (component==null) return null;
+        if (component == null) return null;
 
         return component.GetComponent<T>();
     }
-     public static T GetComponentIfNotNull<T>(this GameObject component) where T : Component
+    public static T GetComponentIfNotNull<T>(this GameObject component) where T : Component
     {
-        if (component==null) return null;
+        if (component == null) return null;
 
         return component.GetComponent<T>();
     }
@@ -92,6 +93,16 @@ public static class zExtensionsComponents // to useful to be in namespace1
             if (t != null && (includeDisabled || t.gameObject.activeSelf)) components.Add(t);
         }
         return components.ToArray();
+    }
+    public static void ResetLocalTransform(this Transform tansform)
+    {
+        tansform.localScale = Vector3.one;
+        tansform.localPosition = Vector3.zero;
+        tansform.localRotation = Quaternion.identity;
+    }
+    public static void ResetLocalTransform(this GameObject gameObject)
+    {
+        if (gameObject != null) gameObject.transform.ResetLocalTransform();
     }
 }
 

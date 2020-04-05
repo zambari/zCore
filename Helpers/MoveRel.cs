@@ -1,9 +1,14 @@
 ﻿//v0.2
+//v.4 setget v2
+
 using UnityEngine;
+
 using UnityEngine.UI;
 using Z;
 namespace Z
 {
+
+
     public class MoveRel : MonoBehaviour
     {
         [Header("MoveRel will Set positon relative to parent")]
@@ -97,31 +102,87 @@ namespace Z
             recievedEventCount++;
             previewSettingValue = f;
             rect.SetSizeX(f);
+            transform.hasChanged = true;
         }
         public void SetRelativeSizeX(float f)
         {
             recievedEventCount++;
             previewSettingValue = f;
             rect.SetRelativeSizeX(parentRect, f);
+
         }
+        float parentWidth { get { return parentRect.rect.width; } }
+        float parentHeight { get { return parentRect.rect.height; } }
+        public float normalizedX
+        {
+            get
+            {
+                if (parentWidth == 0) return -1;
+                return rect.anchoredPosition.x / parentWidth;
+            }
+            set
+            {
+                rect.anchoredPosition = new Vector2(value * parentWidth, rect.anchoredPosition.y);
+            }
+        }
+
+        public float normalizedWidth
+        {
+            get
+            {
+                if (parentWidth == 0) return -1;
+                return rect.rect.width / parentWidth;
+            }
+            set
+            {
+                rect.sizeDelta = new Vector2(value * parentWidth, rect.sizeDelta.y);
+            }
+        }
+
+        public float normalizedY
+        {
+            get
+            {
+                return rect.anchoredPosition.y / parentWidth;
+            }
+            set
+            {
+                rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, value * parentHeight);
+            }
+        }
+
+        public float normalizedHeight
+        {
+            get
+            {
+                return rect.rect.height / parentHeight;
+            }
+            set
+            {
+                rect.sizeDelta = new Vector2(rect.sizeDelta.x, value * parentHeight);
+            }
+        }
+
 
         public void SetRelativePosY(float f)
         {
             recievedEventCount++;
             previewSettingValue = f;
             rect.SetRelativeLocalY(parentRect, f);
+            transform.hasChanged = true;
         }
         public void SetSizeY(float f)
         {
             recievedEventCount++;
             previewSettingValue = f;
             rect.SetSizeY(f);
+            transform.hasChanged = true;
         }
         public void SetRelativeSizeY(float f)
         {
             recievedEventCount++;
             previewSettingValue = f;
-
+            transform.hasChanged = true;
             rect.SetRelativeSizeY(parentRect, f);
         }
 

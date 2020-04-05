@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using UnityEngine;
 // zambari 2019
 // v.02 squared, formatting
 // v.03 renadmed, directions
-
+// v.04 perperniduclar
+// v.05 get set component
 
 namespace Z
 {
@@ -31,7 +33,48 @@ namespace Z
             return DirectionsFour.down;
 
         }
-
+        public enum VectorComponent { none, x, y, z }
+        public static Vector3 SetComponent(this Vector3 vector, VectorComponent component, float f)
+        {
+            switch (component)
+            {
+                case VectorComponent.x: vector.x = f; break;
+                case VectorComponent.y: vector.y = f; break;
+                case VectorComponent.z: vector.z = f; break;
+            }
+            return vector;
+        }
+        public static Vector3 SetComponent(this Vector3 vector, VectorComponent component, float f, bool invert)
+        {
+            if (invert) f *= -1;
+            switch (component)
+            {
+                case VectorComponent.x: vector.x = f; break;
+                case VectorComponent.y: vector.y = f; break;
+                case VectorComponent.z: vector.z = f; break;
+            }
+            return vector;
+        }
+        public static Vector3 InvertComponent(this Vector3 vector, VectorComponent component)
+        {
+            switch (component)
+            {
+                case VectorComponent.x: vector.x *= -1; break;
+                case VectorComponent.y: vector.y *= -1; break;
+                case VectorComponent.z: vector.z *= -1; break;
+            }
+            return vector;
+        }
+        public static float GetComponent(this Vector3 vector, VectorComponent component)
+        {
+            switch (component)
+            {
+                case VectorComponent.x: return vector.x;
+                case VectorComponent.y: return vector.y;
+                case VectorComponent.z: return vector.z;
+                default: return 0;
+            }
+        }
         public static Vector2 GetMainDirection(Vector2 A, Vector2 B)
         {
             Vector3 delta = B - A;
@@ -180,6 +223,101 @@ namespace Z
 
             return v;
 
+        }
+
+
+        public static Vector2 PerpendicularClockwise(this Vector2 vector2)
+        {
+            return new Vector2(vector2.y, -vector2.x);
+        }
+
+        public static Vector2 PerpendicularCounterClockwise(this Vector2 vector2)
+        {
+            return new Vector2(-vector2.y, vector2.x);
+        }
+
+
+
+        public static float Map(this Vector2 minMax, float f)
+        {
+            f *= (minMax.y - minMax.x);
+            f += minMax.x;
+            return f;
+        }
+
+        public static float MapInversed(this Vector2 minMax, float f)
+        {
+            f /= (minMax.y - minMax.x);
+
+            f -= minMax.x;
+            return f;
+        }
+        public static void SetScale(this Transform transform, float scale)
+        {
+            if (transform != null) transform.localScale = new Vector3(scale, scale, scale);
+        }
+
+        public static float Lerp(this Vector2 vector, float f)
+        {
+            return Mathf.LerpUnclamped(vector.x, vector.y, f);
+        }
+        public static float LerpClamped(this Vector2 vector, float f)
+        {
+            return Mathf.Lerp(vector.x, vector.y, f);
+        }
+
+        public static float SmoothStep(this Vector2 vector, float f)
+        {
+            return Mathf.SmoothStep(vector.x, vector.y, f);
+        }
+        public static Vector3 SwapXY(this Vector3 v)
+        {
+            return new Vector3(v.y, v.x, v.z);
+        }
+        public static Vector2 SwapXY(this Vector2 v)
+        {
+            return new Vector2(v.y, v.x);
+        }
+        public static Vector3 ToVector3(this float f)
+        {
+            return new Vector3(f, f, f);
+        }
+        public static Vector3 ToVector3FromInt(this int f)
+        {
+            return new Vector3(f, f, f);
+        }
+
+        public static float GetPathLen(this List<Vector3> points)
+        {
+            float totalLen = 0;
+            if (points == null || points.Count < 2) return 0;
+            var thisPoint = points[1];
+            Vector3 nextPoint;
+            Vector3 thisDir = Vector3.zero;
+            for (int i = 1; i < points.Count - 1; i++)
+            {
+                nextPoint = points[i + 1];
+                thisDir = nextPoint - thisPoint;
+                totalLen += thisDir.magnitude;
+                thisPoint = nextPoint;
+            }
+            return totalLen;
+        }
+        public static float GetPathLen(this Vector3[] points)
+        {
+            float totalLen = 0;
+            if (points == null || points.Length < 2) return 0;
+            var thisPoint = points[1];
+            Vector3 nextPoint;
+            Vector3 thisDir = Vector3.zero;
+            for (int i = 1; i < points.Length - 1; i++)
+            {
+                nextPoint = points[i + 1];
+                thisDir = nextPoint - thisPoint;
+                totalLen += thisDir.magnitude;
+                thisPoint = nextPoint;
+            }
+            return totalLen;
         }
     }
 }
