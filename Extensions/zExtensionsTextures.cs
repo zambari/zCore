@@ -7,6 +7,8 @@ using System;
 // v.02b check dimeniosn update
 // v.03 testpattern, circle
 // v.04  create and fill
+// v.05 cross
+
 public static class zExtensionsTextures
 {
 
@@ -45,7 +47,7 @@ public static class zExtensionsTextures
     }
 
 
-   
+
     public static bool CheckDimensions(this Texture texture, Vector2Int targetDimensions)
     {
         if (texture == null) return false;
@@ -84,6 +86,29 @@ public static class zExtensionsTextures
 
     }
 
+    public static void DrawCross(this Texture2D texture, int x, int y, Color color, int len = 3)
+    {
+        //texture.SetPixel(x,y,color);
+        for (int i = -len; i <= len; i++)
+        {
+            texture.SetPixel(x, y + i, color);
+            texture.SetPixel(x + i, y, color);
+        }
+    }
+
+
+    public static void DrawCross(this Texture2D texture, int x, int y, Color color, int len, int width)
+    {
+        texture.SetPixel(x, y, color);
+        for (int i = -len; i < len; i++)
+        {
+            for (int j = -width; j <= width; j++)
+            {
+                texture.SetPixel(x + j, y + i, color);
+                texture.SetPixel(x + i, y + j, color);
+            }
+        }
+    }
     public static Color Alpha(this Color c, float a)
     {
         Color m = new Color(c.r, c.g, c.b, a);
@@ -180,11 +205,11 @@ public static class zExtensionsTextures
         UnityEngine.Object.DestroyImmediate(rt);
         return null;
     }
-public static string SizeString(this Texture t)
-{
-    if (t==null) return "null";
-    return "["+t.width+"x"+t.height+"]";
-}
+    public static string SizeString(this Texture t)
+    {
+        if (t == null) return "null";
+        return "[" + t.width + "x" + t.height + "]";
+    }
     public static RenderTexture ToRenderTexture(this Texture texture)
     {
         if (texture == null) return null;
@@ -192,7 +217,7 @@ public static string SizeString(this Texture t)
         renderTexture.format = RenderTextureFormat.ARGB32;
         renderTexture.Create();
         copyCount++;
-        renderTexture.name = texture.name + " as RT " + renderTexture.SizeString()+" /" + copyCount;
+        renderTexture.name = texture.name + " as RT " + renderTexture.SizeString() + " /" + copyCount;
         Graphics.Blit(texture, renderTexture);
         return renderTexture;
     }

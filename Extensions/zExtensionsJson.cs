@@ -62,8 +62,9 @@ public static class zExtensionsJson
             Debug.Log("saving failed, file not created : " + path);
 
     }
-    static string DefaultSavePath(string path)
+    public static string DefaultSavePath(string path)
     {
+        path = path.Replace('\\', '/');
         if (!path.Contains(".json")) path += ".json";
 #if UNITY_EDITOR
         if (!Directory.Exists(Application.streamingAssetsPath))
@@ -81,8 +82,9 @@ public static class zExtensionsJson
     {
         return System.IO.File.Exists(path);
     }
-    static string TryToFindFile(string path)
+    public static string TryToFindFile(string path)
     {
+        path = path.Replace("\\", "x");
         if (FileExists(path)) return path;
         if (!path.Contains(".json")) path += ".json";
         if (FileExists(path)) return path;
@@ -106,6 +108,7 @@ public static class zExtensionsJson
     /// </summary>
     public static T FromJson<T>(this T obj, string path, bool silent = false) // different naming conventino
     {
+
         path = TryToFindFile(path);
         // if (!path.Contains(".json")) path += ".json";
         // if (!path.Contains(Application.streamingAssetsPath)) path = Application.streamingAssetsPath + "/" + path;

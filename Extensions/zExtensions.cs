@@ -45,6 +45,8 @@
 // v0.80 bellcurve fix
 // v0.81 scurve, symmetrical evaluation
 // v0.82 name or null on gameobjects
+// v0.83 float sort
+
 
 
 /// zExtensionsRandom - randomizin floats, strings etc
@@ -170,6 +172,11 @@ public static class zExt
         var temp = b;
         b = a;
         a = temp;
+    }
+
+    public static void Sort(ref float a, ref float b)
+    {
+        if (a > b) Swap(ref a, ref  b);
     }
     public static bool Contains(this Vector2 range, float parameter)
     {

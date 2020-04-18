@@ -11,8 +11,8 @@ using UnityEditor;
 // v. 0.6 undo support on addorgetcomponent
 // v. 0.7 getcompinf notnull
 // v. 0.8 transform localreset
-
-/// oeverrides zRectExtensions
+// v.   0 9 ad child to list
+///  v/// oeverrides zRectExtensions
 
 public static class zExtensionsComponents // to useful to be in namespace1
 {
@@ -189,7 +189,25 @@ namespace Z
             return children;
         }
 
-
+        /// <summary>
+        /// Try using the transorm verion, its swice as fast
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="list"></param>
+        public static void AddAllChildrenToList(this GameObject t, List<GameObject> list)
+        {
+            if (list == null) return;
+            for (int i = 0; i < t.transform.childCount; i++)
+                AddAllChildrenToList(t.transform.GetChild(i).gameObject, list);
+            list.Add(t);
+        }
+        public static void AddAllChildrenToList(this Transform t, List<Transform> list)
+        {
+            if (list == null) return;
+            for (int i = 0; i < t.childCount; i++)
+                AddAllChildrenToList(t.GetChild(i), list);
+            list.Add(t);
+        }
         public static void DestroySmart(this UnityEngine.Component c)
         {
 
