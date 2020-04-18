@@ -8,6 +8,7 @@ using UnityEngine.UI;
 // v.1.01
 // v.1.02 extra space when no tag
 [System.Serializable]
+[System.Obsolete("Use NameUtils extensions insstead")]
 public class NameHelper
 {
     const int maxLen = 45;

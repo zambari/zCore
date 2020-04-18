@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 // v.03. gameobject, trasform, name
-
+// v.04 showorhide as an extension
 
 public interface IShowHide
 {
@@ -56,5 +56,24 @@ public static class ShowHideExetensions
             showHide.Show();
         else
             obj.gameObject.SetActive(true);
+    }
+    public static void ShowOrHide(this GameObject obj, bool show)
+    {
+        if (obj == null) return;
+        var showHide = obj.GetComponent<IShowHide>();
+        if (show)
+        {
+            if (showHide != null)
+                showHide.Show();
+            else
+                obj.gameObject.SetActive(true);
+        }
+        else
+        {
+            if (showHide != null)
+                showHide.Hide();
+            else
+                obj.gameObject.SetActive(false);
+        }
     }
 }
