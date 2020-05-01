@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
-// v.0.2 back to dotnet <4.5 compatiiblity
-
 public static class zBench
 {
     static Dictionary<string, System.Diagnostics.Stopwatch> stopwatchdict;

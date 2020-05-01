@@ -12,9 +12,18 @@ namespace zUI
     // v.0.4 merge with a more progressive branch
     // v.0.5 add child text
 
+    // v.0. layoutpreferred to vector
+
+    public static class EvenMoreLayoutExt
+    {
+        public static Vector2 PreferredSize(this LayoutElement le)
+        {
+            return new Vector2(le.preferredWidth, le.preferredHeight);
+        }
+
+    }
+
     public enum LayoutElementState { noLayoutElement, layoutPresentIgnoring, layoutPresentStretch, layoutStrechHorizontal, lyoutStretchVertical, layoutNotFlexible, layoutDenenerate }
-
-
 
     public static class MoreLayoutExt
     {
@@ -26,11 +35,10 @@ namespace zUI
             if (layoutElement.flexibleHeight > 0 && layoutElement.flexibleHeight > 0) return LayoutElementState.layoutPresentStretch;
 
             if ((layoutElement.preferredHeight > 0 || layoutElement.minHeight > 0) &&
-            (layoutElement.preferredWidth > 0 || layoutElement.minWidth > 0)) return LayoutElementState.layoutNotFlexible;
+                (layoutElement.preferredWidth > 0 || layoutElement.minWidth > 0)) return LayoutElementState.layoutNotFlexible;
             return LayoutElementState.layoutDenenerate;
 
         }
-
 
         public static void SetLayoutElementState(this LayoutElement layoutElement, LayoutElementState state)
         {
@@ -79,7 +87,6 @@ namespace zUI
                     break;
             }
 
-
         }
 
     } // more layout class
@@ -95,7 +102,6 @@ namespace zUI
             if (currentHeight <= 0) currentHeight = defaultSize;
             l.preferredHeight = currentHeight;
 
-
         }
         public static void FillPreferredWidth(this LayoutElement l, bool resetIfDegenerate = true)
         {
@@ -104,7 +110,6 @@ namespace zUI
             if (currentWidth <= 0) currentWidth = defaultSize;
             l.preferredWidth = currentWidth;
 
-
         }
 
         public static void FillPreferred(this LayoutElement l, bool resetIfDegenerate = true)
@@ -112,7 +117,6 @@ namespace zUI
 
             l.FillPreferredHeight(resetIfDegenerate);
             l.FillPreferredWidth(resetIfDegenerate);
-
 
         }
         public static int GetActiveElementCount(this VerticalLayoutGroup layout)
@@ -214,8 +218,6 @@ namespace zUI
             return ng;
         }
 
-
-
         public static void SetMargin(this HorizontalLayoutGroup layout, int margin = 0)
 
         {
@@ -234,8 +236,8 @@ namespace zUI
         {
             Image image = g.AddChildRectTransform().gameObject.AddComponent<Image>();
             image.color = new Color(Random.value * 0.3f + 0.7f,
-                                       Random.value * 0.3f + 0.7f,
-                                       Random.value * 0.2f, opacity);
+                Random.value * 0.3f + 0.7f,
+                Random.value * 0.2f, opacity);
             image.sprite = Resources.Load("Background") as Sprite;
             image.name = "Image";
             return image;
@@ -250,7 +252,6 @@ namespace zUI
         {
             return rect.gameObject.AddImageChild(opacity);
         }
-
 
         public static float GetWidth(this RectTransform r)
         {
@@ -348,7 +349,6 @@ namespace zUI
             return elements.ToArray();
         }
 
-
         public static ILayoutElement[] GetILayoutElements(this VerticalLayoutGroup layout)
         {
             List<ILayoutElement> elements = new List<ILayoutElement>();
@@ -381,10 +381,8 @@ namespace zUI
 
             }
 
-
             return elements.ToArray();
         }
-
 
         public static void AddLayoutElement(this GameObject go, bool ignore = true)
         {
@@ -393,12 +391,10 @@ namespace zUI
             layoutElement.ignoreLayout = ignore;
             //    layoutElement.CollapseComponent();
 
-
         }
         public static void SetAsSiblingTo(this GameObject thisGameObject, GameObject tarGet)
         {
             thisGameObject.transform.SetAsSiblingTo(tarGet.transform);
-
 
         }
         public static void SetAsSiblingTo(this Transform thisTransform, GameObject tarGet)
@@ -410,7 +406,6 @@ namespace zUI
             int tarGetIndex = tarGet.GetSiblingIndex();
             thisTransform.SetParent(tarGet.parent);
             thisTransform.SetSiblingIndex(tarGetIndex + 1);
-
 
         }
 
@@ -456,7 +451,6 @@ namespace zUI
         {
             return g.GetComponent<HorizontalLayoutGroup>() != null;
         }
-
 
     }
 

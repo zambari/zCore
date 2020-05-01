@@ -2,6 +2,13 @@
 	Author: Jon Kenkel (nonathaj)
 	Created: 1/23/2016
 */
+
+/*
+
+this version is used for dependency management in RealtimeFramework
+// v.03. textmeshpro
+
+*/
 #if UNITY_EDITOR
 using System;
 using System.Collections;
@@ -29,10 +36,13 @@ public class AssetDefineManager : AssetPostprocessor {
         new AssetDefine ("ObjectID.cs", destkop, "RUNTIME_FRAMEWORK"),
         new AssetDefine ("SpoutSender.cs", destkop, "SPOUT"),
         new AssetDefine ("NdiSender.cs", destkop, "NDI"),
+
+        new AssetDefine ("TMP Settings.asset", destkop, "TEXTMESHPRO"),
         //	 new AssetDefine("IAnimateInOut.cs",destkop , "iAnimateInOut"),
         //  new AssetDefine("zLog.cs",destkop , "zLog"),
         //	new AssetDefine("zExtensionsUI",destkop , "ZUI"),
         new AssetDefine ("zOSC.cs", destkop, "zOSC"),
+        new AssetDefine ("PaletteBase.cs", destkop, "PALETTES"),
         new AssetDefine ("MonoBehaviourWithBg.cs", destkop, "MONOBG"),
 
         //	new AssetDefine("PlayerPrefsX.cs",destkop , "PlayerPrefsX"),

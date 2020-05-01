@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -112,13 +112,18 @@ namespace Z
     public static class zExtensionsComponentsZ
     {
 
-
-
-        public static void MoveComponentToPosition(this UnityEngine.Component component, int desiredPosition)// : where T:UnityEngine.Component
+        public static void MoveComponentToPosition(this UnityEngine.Component component, int desiredPosition) // : where T:UnityEngine.Component
         {
 #if UNITY_EDITOR
             if (component == null) return;
-
+#if UNITY_2018_3_OR_NEWER
+            var status = UnityEditor.PrefabUtility.GetPrefabInstanceStatus(component.gameObject);
+            if (status == PrefabInstanceStatus.Connected)
+            {
+                Debug.Log("cannot move component on prefab, aborting. remove this debug");
+                return;
+            }
+#endif
             var components = component.gameObject.GetComponents<UnityEngine.Component>();
             int currentPosition = 0;
             for (int i = 0; i < components.Length; i++)
@@ -137,10 +142,19 @@ namespace Z
 
         }
 
-        public static void MoveComponent(this UnityEngine.Component component, int offset)// : where T:UnityEngine.Component
+        public static void MoveComponent(this UnityEngine.Component component, int offset) // : where T:UnityEngine.Component
         {
 #if UNITY_EDITOR
             if (component == null) return;
+
+#if UNITY_2018_3_OR_NEWER
+            var status = UnityEditor.PrefabUtility.GetPrefabInstanceStatus(component.gameObject);
+            if (status == PrefabInstanceStatus.Connected)
+            {
+                Debug.Log("cannot move component on prefab, aborting. remove this debug");
+                return;
+            }
+#endif
             if (offset < 0)
                 for (int i = 0; i < -offset; i++)
                     UnityEditorInternal.ComponentUtility.MoveComponentUp(component);
@@ -150,7 +164,6 @@ namespace Z
 #endif
 
         }
-
 
         public static void RemoveAllComponentsExcluding(this GameObject obj, params System.Type[] types)
         {
@@ -167,7 +180,6 @@ namespace Z
                 g[i] = foundObjects[i].gameObject;
             return g;
         }
-
 
         public static string NameOrNull(this MonoBehaviour source)
         {
@@ -222,10 +234,7 @@ namespace Z
 #endif
             }
 
-
         }
-
-
 
         public static void CollapseComponent(this MonoBehaviour mono, UnityEngine.Component c, bool expanded = false)
         {
@@ -243,7 +252,6 @@ namespace Z
                 UnityEditorInternal.InternalEditorUtility.SetIsInspectorExpanded(c, false);
 #endif
         }
-
 
         public static void CollapseComponent(this UnityEngine.Component c, bool expanded = false)
         {
@@ -297,10 +305,8 @@ namespace Z
             for (int i = 0; i < thisGoArray.Length; i++)
                 children.AddRange((thisGoArray[i]).GetChildren(deep));
 
-
             return children.ToArray();
         }
-
 
         public static GameObject[] GetAllChildrenCalled(this GameObject[] thisGoArray, string name)
         {
@@ -311,7 +317,6 @@ namespace Z
                 if (children[i].name.Equals(name)) namedObjects.Add(children[i]);
             }
             return namedObjects.ToArray();
-
 
         }
     }

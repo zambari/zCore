@@ -45,6 +45,7 @@ public class ListPopulator : MonoBehaviour
     {
         if (items == null) items = new List<ListItem>();
         var item = Instantiate(itemTemplate, itemTemplate.transform.parent);
+        // Debug.Log($"Created with parent {itemTemplate.transform.parent}");
         items.Add(item);
         item.gameObject.SetActive(true);
         return item;

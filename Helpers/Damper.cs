@@ -39,7 +39,7 @@ public class Damper
         }
     }
     public float smoothTime = 0.1f;
-    [HideInInspector] public float velocity;
+    public float velocity;
     public void InitializeValue(float value)
     {
         targetValue = value;

@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -32,14 +31,56 @@ namespace Z
             if (string.IsNullOrEmpty(s)) return 0; // invalid hash
             byte[] bytes;
 
-            using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
+            using(System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
             {
                 md5.Initialize();
                 md5.ComputeHash(Encoding.UTF8.GetBytes(s));
                 bytes = md5.Hash;
-                return (ulong)BitConverter.ToUInt64(bytes, 0);
+                return (ulong) BitConverter.ToUInt64(bytes, 0);
             }
 
+        }
+        public static string GetGameObjectPath(this GameObject g)
+        {
+            string path = g.name;
+            Transform parent = g.transform.parent;
+            while (parent != null)
+            {
+                var thisName = parent.name;
+                int charCount = 0;
+                int readindex = 0;
+                while (charCount < 10 && readindex < parent.name.Length)
+                {
+                    thisName = "";
+                    char thischar = parent.name[readindex];
+                    readindex++;
+                    if (parent.name.Length - readindex > 5)
+                    {
+                        readindex++;
+                        charCount++;
+                    }
+
+                    if ((int) thischar < 128 && (int) thischar > 48)
+                    {
+                        thisName += thischar;
+                        charCount++;
+                    }
+
+                }
+                // thisName= Encoding.ASCII.GetString(Encoding.ASCII.GetBytes(thisName));
+                // thisName.Trim();
+                // if (thisName.Length>15)
+                // {
+                //     thisName=thisName.Substring(5);
+                // }
+                // if (thisName.Length>10)
+                // {
+                //     thisName=thisName.Substring(0,9);
+                // }
+                path = thisName + " / " + path;
+                parent = parent.parent;
+            }
+            return path;
         }
         public static UInt32 SwapEndian(this UInt32 source)
         {
@@ -175,7 +216,7 @@ namespace Z
                 Int32 len = bytearray.Length;
                 IntPtr i = Marshal.AllocHGlobal(len);
                 Marshal.Copy(bytearray, 0, i, len);
-                var val = (T)Marshal.PtrToStructure(i, typeof(T));
+                var val = (T) Marshal.PtrToStructure(i, typeof(T));
                 Marshal.FreeHGlobal(i);
 
                 var rev = val as IEndianReverse;
@@ -189,21 +230,20 @@ namespace Z
             }
         }
 
-
-        public static byte[] ToByteArray(this int[] intz)// 2017.08.18
+        public static byte[] ToByteArray(this int[] intz) // 2017.08.18
         {
             byte[] byteArray = new byte[intz.Length];
             for (int i = 0; i < intz.Length; i++)
-                byteArray[i] = (byte)intz[i];
+                byteArray[i] = (byte) intz[i];
             return byteArray;
         }
 
-        public static byte[] ToByteArray(this string s)// 2017.08.18
+        public static byte[] ToByteArray(this string s) // 2017.08.18
         {
             if (string.IsNullOrEmpty(s)) return new byte[0];
             byte[] byteArray = new byte[s.Length];
             for (int i = 0; i < s.Length; i++)
-                byteArray[i] = (byte)s[i];
+                byteArray[i] = (byte) s[i];
             return byteArray;
         }
         public static string ByteArrayToString(this byte[] b, int startIndex = 0, int length = 0) // 2019.09.25
@@ -228,7 +268,7 @@ namespace Z
             if (length == 0) length = b.Length;
             for (int i = startIndex; i < length; i++)
             {
-                char c = (char)b[i];
+                char c = (char) b[i];
                 if (!char.IsControl(c))
                 {
                     s += c;
@@ -254,13 +294,12 @@ namespace Z
 
             string[] hexStrings = s.Trim().Split(' ');
 
-
             byte[] bytes = new byte[hexStrings.Length];
             for (int i = 0; i < bytes.Length; i++)
             {
                 //Dbg.Log(" stirng 1 "+hexStrings[i]);
-                int conv = (int)Convert.ToUInt32(hexStrings[i], 16);
-                bytes[i] = (byte)conv;
+                int conv = (int) Convert.ToUInt32(hexStrings[i], 16);
+                bytes[i] = (byte) conv;
             }
             return bytes;
         }
@@ -271,13 +310,13 @@ namespace Z
             if (len == -1) return new char[1];
             char[] c = new char[len];
             for (int i = 0; i < len; i++)
-                c[i] = (char)b[i];
+                c[i] = (char) b[i];
             return c;
         }
 
         public static string ToHex(this byte b)
         {
-            return ((int)b).ToString("x2");
+            return ((int) b).ToString("x2");
         }
         public static string ToHex(this int i)
         {
@@ -297,7 +336,7 @@ namespace Z
                 current2 = current2 * 2;
             }
 
-            return (byte)temp;
+            return (byte) temp;
         }
 
         public static string ByteToBinaryString(this byte inputByte)
@@ -332,7 +371,6 @@ namespace Z
         //     for (int i = s.Length; i < len; i++) s += ' ';
         //     return s;
         // }
-
 
     }
 }

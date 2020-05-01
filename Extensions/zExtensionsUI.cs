@@ -1,36 +1,50 @@
-﻿
-
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using UnityEngine;
-using System;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-
+#if TEXTMESHPRO
+using TMPro;
+#endif
 /// oeverrides zRectExtensions
+// v.0.2 texmetshpro
 
 public static class zExtensionsUI
 {
-public static void SetText(this Text text,float s)
+
+#if TEXTMESHPRO
+    public static void SetText(this TextMeshPro text, float s)
     {
-        if (text!=null) text.SetText(s.ToShortString());
+        if (text != null) text.SetText(s.ToShortString());
 
     }
-    public static void SetText(this Text text,int s)
+    public static void SetText(this TextMeshPro text, string s)
     {
-        if (text!=null) text.SetText(s.ToString());
+        if (text != null) text.text = s;
+
+    }
+#endif
+    public static void SetText(this Text text, float s)
+    {
+        if (text != null) text.SetText(s.ToShortString());
+
+    }
+    public static void SetText(this Text text, int s)
+    {
+        if (text != null) text.SetText(s.ToString());
 
     }
 
-    public static void SetText(this Text text,string s)
+    public static void SetText(this Text text, string s)
     {
-        if (text!=null) text.text=s;
+        if (text != null) text.text = s;
     }
-   
+
     public static LayoutElement[] GetActiveElements(this HorizontalLayoutGroup layout)
     {
         List<LayoutElement> elements = new List<LayoutElement>();
@@ -46,7 +60,7 @@ public static void SetText(this Text text,float s)
         }
         return elements.ToArray();
     }
-    
+
     // public static Image Image(this RectTransform rect, float transparency = 1)
     // {
     //     Image thisImage = rect.GetComponent<Image>();
@@ -59,13 +73,12 @@ public static void SetText(this Text text,float s)
     // }
     // public static RectTransform rect(this GameObject go)
     // {
-        
+
     //     RectTransform r = go.GetComponent<RectTransform>();
     //     if (r == null) r = go.AddComponent<RectTransform>();
     //     return r;
     // }
 
-    
     public static Texture2D Create(this Texture2D t, Color fillColor, int sixeX = 1, int sizeY = 1) //, bool apply=true
     {
         Texture2D texture = new Texture2D(sixeX, sizeY);
@@ -96,7 +109,6 @@ public static void SetText(this Text text,float s)
             colors[i] = colors[i] + fillColor;
         texture.SetPixels32(colors);
         texture.Apply();
-
 
     }
 

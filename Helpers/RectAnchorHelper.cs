@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,18 +19,18 @@ namespace zUI
         [SerializeField] bool edit;
         [SerializeField] bool _symmetricalXMode;
         [SerializeField] bool _symmetricalYMode;
-        public bool symmetricalXMode { get { return _symmetricalXMode; } set { _symmetricalXMode = value;  CheckAndSet(); } }
+        public bool symmetricalXMode { get { return _symmetricalXMode; } set { _symmetricalXMode = value; CheckAndSet(); } }
 
-        public bool symmetricalYMode  { get { return _symmetricalYMode; } set { _symmetricalYMode = value;  CheckAndSet(); } }
+        public bool symmetricalYMode { get { return _symmetricalYMode; } set { _symmetricalYMode = value; CheckAndSet(); } }
         [SerializeField] RectTransform rect;
         [Range(0, 1)]
         [SerializeField] float _xAnchorMin;
         [Range(0, 1)]
-        [SerializeField] float _xAnchorMax=1;
+        [SerializeField] float _xAnchorMax = 1;
         [Range(0, 1)]
         [SerializeField] float _yAnchorMin;
         [Range(0, 1)]
-        [SerializeField] float _yAnchorMax=1;
+        [SerializeField] float _yAnchorMax = 1;
         public float xAnchorMin { get { return _xAnchorMin; } set { _xAnchorMin = value; CheckAndSet(); } }
 
         public float xAnchorMax { get { return _xAnchorMax; } set { _xAnchorMax = value; CheckAndSet(); } }
@@ -42,9 +42,10 @@ namespace zUI
 
         // [SerializeField] [HideInInspector] Vector2 offsetMin;
         // [SerializeField] [HideInInspector] Vector2 offsetMax;
-        [Range(-1, 100)]
-        [SerializeField] float margin = -1;
-
+        public void SetMargin(float f) { margin = f; }
+        [Range(-1, 15)]
+        [SerializeField] float _margin = -1;
+        public float margin { get { return _margin; } set { _margin = value; CheckAndSet(); } }
         void CheckAndSet()
         {
             if (symmetricalXMode) _xAnchorMax = 1 - _xAnchorMin;
@@ -76,8 +77,8 @@ namespace zUI
             rect.anchorMax = new Vector2(xAnchorMax, yAnchorMax);
             if (margin != -1)
             {
-                rect.offsetMin = new Vector2(margin, margin);
-                rect.offsetMax = new Vector2(-margin, -margin);
+                rect.offsetMin = new Vector2(margin * margin, margin * margin);
+                rect.offsetMax = new Vector2(-(margin * margin), -(margin * margin));
             }
         }
         void GetValues()
@@ -90,21 +91,21 @@ namespace zUI
             // offsetMin = rect.offsetMin;
             // offsetMax = rect.offsetMax;
         }
-#if UNITY_EDITOR
-        void OnEnable()
-        {
-            AssemblyReloadEvents.beforeAssemblyReload += OnBeforeAssemblyReload;
-        }
+        // #if UNITY_EDITOR
+        //         void OnEnable()
+        //         {
+        //             AssemblyReloadEvents.beforeAssemblyReload += OnBeforeAssemblyReload;
+        //         }
 
-        void OnDisable()
-        {
-            AssemblyReloadEvents.beforeAssemblyReload -= OnBeforeAssemblyReload;
-        }
-        public void OnBeforeAssemblyReload()
-        {
-            edit = false;
-        }
-#endif
+        //         void OnDisable()
+        //         {
+        //             AssemblyReloadEvents.beforeAssemblyReload -= OnBeforeAssemblyReload;
+        //         }
+        //         public void OnBeforeAssemblyReload()
+        //         {
+        //             edit = false;
+        //         }
+        // #endif
     }
 
 

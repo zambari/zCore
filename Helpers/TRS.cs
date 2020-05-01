@@ -36,6 +36,7 @@ namespace Z
             position = transform.localPosition;
 
         }
+      
         public TRS(Transform transform, bool useLocal = true)
         {
             if (transform == null)

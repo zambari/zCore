@@ -5,6 +5,7 @@ using UnityEngine;
 // v.03 renadmed, directions
 // v.04 perperniduclar
 // v.05 get set component
+// v.06 interpolate
 
 namespace Z
 {
@@ -38,20 +39,39 @@ namespace Z
         {
             switch (component)
             {
-                case VectorComponent.x: vector.x = f; break;
-                case VectorComponent.y: vector.y = f; break;
-                case VectorComponent.z: vector.z = f; break;
+                case VectorComponent.x:
+                    vector.x = f;
+                    break;
+                case VectorComponent.y:
+                    vector.y = f;
+                    break;
+                case VectorComponent.z:
+                    vector.z = f;
+                    break;
             }
             return vector;
         }
+
+        [System.Obsolete("use SetVectorComponent, less confusion")]
         public static Vector3 SetComponent(this Vector3 vector, VectorComponent component, float f, bool invert)
+        {
+            return SetVectorComponent(vector, component, f, invert);
+        }
+
+        public static Vector3 SetVectorComponent(this Vector3 vector, VectorComponent component, float f, bool invert)
         {
             if (invert) f *= -1;
             switch (component)
             {
-                case VectorComponent.x: vector.x = f; break;
-                case VectorComponent.y: vector.y = f; break;
-                case VectorComponent.z: vector.z = f; break;
+                case VectorComponent.x:
+                    vector.x = f;
+                    break;
+                case VectorComponent.y:
+                    vector.y = f;
+                    break;
+                case VectorComponent.z:
+                    vector.z = f;
+                    break;
             }
             return vector;
         }
@@ -59,20 +79,36 @@ namespace Z
         {
             switch (component)
             {
-                case VectorComponent.x: vector.x *= -1; break;
-                case VectorComponent.y: vector.y *= -1; break;
-                case VectorComponent.z: vector.z *= -1; break;
+                case VectorComponent.x:
+                    vector.x *= -1;
+                    break;
+                case VectorComponent.y:
+                    vector.y *= -1;
+                    break;
+                case VectorComponent.z:
+                    vector.z *= -1;
+                    break;
             }
             return vector;
         }
+
+        [System.Obsolete("use getvectorcomponent, less confusion")]
         public static float GetComponent(this Vector3 vector, VectorComponent component)
+        {
+            return GetVectorComponent(vector, component);
+        }
+        public static float GetVectorComponent(this Vector3 vector, VectorComponent component)
         {
             switch (component)
             {
-                case VectorComponent.x: return vector.x;
-                case VectorComponent.y: return vector.y;
-                case VectorComponent.z: return vector.z;
-                default: return 0;
+                case VectorComponent.x:
+                    return vector.x;
+                case VectorComponent.y:
+                    return vector.y;
+                case VectorComponent.z:
+                    return vector.z;
+                default:
+                    return 0;
             }
         }
         public static Vector2 GetMainDirection(Vector2 A, Vector2 B)
@@ -95,35 +131,53 @@ namespace Z
             }
             return Vector2.down;
         }
+
+        public static Vector3 Interpolate(this IList<Vector3> positions, float lerpAmt)
+        {
+            if (lerpAmt < 0) lerpAmt = 0;
+            if (lerpAmt > 1) lerpAmt = 1;
+            var lenMinusOne = positions.Count - 1;
+            int startindex = Mathf.FloorToInt(lenMinusOne * lerpAmt);
+            if (startindex >= lenMinusOne - 1) startindex = lenMinusOne - 1;
+            float reminder = lerpAmt * lenMinusOne - startindex;
+            var startval = positions[startindex];
+            var endval = positions[startindex + 1];
+            return Vector3.Lerp(startval, endval, reminder);
+        }
         public static Vector2 DeadZone(this Vector2 v, float zone, out bool wasOutside)
         {
             wasOutside = false;
             if (v.x > 0)
             {
                 v.x -= zone;
-                if (v.x < 0) v.x = 0; else wasOutside = true;
+                if (v.x < 0) v.x = 0;
+                else wasOutside = true;
             }
             else
             {
                 v.x += zone;
-                if (v.x > 0) v.x = 0; else wasOutside = true;
+                if (v.x > 0) v.x = 0;
+                else wasOutside = true;
             }
             if (v.y > 0)
             {
                 v.y -= zone;
-                if (v.y < 0) v.y = 0; else wasOutside = true;
+                if (v.y < 0) v.y = 0;
+                else wasOutside = true;
             }
             else
             {
                 v.y += zone;
-                if (v.y > 0) v.y = 0; else wasOutside = true;
+                if (v.y > 0) v.y = 0;
+                else wasOutside = true;
             }
             return v;
         }
         public static float DeadZone(this float v, float zone)
         {
             if (v > 0)
-                v -= zone; if (v < 0) v = 0;
+                v -= zone;
+            if (v < 0) v = 0;
             else { v += zone; if (v > 0) v = 0; }
             return v;
         }
@@ -132,11 +186,15 @@ namespace Z
             wasOutside = false;
             if (v > 0)
             {
-                v -= zone; if (v < 0) v = 0; else wasOutside = true;
+                v -= zone;
+                if (v < 0) v = 0;
+                else wasOutside = true;
             }
             else
             {
-                v += zone; if (v > 0) v = 0; else wasOutside = true;
+                v += zone;
+                if (v > 0) v = 0;
+                else wasOutside = true;
             }
             return v;
         }
@@ -225,7 +283,6 @@ namespace Z
 
         }
 
-
         public static Vector2 PerpendicularClockwise(this Vector2 vector2)
         {
             return new Vector2(vector2.y, -vector2.x);
@@ -235,8 +292,6 @@ namespace Z
         {
             return new Vector2(-vector2.y, vector2.x);
         }
-
-
 
         public static float Map(this Vector2 minMax, float f)
         {

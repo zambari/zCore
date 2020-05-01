@@ -46,8 +46,7 @@
 // v0.81 scurve, symmetrical evaluation
 // v0.82 name or null on gameobjects
 // v0.83 float sort
-
-
+// v0.84 swap generic
 
 /// zExtensionsRandom - randomizin floats, strings etc
 /// zExtensionsComponents component adding, removing, moving order
@@ -59,9 +58,9 @@
 /// 
 /// 
 /// 
-using UnityEngine;
 using System;
 using System.Collections;
+using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -92,7 +91,6 @@ public static class zExt
         if (onComplete != null) onComplete();
     }
 
-
     public static void ExecuteAfter(this MonoBehaviour source, float delay, System.Action Execute, bool unscaled = false)
     {
         source.StartCoroutine(WaitRoutine(delay, Execute, unscaled));
@@ -117,7 +115,8 @@ public static class zExt
         {
             var c = poolLetters[UnityEngine.Random.Range(0, poolLetters.Length - 1)];
             string s = c + "";
-            if (UnityEngine.Random.value > upperToLowerRatio) s = s.ToLower(); else s = s.ToUpper();
+            if (UnityEngine.Random.value > upperToLowerRatio) s = s.ToLower();
+            else s = s.ToUpper();
             builder.Append(c);
         }
         return builder.ToString();
@@ -140,7 +139,8 @@ public static class zExt
         {
             var c = pool[UnityEngine.Random.Range(0, pool.Length - 1)];
             string s = c + "";
-            if (UnityEngine.Random.value > upperToLowerRatio) s = s.ToLower(); else s = s.ToUpper();
+            if (UnityEngine.Random.value > upperToLowerRatio) s = s.ToLower();
+            else s = s.ToUpper();
             builder.Append(c);
         }
         return builder.ToString();
@@ -148,35 +148,39 @@ public static class zExt
     static readonly string pool = "abcdefghijklmnopqrstuvwxyz0123456789";
     static readonly string poolLetters = "abcdefghijklmnopqrstuvwxyz";
 
-
-    public static void Swap(ref Vector3 a, ref Vector3 b)
+    // public static void Swap(ref Vector3 a, ref Vector3 b)
+    // {
+    //     Vector3 temp = b;
+    //     b = a;
+    //     a = temp;
+    // }
+    // public static void Swap(ref float a, ref float b)
+    // {
+    //     var temp = b;
+    //     b = a;
+    //     a = temp;
+    // }
+    // public static void Swap(ref int a, ref int b)
+    // {
+    //     var temp = b;
+    //     b = a;
+    //     a = temp;
+    // }
+    // public static void Swap(ref string a, ref string b)
+    // {
+    //     var temp = b;
+    //     b = a;
+    //     a = temp;
+    // }
+    public static void Swap<T>(ref T a, ref T b)
     {
-        Vector3 temp = b;
-        b = a;
-        a = temp;
+        T c = a;
+        a = b;
+        b = c;
     }
-    public static void Swap(ref float a, ref float b)
-    {
-        var temp = b;
-        b = a;
-        a = temp;
-    }
-    public static void Swap(ref int a, ref int b)
-    {
-        var temp = b;
-        b = a;
-        a = temp;
-    }
-    public static void Swap(ref string a, ref string b)
-    {
-        var temp = b;
-        b = a;
-        a = temp;
-    }
-
     public static void Sort(ref float a, ref float b)
     {
-        if (a > b) Swap(ref a, ref  b);
+        if (a > b) Swap(ref a, ref b);
     }
     public static bool Contains(this Vector2 range, float parameter)
     {
@@ -242,6 +246,7 @@ public static class zExt
 
         RepaintHierarchy();
     }
+
     [Obsolete("use HideObject In Hierarchy")]
     public static void HideObject(this GameObject obj, HideFlags flag = HideFlags.HideInHierarchy)
     {
@@ -265,7 +270,6 @@ public static class zExt
 
     }
 
-
 #if UNITY_EDITOR
     public static void PerformAction(this GameObject[] selection, Action<GameObject> actionToPerform)
     {
@@ -276,7 +280,6 @@ public static class zExt
         }
     }
 #endif
-
 
     /// <summary>
     /// Copied from https://gist.github.com/maxattack/4c7b4de00f5c1b95a33b
@@ -381,7 +384,6 @@ public static class zExt
         return new AnimationCurve(new Keyframe(0, 0, 1, 1), new Keyframe(1, 1, 1, 1));
     }
 
-
     public static AnimationCurve LinearCurveDown()
     {
         return new AnimationCurve(new Keyframe(1, 1, 1, 1), new Keyframe(0, 0, 1, 1));
@@ -404,20 +406,15 @@ public static class zExt
         return animationCurve.Evaluate(t);
     }
 
-
     public static string ToConstructorString(this Color c)
     {
         return "new Color(" + c.r + "f," + c.g + "f," + c.b + "f," + c.a + "f)";
     }
 
-
-
-
     public static float Duration(this UnityEngine.Video.VideoPlayer videoPlayer)
     {
         return videoPlayer.frameCount / videoPlayer.frameRate;
     }
-
 
     public static bool ShiftPressed()
     {

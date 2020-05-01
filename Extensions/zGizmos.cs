@@ -6,6 +6,9 @@ using UnityEngine.UI;
 // {
 // some wrappers around standard Gizmos
 // v.02 label
+// v.03 linefade
+// v.04 normal line and color wrappers
+// drawfromray
 public static class zGizmos
 {
     public static void DrawCross(Vector3 position, float size = 0.05f)
@@ -40,9 +43,49 @@ public static class zGizmos
         }
 
     }
+    public static Color color { get { return Gizmos.color; } set { Gizmos.color = value; } }
+    public static void DrawLine(Vector3 from, Vector3 to)
+    {
+
+        Gizmos.DrawLine(from, to);
+    }
+    static Vector3 rayDir = Vector3.left;
+    public static void SetRayDir(Vector3 r)
+    {
+        rayDir = r;
+    }
+    public static void DrawFromRay(Vector3 origin)
+    {
+        DrawLine(origin, origin + rayDir);
+    }
+
+    public static void DrawFromRay(Vector3 origin, Vector3 dst, Color colorA, Color colorB, float size = 0.1f)
+    {
+
+        float distance = (origin - dst).magnitude;
+        if (distance == 0) return;
+        float step = size / distance;
+        for (float i = 0; i < 1; i += step)
+        {
+            Gizmos.color = Color.Lerp(colorA, colorB, i);
+            DrawFromRay(Vector3.Lerp(origin, dst, i));
+        }
+    }
+    public static void DrawFromRay(Vector3 origin, Vector3 dst, float size = 0.1f)
+    {
+
+        float distance = (origin - dst).magnitude;
+        if (distance == 0) return;
+        float step = size / distance;
+        for (float i = 0; i < 1; i += step)
+        {
+            DrawFromRay(Vector3.Lerp(origin, dst, i));
+        }
+    }
     public static void DrawLineDashed(Vector3 position, Vector3 position2, Color A, Color B, float size = 0.1f)
     {
         float distance = (position - position2).magnitude;
+        if (distance == 0) return;
         float step = size / distance;
         for (float i = 0; i < 1; i += step)
         {
@@ -52,11 +95,23 @@ public static class zGizmos
         }
 
     }
+    public static void DrawLineFade(Vector3 position, Vector3 position2, Color A, Color B, float size = 0.1f)
+    {
+        float distance = (position - position2).magnitude;
+        float step = size / distance;
+        for (float i = 0; i < 1; i += step)
+        {
+            Gizmos.color = Color.Lerp(A, B, i);
+            Gizmos.DrawLine(Vector3.Lerp(position, position2, i), Vector3.Lerp(position, position2, i + step));
+            // i += step;
+        }
+    }
     public static void DrawPath(Vector3[] positions)
     {
         for (int i = 0; i < positions.Length - 1; i++)
             Gizmos.DrawLine(positions[i], positions[i + 1]);
     }
+
     public static void DrawPath(List<Vector3> positions)
     {
         for (int i = 0; i < positions.Count - 1; i++)
@@ -71,6 +126,28 @@ public static class zGizmos
     {
         for (int i = 0; i < positions.Count - 1; i++)
             Gizmos.DrawLine(positions[i] + offset, positions[i + 1] + offset);
+    }
+    public static void DrawRays(List<Ray> rays, Vector3 offset, float length = 400)
+    {
+        for (int i = 0; i < rays.Count; i++)
+            Gizmos.DrawRay(rays[i].origin + offset, rays[i].direction * length); //rays[i].origin +
+    }
+    public static void DrawRays(List<Ray> rays, Vector3 offset, int from, int to, float length = 400)
+    {
+        for (int i = from; i < to; i++)
+            Gizmos.DrawRay(rays[i].origin + offset, rays[i].direction * length); //rays[i].origin +
+    }
+    public static void DrawRays(List<Ray> rays, float length = 400)
+    {
+        for (int i = 0; i < rays.Count; i++)
+            Gizmos.DrawRay(rays[i].origin, rays[i].direction * length); //rays[i].origin +
+    }
+    public static void DrawPath(Vector3[] positions, Vector3 offset, bool loop)
+    {
+        for (int i = 0; i < positions.Length - 1; i++)
+            Gizmos.DrawLine(positions[i] + offset, positions[i + 1] + offset);
+        if (loop)
+            Gizmos.DrawLine(positions[positions.Length - 1] + offset, positions[0] + offset);
     }
     public static void DrawPath(Vector3[] positions, Transform referenceTransform)
     {

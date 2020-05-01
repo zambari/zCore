@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-// .02 back to path combine for compat
 
 namespace Z
 {
@@ -31,7 +30,7 @@ namespace Z
                 throw new System.InvalidOperationException("you provided null string as filename");
             }
             if (s[0] == '/') s = s.Substring(1);
-            return  System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Application.dataPath), s);
+            return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Application.dataPath), s);
         }
         public static string ReadAllText(this string path)
         {
@@ -106,7 +105,7 @@ namespace Z
             //   if (fexis)
 
         }
-     
+
         public static string FileName(string name)
         {
             return System.IO.Path.GetFileName(name);

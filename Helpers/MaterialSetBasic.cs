@@ -21,14 +21,15 @@ public class MaterialSetBasic : MonoBehaviour
         mrends = GetComponentsInChildren<MeshRenderer>();
 
         Material[] oneMat = new Material[1];
-        Material[] twoMats = new Material[2];
+        Material[] twoMats = new Material[4];
         oneMat[0] = m;
         twoMats[0] = m;
         twoMats[1] = m;
-
+        twoMats[2] = m;
+        twoMats[3] = m;
 #if UNITY_EDITOR
         for (int i = 0; i < mrends.Length; i++)
-            UnityEditor.Undo.RecordObject(mrends[i],"Material change");
+            UnityEditor.Undo.RecordObject(mrends[i], "Material change");
 #endif
 
         for (int i = 0; i < mrends.Length; i++)
@@ -55,27 +56,28 @@ public class MaterialSetBasic : MonoBehaviour
     }
 
     [ExposeMethodInEditor]
-    void SetMaterialNow()
+    public void SetMaterialNow()
     {
         SetMaterial(materialToSet);
     }
 
-    [ExposeMethodInEditor]
-    void SetMaterialAlt()
-    {
-        SetMaterial(materialToSetAlt);
-    }
+    // [ExposeMethodInEditor]
+    // void SetMaterialAlt()
+    // {
+    //     SetMaterial(materialToSetAlt);
+    // }
 
-    [ExposeMethodInEditor]
-    void SetMaterialOrg()
-    {
-        SetMaterial(materialToSetOrg);
-    }
-    [ExposeMethodInEditor]
+    // [ExposeMethodInEditor]
+    // void SetMaterialOrg()
+    // {
+    //     SetMaterial(materialToSetOrg);
+    // }
+    // [ExposeMethodInEditor]
+
     void GetMaterial()
     {
         MeshRenderer meshRenderer = GetComponentInChildren<MeshRenderer>();
-        if (meshRenderer != null) materialToSetOrg = meshRenderer.sharedMaterial;
+        if (meshRenderer != null) materialToSet = meshRenderer.sharedMaterial;
     }
     void Reset()
     {

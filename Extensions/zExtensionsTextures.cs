@@ -1,20 +1,14 @@
-﻿
-
-using UnityEngine;
+﻿using System;
 using System.IO;
-using System;
+using UnityEngine;
 // v.02 check dimeniosn
 // v.02b check dimeniosn update
 // v.03 testpattern, circle
 // v.04  create and fill
-// v.05 cross
-
 public static class zExtensionsTextures
 {
 
     // public static Color baseColor = new Color(1f / 6, 1f / 2, 1f / 2, 1f / 2); //?
-
-
 
     public static string DumpToJPGBase64(this RenderTexture rt, int quality = 70)
     {
@@ -32,7 +26,6 @@ public static class zExtensionsTextures
 
     }
 
-
     public static Texture2D CreateAndFill(this Texture2D t, Color c, int x = 1, int y = 1) //, bool apply=true
     {
         if (t == null) t = new Texture2D(x, y);
@@ -40,13 +33,10 @@ public static class zExtensionsTextures
         return t;
     }
 
-
     public static void SetAlpha(this Color c, float a)
     {
         c.Alpha(a);
     }
-
-
 
     public static bool CheckDimensions(this Texture texture, Vector2Int targetDimensions)
     {
@@ -72,7 +62,6 @@ public static class zExtensionsTextures
         return true;
     }
 
-
     public static Texture2D TextureFromBase64(this string base64string)
     {
 
@@ -86,29 +75,6 @@ public static class zExtensionsTextures
 
     }
 
-    public static void DrawCross(this Texture2D texture, int x, int y, Color color, int len = 3)
-    {
-        //texture.SetPixel(x,y,color);
-        for (int i = -len; i <= len; i++)
-        {
-            texture.SetPixel(x, y + i, color);
-            texture.SetPixel(x + i, y, color);
-        }
-    }
-
-
-    public static void DrawCross(this Texture2D texture, int x, int y, Color color, int len, int width)
-    {
-        texture.SetPixel(x, y, color);
-        for (int i = -len; i < len; i++)
-        {
-            for (int j = -width; j <= width; j++)
-            {
-                texture.SetPixel(x + j, y + i, color);
-                texture.SetPixel(x + i, y + j, color);
-            }
-        }
-    }
     public static Color Alpha(this Color c, float a)
     {
         Color m = new Color(c.r, c.g, c.b, a);
@@ -250,9 +216,9 @@ public static class zExtensionsTextures
         for (int u = 0; u < tex.width; u++)
             for (int v = 0; v < tex.height; v++)
                 tex.SetPixel(u, v, Color.Lerp(
-                                                Color.Lerp(color0, color3, u / (float)tex.width),
-                                                Color.Lerp(color1, color2, u / (float)tex.width),
-                                                  v / (float)tex.height));
+                    Color.Lerp(color0, color3, u / (float) tex.width),
+                    Color.Lerp(color1, color2, u / (float) tex.width),
+                    v / (float) tex.height));
 
         return tex;
     }
@@ -330,22 +296,23 @@ public static class zExtensionsTextures
     {
         float Low = 18f / 255;
         float High = 240f / 255;
-        return new Color32[] {
-                        new Color ( High,High,High),
-                        new Color( High,High,Low),
-                        new Color( Low, High,High),
-                        new Color( Low, High,Low),
-                        new Color( High, Low,High),
-                        new Color( High, Low,Low),
-                        new Color( Low, Low, High),
-                        new Color( Low, Low, Low)
-                        };
+        return new Color32[]
+        {
+            new Color(High, High, High),
+                new Color(High, High, Low),
+                new Color(Low, High, High),
+                new Color(Low, High, Low),
+                new Color(High, Low, High),
+                new Color(High, Low, Low),
+                new Color(Low, Low, High),
+                new Color(Low, Low, Low)
+        };
     }
     public static Texture2D DrawLine(this Texture2D tex, int x0, int y0, int x1, int y1, Color col)
     {
         if (tex == null) tex = new Texture2D(defaultTextureDim, defaultTextureDim);
-        int dy = (int)(y1 - y0);
-        int dx = (int)(x1 - x0);
+        int dy = (int) (y1 - y0);
+        int dx = (int) (x1 - x0);
         int stepx, stepy;
 
         if (dy < 0) { dy = -dy; stepy = -1; }
