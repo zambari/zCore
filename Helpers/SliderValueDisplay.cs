@@ -10,12 +10,12 @@ namespace Z
     // v0.22 multiplier v1
     // v0.22a getslider
     // v0.22b nullchek
+    // v0.3 set on start
 
     [RequireComponent(typeof(Text))]
     [ExecuteInEditMode]
     public class SliderValueDisplay : MonoBehaviour
     {
-
 
         Text text;
         Slider slider;
@@ -32,6 +32,7 @@ namespace Z
             slider = GetComponentInParent<Slider>();
             // if (slider == null) { enabled = false; return; }
             text = GetComponent<Text>();
+            Invoke("UpdateValue",.1f);
         }
         void Start()
         {
@@ -39,10 +40,15 @@ namespace Z
             if (slider != null)
                 slider.onValueChanged.AddListener(OnSliderValueChanged);
         }
+        void UpdateValue()
+        {
+            OnSliderValueChanged(slider.value);
+
+        }
         void OnSliderValueChanged(float f)
         {
             f *= multiplier;
-            string val = wholeNumbers ? ((int)f).ToString() : f.ToShortString();
+            string val = wholeNumbers ? ((int) f).ToString() : f.ToShortString();
             if (text != null)
             {
                 if (string.IsNullOrEmpty(unit))

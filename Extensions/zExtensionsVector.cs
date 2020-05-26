@@ -6,6 +6,7 @@ using UnityEngine;
 // v.04 perperniduclar
 // v.05 get set component
 // v.06 interpolate
+// v.07 GetDimensions<T>(this T[][] vals)
 
 namespace Z
 {
@@ -143,6 +144,19 @@ namespace Z
             var startval = positions[startindex];
             var endval = positions[startindex + 1];
             return Vector3.Lerp(startval, endval, reminder);
+        }
+
+        public static float Interpolate(this IList<float> positions, float lerpAmt)
+        {
+            if (lerpAmt < 0) lerpAmt = 0;
+            if (lerpAmt > 1) lerpAmt = 1;
+            var lenMinusOne = positions.Count - 1;
+            int startindex = Mathf.FloorToInt(lenMinusOne * lerpAmt);
+            if (startindex >= lenMinusOne - 1) startindex = lenMinusOne - 1;
+            float reminder = lerpAmt * lenMinusOne - startindex;
+            var startval = positions[startindex];
+            var endval = positions[startindex + 1];
+            return Mathf.Lerp(startval, endval, reminder);
         }
         public static Vector2 DeadZone(this Vector2 v, float zone, out bool wasOutside)
         {
@@ -373,6 +387,12 @@ namespace Z
                 thisPoint = nextPoint;
             }
             return totalLen;
+        }
+        public static Vector2Int GetDimensions<T>(this T[][] vals)
+        {
+            if (vals == null || vals.Length == 0 || vals[0] == null) return Vector2Int.zero;
+            return new Vector2Int(vals.Length, vals[0].Length);
+
         }
     }
 }

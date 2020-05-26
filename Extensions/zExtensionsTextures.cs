@@ -5,6 +5,9 @@ using UnityEngine;
 // v.02b check dimeniosn update
 // v.03 testpattern, circle
 // v.04  create and fill
+// v.05 cross
+// v.06 dump to jpg )
+// v.07 some comments
 public static class zExtensionsTextures
 {
 
@@ -38,12 +41,21 @@ public static class zExtensionsTextures
         c.Alpha(a);
     }
 
+    /// <summary>
+    /// returns true if texture extists and has matching dimensinos, false otherwise
+    /// </summary>
+
     public static bool CheckDimensions(this Texture texture, Vector2Int targetDimensions)
     {
         if (texture == null) return false;
         if (texture.width != targetDimensions.x || texture.height != targetDimensions.y) return false;
         return true;
     }
+
+    /// <summary>
+    /// returns true if texture extists and has matching dimensinos, false otherwise
+    /// </summary>
+
     public static bool CheckDimensions(this Texture texture, int width, int height = -1)
     {
         if (texture == null) return false;
@@ -52,6 +64,11 @@ public static class zExtensionsTextures
         if (height != -1 && texture.height != height) return false;
         return true;
     }
+
+    /// <summary>
+    /// returns true if texture extists and has matching dimensinos, false otherwise
+    /// </summary>
+
     public static bool CheckDimensions(this Texture texture, Texture otherTexture)
     {
         if (texture == null) return false;
@@ -75,6 +92,28 @@ public static class zExtensionsTextures
 
     }
 
+    public static void DrawCross(this Texture2D texture, int x, int y, Color color, int len = 3)
+    {
+        //texture.SetPixel(x,y,color);
+        for (int i = -len; i <= len; i++)
+        {
+            texture.SetPixel(x, y + i, color);
+            texture.SetPixel(x + i, y, color);
+        }
+    }
+
+    public static void DrawCross(this Texture2D texture, int x, int y, Color color, int len, int width)
+    {
+        texture.SetPixel(x, y, color);
+        for (int i = -len; i < len; i++)
+        {
+            for (int j = -width; j <= width; j++)
+            {
+                texture.SetPixel(x + j, y + i, color);
+                texture.SetPixel(x + i, y + j, color);
+            }
+        }
+    }
     public static Color Alpha(this Color c, float a)
     {
         Color m = new Color(c.r, c.g, c.b, a);
@@ -162,6 +201,19 @@ public static class zExtensionsTextures
         tex.Apply();
 
         File.WriteAllBytes(pngOutPath, tex.EncodeToPNG());
+        RenderTexture.active = oldRT;
+    }
+
+    public static void DumpToJpg(this RenderTexture rt, string pngOutPath)
+    {
+        var oldRT = RenderTexture.active;
+
+        var tex = new Texture2D(rt.width, rt.height);
+        RenderTexture.active = rt;
+        tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+        tex.Apply();
+
+        File.WriteAllBytes(pngOutPath, tex.EncodeToJPG());
         RenderTexture.active = oldRT;
     }
     public static RenderTexture DestroyIfNotNull(this RenderTexture rt)

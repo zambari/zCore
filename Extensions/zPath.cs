@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+// .02 back to path combine for compat
+// .03 writejons
 
 namespace Z {
     public static class zPath {
@@ -121,6 +123,14 @@ namespace Z {
         public static T ReadJson<T> (this string path) {
             var tex = path.ReadAllText ();
             return JsonUtility.FromJson<T> (tex);
+        }
+
+        public static void WriteJson<T>(this T obj, string path, bool silent = true)
+        {
+            string json = JsonUtility.ToJson(obj, true);
+            json.WriteAllText(path);
+            if (!silent)
+                Debug.Log("written to " + path);
         }
     }
 }
