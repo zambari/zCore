@@ -1,38 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿
+
 using UnityEngine;
+using System;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using System.Collections.Generic;
+using System.Text;
+using System.IO;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-#if TEXTMESHPRO
-using TMPro;
-#endif
+// v.02 setcallback on butotn
 /// oeverrides zRectExtensions
-// v.0.2 texmetshpro
 
 public static class zExtensionsUI
 {
-
-#if TEXTMESHPRO
-    public static void SetText(this TextMeshPro text, float s)
-    {
-        if (text != null) text.SetText(s.ToShortString());
-
-    }
-    public static void SetText(this TextMeshPro text, string s)
-    {
-        if (text != null) text.text = s;
-
-    }
-#endif
     public static void SetText(this Text text, float s)
     {
         if (text != null) text.SetText(s.ToShortString());
+    }
 
+    public static Button AddCallback(this Button button, UnityAction callback)
+    {
+        if (button != null)
+            button.onClick.AddListener(callback);
+        else
+            Debug.Log("No button reference");
+        return button;
+
+    }
+    public static Slider AddCallback(this Slider slider, UnityAction<float> callback)
+    {
+        if (slider != null)
+            slider.onValueChanged.AddListener(callback);
+        else
+            Debug.Log("No slider reference");
+        return slider;
+    }
+    public static Toggle AddCallback(this Toggle toggle, UnityAction<bool> callback)
+    {
+        if (toggle != null)
+            toggle.onValueChanged.AddListener(callback);
+        else
+            Debug.Log("No toggle reference");
+        return toggle;
     }
     public static void SetText(this Text text, int s)
     {
@@ -79,6 +90,7 @@ public static class zExtensionsUI
     //     return r;
     // }
 
+
     public static Texture2D Create(this Texture2D t, Color fillColor, int sixeX = 1, int sizeY = 1) //, bool apply=true
     {
         Texture2D texture = new Texture2D(sixeX, sizeY);
@@ -109,6 +121,7 @@ public static class zExtensionsUI
             colors[i] = colors[i] + fillColor;
         texture.SetPixels32(colors);
         texture.Apply();
+
 
     }
 
