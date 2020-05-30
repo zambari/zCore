@@ -41,7 +41,7 @@ public static class zExtensionsColors // to useful to be in namespace1
         c.a = a;
         return c;
     }
-        static Color32[] GetParade()
+     public  static Color32[] GetParade()
     {
         float Low = 18f / 255;
         float High = 240f / 255;

@@ -250,7 +250,7 @@ public static class zExtensionsTextures
         texture.Fill(Color.black);
         float colorMulti = 0.5f;
         texture.FourCornerGradient(Color.blue * colorMulti, Color.red * colorMulti, Color.green * colorMulti, Color.yellow * colorMulti);
-        Color32[] parade = GetParade();
+        Color32[] parade = zExtensionsColors.GetParade();
 
         int offset = texture.width / 10;
         int step = (texture.width - offset) / (parade.Length + 1);
