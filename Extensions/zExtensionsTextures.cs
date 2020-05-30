@@ -7,6 +7,7 @@ using UnityEngine;
 // v.04  create and fill
 // v.05 shif color hue
 // v.06 moved colors 
+// v.07 draw cross , pixel normalized
 public static class zExtensionsTextures
 {
 
@@ -119,7 +120,26 @@ public static class zExtensionsTextures
                 texture.SetPixel(i, j, color);
 
     }
-
+ public static Color GetPixelNormalized(this Texture2D texture, Vector2 xy)
+    {
+        return texture.GetPixelNormalized(xy.x, xy.y);
+    }
+    public static Color GetPixelNormalized(this Texture2D texture, float x, float y)
+    {
+        return texture.GetPixel((int)(x * texture.width), (int)(y * texture.height));
+    }
+    public static void SetPixelNormalized(this Texture2D texture, Vector2 xy, Color c)
+    {
+        texture.SetPixelNormalized(xy.x, xy.y, c);
+    }
+    public static void SetPixelNormalized(this Texture2D texture, float x, float y, Color c)
+    {
+        texture.SetPixel((int)(x * texture.width), (int)(y * texture.height), c);
+    }
+    public static float Average(this Color32 color)
+    {
+        return ((int)color.r + color.g + color.b) / (3f * 255);
+    }
     /// <summary>
     ///  used for test pattern
     /// </summary>
@@ -339,5 +359,44 @@ public static class zExtensionsTextures
             }
         }
         return tex;
+    }
+
+     public static void DrawCross(this Texture2D texture, int x, int y, Color color, int len = 3)
+    {
+        //texture.SetPixel(x,y,color);
+        for (int i = -len; i <= len; i++)
+        {
+            texture.SetPixel(x, y + i, color);
+            texture.SetPixel(x + i, y, color);
+        }
+    }
+
+
+    public static void DrawCross(this Texture2D texture, int x, int y, Color color, int len, int width)
+    {
+        texture.SetPixel(x, y, color);
+        for (int i = -len; i < len; i++)
+        {
+            for (int j = -width; j <= width; j++)
+            {
+                texture.SetPixel(x + j, y + i, color);
+                texture.SetPixel(x + i, y + j, color);
+            }
+        }
+    }
+
+    public static void DrawCross(this Texture2D texture, int x, int y, Color color, int len, int width, int deadzonecenter)
+    {
+        texture.SetPixel(x, y, color);
+        for (int i = -len; i < len; i++)
+        {
+            if (i < -deadzonecenter || i > deadzonecenter)
+                for (int j = -width; j <= width; j++)
+                {
+
+                    texture.SetPixel(x + j, y + i, color);
+                    texture.SetPixel(x + i, y + j, color);
+                }
+        }
     }
 }

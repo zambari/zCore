@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Z.LayoutPanel;
 #if LAYOUTPANEL
+using Z.LayoutPanel;
 #endif
 // v.02 controls avnas grouyps
 public static class FlasherExtension
@@ -78,9 +78,10 @@ public class Flasher : MonoBehaviour, IShowHide
     public float speed = .7f;
     public float initialDelay = 0;
 
-    // #if LAYOUTPANEL
+#if LAYOUTPANEL
     Image[] borderImages;
     Color borderColor;
+
     Image[] GetBorderImages()
     {
         List<LayoutBorderDragger> borders = new List<LayoutBorderDragger>();
@@ -95,7 +96,7 @@ public class Flasher : MonoBehaviour, IShowHide
         borderColor = borderImages[0].color;
         return borderImages;
     }
-    // #endif
+#endif
 
     void Reset()
     {
@@ -192,7 +193,7 @@ public class Flasher : MonoBehaviour, IShowHide
         //if (!isrunning && gameObject.activeInHierarchy)
         //StartCoroutine(FlashRoutine());
     }
-    public enum FlashStatusMode { normal, error };
+    public enum FlashStatusMode { normal, error }
     FlashStatusMode flashStatusMode;
     [ExposeMethodInEditor]
     public void FlashRed()
