@@ -10,6 +10,7 @@ using UnityEngine;
 /// v.04 lastitem, randomitem
 /// v.05 suqrebracketstring
 /// v.05 firstitem, middleitem
+/// v.06 ItemBasedOnNormalized
 /// 
 namespace Z
 {
@@ -93,45 +94,49 @@ namespace Z
             bt[1] = t;
             return BitConverter.ToUInt32(bt, 0);
         }
-        public static T FirstItem<T>(this List<T> src)
+        public static T FirstItem<T>(this IList<T> src)
         {
             if (src == null || src.Count == 0) return default(T);
             return src[0];
         }
-        public static T FirstItem<T>(this T[] src)
-        {
-            if (src == null || src.Length == 0) return default(T);
-            return src[0];
-        }
-        public static T LastItem<T>(this T[] src)
-        {
-            if (src == null || src.Length == 0) return default(T);
-            return src[src.Length - 1];
-        }
-        public static T LastItem<T>(this List<T> src)
+
+        public static T LastItem<T>(this IList<T> src)
         {
             if (src == null || src.Count == 0) return default(T);
             return src[src.Count - 1];
         }
-        public static T MiddleItem<T>(this List<T> src)
+        public static T MiddleItem<T>(this IList<T> src)
         {
             if (src == null || src.Count == 0) return default(T);
             return src[src.Count / 2];
         }
-        public static T MiddleItem<T>(this T[] src)
-        {
-            if (src == null || src.Length == 0) return default(T);
-            return src[src.Length / 2];
-        }
-        public static T RandomItem<T>(this T[] src)
-        {
-            if (src == null || src.Length == 0) return default(T);
-            return src[UnityEngine.Random.Range(0, src.Length)];
-        }
-        public static T RandomItem<T>(this List<T> src)
+
+        public static T RandomItem<T>(this IList<T> src)
         {
             if (src == null || src.Count == 0) return default(T);
             return src[UnityEngine.Random.Range(0, src.Count)];
+        }
+
+        public static T ItemBasedOnNormalized<T>(this IList<T> src, float lerpAmt)
+        {
+            if (src == null || src.Count == 0) return default(T);
+
+            return src[IndexBasedOnNormalized(src, lerpAmt)];
+        }
+        public static int IndexBasedOnNormalized<T>(this IList<T> src, float lerpAmt)
+        {
+            if (src == null || src.Count == 0) return 0;
+            int index = Mathf.RoundToInt(lerpAmt * src.Count);
+            if (index < 0) index = 0;
+            if (index >= src.Count) index = src.Count - 1;
+            return index;
+        }
+
+        public static float NormalizedFromIndex<T>(this IList<T> src, int index)
+        {
+            if (src == null || src.Count == 0) return 0;
+            float indexfloat = index;
+            return indexfloat / src.Count;
         }
         public static Int32 SwapEndian(this Int32 source)
         {
