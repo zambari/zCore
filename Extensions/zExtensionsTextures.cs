@@ -5,29 +5,12 @@ using UnityEngine;
 // v.02b check dimeniosn update
 // v.03 testpattern, circle
 // v.04  create and fill
-// v.05 cross
-// v.06 dump to jpg )
-// v.07 some comments
+// v.05 shif color hue
+// v.06 moved colors 
 public static class zExtensionsTextures
 {
 
     // public static Color baseColor = new Color(1f / 6, 1f / 2, 1f / 2, 1f / 2); //?
-
-    public static string DumpToJPGBase64(this RenderTexture rt, int quality = 70)
-    {
-        var oldRT = RenderTexture.active;
-
-        var tex = new Texture2D(rt.width, rt.height);
-        RenderTexture.active = rt;
-        tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
-        tex.Apply();
-        byte[] bytes = tex.EncodeToJPG(quality);
-        string encoded = Convert.ToBase64String(bytes);
-        // convert.frombase64string
-        RenderTexture.active = oldRT;
-        return encoded;
-
-    }
 
     public static Texture2D CreateAndFill(this Texture2D t, Color c, int x = 1, int y = 1) //, bool apply=true
     {
@@ -36,14 +19,6 @@ public static class zExtensionsTextures
         return t;
     }
 
-    public static void SetAlpha(this Color c, float a)
-    {
-        c.Alpha(a);
-    }
-
-    /// <summary>
-    /// returns true if texture extists and has matching dimensinos, false otherwise
-    /// </summary>
 
     public static bool CheckDimensions(this Texture texture, Vector2Int targetDimensions)
     {
@@ -51,11 +26,6 @@ public static class zExtensionsTextures
         if (texture.width != targetDimensions.x || texture.height != targetDimensions.y) return false;
         return true;
     }
-
-    /// <summary>
-    /// returns true if texture extists and has matching dimensinos, false otherwise
-    /// </summary>
-
     public static bool CheckDimensions(this Texture texture, int width, int height = -1)
     {
         if (texture == null) return false;
@@ -64,11 +34,6 @@ public static class zExtensionsTextures
         if (height != -1 && texture.height != height) return false;
         return true;
     }
-
-    /// <summary>
-    /// returns true if texture extists and has matching dimensinos, false otherwise
-    /// </summary>
-
     public static bool CheckDimensions(this Texture texture, Texture otherTexture)
     {
         if (texture == null) return false;
@@ -92,28 +57,22 @@ public static class zExtensionsTextures
 
     }
 
-    public static void DrawCross(this Texture2D texture, int x, int y, Color color, int len = 3)
+    public static string DumpToJPGBase64(this RenderTexture rt, int quality = 70)
     {
-        //texture.SetPixel(x,y,color);
-        for (int i = -len; i <= len; i++)
-        {
-            texture.SetPixel(x, y + i, color);
-            texture.SetPixel(x + i, y, color);
-        }
+        var oldRT = RenderTexture.active;
+
+        var tex = new Texture2D(rt.width, rt.height);
+        RenderTexture.active = rt;
+        tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+        tex.Apply();
+        byte[] bytes = tex.EncodeToJPG(quality);
+        string encoded = Convert.ToBase64String(bytes);
+        // convert.frombase64string
+        RenderTexture.active = oldRT;
+        return encoded;
+
     }
 
-    public static void DrawCross(this Texture2D texture, int x, int y, Color color, int len, int width)
-    {
-        texture.SetPixel(x, y, color);
-        for (int i = -len; i < len; i++)
-        {
-            for (int j = -width; j <= width; j++)
-            {
-                texture.SetPixel(x + j, y + i, color);
-                texture.SetPixel(x + i, y + j, color);
-            }
-        }
-    }
     public static Color Alpha(this Color c, float a)
     {
         Color m = new Color(c.r, c.g, c.b, a);
@@ -201,19 +160,6 @@ public static class zExtensionsTextures
         tex.Apply();
 
         File.WriteAllBytes(pngOutPath, tex.EncodeToPNG());
-        RenderTexture.active = oldRT;
-    }
-
-    public static void DumpToJpg(this RenderTexture rt, string pngOutPath)
-    {
-        var oldRT = RenderTexture.active;
-
-        var tex = new Texture2D(rt.width, rt.height);
-        RenderTexture.active = rt;
-        tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
-        tex.Apply();
-
-        File.WriteAllBytes(pngOutPath, tex.EncodeToJPG());
         RenderTexture.active = oldRT;
     }
     public static RenderTexture DestroyIfNotNull(this RenderTexture rt)
@@ -344,22 +290,7 @@ public static class zExtensionsTextures
     /// From http://wiki.unity3d.com/index.php/TextureDrawLine
     /// </summary>
 
-    static Color32[] GetParade()
-    {
-        float Low = 18f / 255;
-        float High = 240f / 255;
-        return new Color32[]
-        {
-            new Color(High, High, High),
-                new Color(High, High, Low),
-                new Color(Low, High, High),
-                new Color(Low, High, Low),
-                new Color(High, Low, High),
-                new Color(High, Low, Low),
-                new Color(Low, Low, High),
-                new Color(Low, Low, Low)
-        };
-    }
+
     public static Texture2D DrawLine(this Texture2D tex, int x0, int y0, int x1, int y1, Color col)
     {
         if (tex == null) tex = new Texture2D(defaultTextureDim, defaultTextureDim);
