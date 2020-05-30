@@ -270,7 +270,19 @@ namespace Z
             }
             return children;
         }
-        public static T[] GetComponentsInChildrenIncludingInactive<T>(this Component k)
+        public static T[] GetComponentsInChildrenIncludingInactive<T>(this Component k, List<Transform> childrenList)
+        {
+
+            List<T> list = new List<T>();
+            foreach (var c in childrenList)
+            {
+                var thisComponent = c.GetComponent<T>();
+                if (thisComponent != null) list.Add(thisComponent);
+            }
+            return list.ToArray();
+        }
+
+        public static List<T> GetComponentsInChildrenIncludingInactive<T>(this Component k)
         {
             List<T> list = new List<T>();
             var allchildren = k.transform.GetAllChildren();
@@ -279,7 +291,7 @@ namespace Z
                 var thisComponent = c.GetComponent<T>();
                 if (thisComponent != null) list.Add(thisComponent);
             }
-            return list.ToArray();
+            return list; //.ToArray();
         }
         public static List<Transform> GetAllChildren(this Transform transform, List<Transform> list = null)
         {
