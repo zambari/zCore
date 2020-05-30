@@ -22,6 +22,29 @@ public static class zBench
 
     }
 
+    public static Dictionary<string, List<float>> callDictionary;
+
+    
+    public static void FlagIfKeepsFiring(string label, int maxCallsInTime = 10, float time=2)
+    {
+        if (callDictionary == null) callDictionary = new Dictionary<string, List<float>>();
+        List<float> thisList = null;
+        if (!callDictionary.TryGetValue(label, out thisList))
+        {
+
+        }
+        if (thisList == null) thisList = new List<float>();
+        thisList.Add(Time.time);
+        callDictionary.Add(label, thisList);
+        while (thisList.Count > maxCallsInTime)
+        {
+            thisList.RemoveAt(0);
+        }
+        if (Time.time-thisList[0]<time)
+        {
+            Debug.Log($"Warning More than {maxCallsInTime} calls labeled '{label} were executed during last {time} ");
+        }
+    }
     public static System.Diagnostics.Stopwatch Start(string key)
     {
         var sw = GetStopWatch(key);
@@ -36,18 +59,18 @@ public static class zBench
     public static int ElapsedMilliseconds(string key)
     {
         var sw = GetStopWatch(key);
-        return (int)sw.ElapsedMilliseconds;
+        return (int) sw.ElapsedMilliseconds;
     }
     public static int ElapsedTicks(string key)
     {
         var sw = GetStopWatch(key);
-        return (int)sw.ElapsedTicks;
+        return (int) sw.ElapsedTicks;
     }
     public static int Pause(string key)
     {
         var sw = GetStopWatch(key);
         sw.Start();
-        return (int)sw.ElapsedMilliseconds;
+        return (int) sw.ElapsedMilliseconds;
     }
     public static int End(string key)
     {
@@ -58,6 +81,6 @@ public static class zBench
         else
             Debug.Log("Time between starting and finih of [" + key + "] was  " + sw.ElapsedMilliseconds + " ms (or " + sw.ElapsedTicks + " ticks)");
         stopwatchdict.Remove(key);
-        return (int)sw.ElapsedMilliseconds;
+        return (int) sw.ElapsedMilliseconds;
     }
 }

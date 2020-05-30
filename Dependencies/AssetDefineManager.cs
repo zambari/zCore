@@ -53,8 +53,10 @@ public class AssetDefineManager : AssetPostprocessor
         new AssetDefine("PaletteBase.cs", destkopAndAndroid, "PALETTES"),
         new AssetDefine("MonoBehaviourWithBg.cs", destkopAndAndroid, "MONOBG"),
         new AssetDefine("DOTween.dll", destkopAndAndroid, "DOTWEEN"),
+        new AssetDefine("LayoutPanel", destkopAndAndroid, "LAYOUTPANEL"),
         new AssetDefine("RuntimeCommandCompletion.cs", destkopAndAndroid, "UREPL"),
         new AssetDefine("PostProcessingModelEditorAttribute.cs", destkopAndAndroid, "POSTPROCESSING"),
+
        // new AssetDefine("PostProcessingBehaviour.cs", destkopAndAndroid, "POSTPROCESSING"),
 
         //	new AssetDefine("PlayerPrefsX.cs",destkopAndAndroid , "PlayerPrefsX"),
