@@ -18,15 +18,29 @@ using Z;
 public class ListItem : MonoBehaviour //, IPointerClickHandler
 {
 
-    [SerializeField] Text _text;
     [HideInInspector]
     public int id;
-    public string label { get { return text.text; } set { text.SetText(value); } }
+    public string label
+    {
+        get { return text.text; } set
+        {
+            name = "Item: " + value;
+            text.SetText(value);
+        }
+    }
     protected ListPopulator _listPopulator;
     protected ListPopulator listPopulator { get { if (_listPopulator == null) _listPopulator = GetComponentInParent<ListPopulator>(); return _listPopulator; } }
     public Button button { get { if (_button == null) _button = GetComponentInChildren<Button>(); return _button; } }
     public Text text { get { if (_text == null) _text = GetComponentInChildren<Text>(); return _text; } }
 
+    [SerializeField] Text _text;
+
+    public RectTransform rectTransform { get { if (_rectTransform == null) _rectTransform = GetComponent<RectTransform>(); return _rectTransform; } }
+    RectTransform _rectTransform;
+
+    public Image image { get { if (_image==null) _image=GetComponent<Image>(); return _image;} }
+    [SerializeField] Image _image;
+    
     [SerializeField]
     Button _button;
     protected virtual void Reset()
