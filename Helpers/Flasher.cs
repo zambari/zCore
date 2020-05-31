@@ -93,7 +93,8 @@ public class Flasher : MonoBehaviour, IShowHide
         var borderImages = new Image[borders.Count];
         for (int i = 0; i < borders.Count; i++)
             borderImages[i] = borders[i].GetComponent<Image>();
-        borderColor = borderImages[0].color;
+        if (borderImages != null && borderImages.Length > 0 && borderImages[0] != null)
+            borderColor = borderImages[0].color;
         return borderImages;
     }
 #endif
