@@ -1,14 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using System.IO;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 // v.02 button listeners
+// v.03 reset adds link
 
 // simplified ver
 
@@ -16,7 +17,6 @@ using UnityEditor;
 using Z;
 public class ListItem : MonoBehaviour //, IPointerClickHandler
 {
-    public Text text { get { if (_text == null) _text = GetComponentInChildren<Text>(); return _text; } }
 
     [SerializeField] Text _text;
     [HideInInspector]
@@ -25,9 +25,16 @@ public class ListItem : MonoBehaviour //, IPointerClickHandler
     protected ListPopulator _listPopulator;
     protected ListPopulator listPopulator { get { if (_listPopulator == null) _listPopulator = GetComponentInParent<ListPopulator>(); return _listPopulator; } }
     public Button button { get { if (_button == null) _button = GetComponentInChildren<Button>(); return _button; } }
+    public Text text { get { if (_text == null) _text = GetComponentInChildren<Text>(); return _text; } }
 
     [SerializeField]
     Button _button;
+    protected virtual void Reset()
+    {
+        _text = GetComponentInChildren<Text>();
+        _button = GetComponentInChildren<Button>();
+        if (_button == null) _button = gameObject.AddComponent<Button>();
+    }
     public void Populate(string label, UnityAction callback)
     {
         this.label = Path.GetFileName(label);
@@ -54,12 +61,7 @@ public class ListItem : MonoBehaviour //, IPointerClickHandler
             Debug.Log("item has no butotn component present", gameObject);
         }
     }
-    void Reset()
-    {
-        _text = GetComponentInChildren<Text>();
-        _button = GetComponentInChildren<Button>();
-        if (_button == null) _button = gameObject.AddComponent<Button>();
-    }
+
     public void SetID(int i)
     {
         id = i;

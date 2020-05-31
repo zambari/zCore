@@ -2,15 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+#if UNITY_EDITOR
+using UnityEditor.SceneManagement;
+// using UnityEditor.Experimental.SceneManagement;
+
+#endif
 // namespace Z
 // {
 // some wrappers around standard Gizmos
 // v.02 label
 // v.03 linefade
 // v.04 normal line and color wrappers
+// v.05 prefabstaege
 // drawfromray
 public static class zGizmos
 {
+
     public static void DrawCross(Vector3 position, float size = 0.05f)
     {
         Gizmos.DrawLine(position + new Vector3(-size, 0, 0), position + new Vector3(size, 0, 0));
@@ -26,6 +33,43 @@ public static class zGizmos
         Gizmos.DrawLine(position + new Vector3(-size, size, -size), position + new Vector3(size, -size, size));
         Gizmos.DrawLine(position + new Vector3(size, size, -size), position + new Vector3(-size, -size, size));
     }
+
+    public static bool PrefabModeIsActive(GameObject gameObject) //https://stackoverflow.com/questions/56155148/how-to-avoid-the-onvalidate-method-from-being-called-in-prefab-mode
+    {
+#if UNITY_EDITOR
+        UnityEditor.Experimental.SceneManagement.PrefabStage prefabStage = UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetPrefabStage(gameObject);
+        if (prefabStage != null)
+            return true;
+        if (UnityEditor.EditorUtility.IsPersistent(gameObject))
+            return true;
+#endif
+        return false;
+
+    }
+    //     public static bool IsPrefabInstance(GameObject obj) //https://answers.unity.com/questions/1599065/how-can-i-use-onvalidate-with-prefabs.html
+    //     {
+    //         bool is_prefab_instance = false;
+    // #if UNITY_EDITOR
+    //         is_prefab_instance = UnityEditor.PrefabUtility.IsPartOfAnyPrefab(obj) &&
+    //             !UnityEditor.PrefabUtility.IsPartOfPrefabAsset(obj) &&
+    //             UnityEditor.PrefabUtility.IsPartOfNonAssetPrefabInstance(obj);
+    // #endif
+    //         return is_prefab_instance;
+    //     }
+    //     // In project or prefab editor.
+    //     public static bool IsPrefabAsset(GameObject obj) //https://answers.unity.com/questions/1599065/how-can-i-use-onvalidate-with-prefabs.html
+    //     {
+    //         bool is_prefab_asset = false;
+    // #if UNITY_EDITOR
+    //         var stage = UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
+    //         is_prefab_asset = (stage != null &&
+    //                 stage.scene == obj.scene) ||
+    //             (UnityEditor.PrefabUtility.IsPartOfAnyPrefab(obj) &&
+    //                 UnityEditor.PrefabUtility.IsPartOfPrefabAsset(obj) &&
+    //                 !UnityEditor.PrefabUtility.IsPartOfNonAssetPrefabInstance(obj));
+    // #endif
+    //         return is_prefab_asset;
+    //     }
     public static void Label(Vector3 position, string text, float offset = -0.01f)
     {
 #if UNITY_EDITOR

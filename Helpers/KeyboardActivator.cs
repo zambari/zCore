@@ -31,23 +31,31 @@ public class KeyboardActivator : MonoBehaviour
     {
         for (int i = 0; i < objectMappings.Count; i++)
         {
-            if (objectMappings[i] != null && objectMappings[i].gameObject != null)
+            if (objectMappings[i] != null)
+            {
 
                 if (Input.GetKeyDown(objectMappings[i].keycode))
                 {
-                    bool newState = !objectMappings[i].gameObject.activeSelf;
-                    if (newState)
-                        objectMappings[i].gameObject.Show();
-                    else
-                        objectMappings[i].gameObject.Hide();
+                    if (objectMappings[i].triggerEvent != null) objectMappings[i].triggerEvent.Invoke();
+                    if (objectMappings[i].gameObject != null)
+                    {
+                        bool newState = !objectMappings[i].gameObject.activeSelf;
+                        if (newState)
+                            objectMappings[i].gameObject.Show();
+                        else
+                            objectMappings[i].gameObject.Hide();
+                    }
                 }
+            }
+
         }
     }
 
-}
-[System.Serializable]
-public class KeycodeGameObjectPair
-{
-    public KeyCode keycode;
-    public GameObject gameObject;
+    [System.Serializable]
+    public class KeycodeGameObjectPair
+    {
+        public KeyCode keycode;
+        public GameObject gameObject;
+        public VoidEvent triggerEvent;
+    }
 }

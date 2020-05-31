@@ -1,16 +1,15 @@
-﻿
-
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using UnityEngine;
-using System;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 // v.02 setcallback on butotn
+// v.03 inputfield getstint float
 /// oeverrides zRectExtensions
 
 public static class zExtensionsUI
@@ -55,7 +54,37 @@ public static class zExtensionsUI
     {
         if (text != null) text.text = s;
     }
+    public static void SetValueInt(this InputField inputField, int val)
+    {
+        inputField.text = val.ToString();
+    }
+    public static void SetValueFloat(this InputField inputField, float val)
+    {
+        inputField.text = val.ToShortString();
+    }
+    public static float GetValueFloat(this InputField inputField)
+    {
+        float result = 0;
+        if (inputField == null) return result;
+        if (string.IsNullOrEmpty(inputField.text)) return result;
+        if (System.Single.TryParse(inputField.text, out result))
+        {
 
+        }
+        return result;
+    }
+    public static int GetValueInt(this InputField inputField)
+    {
+        int result = 0;
+        if (inputField == null) return result;
+        if (string.IsNullOrEmpty(inputField.text)) return result;
+        if (System.Int32.TryParse(inputField.text, out result))
+        {
+
+        }
+        return result;
+
+    }
     public static LayoutElement[] GetActiveElements(this HorizontalLayoutGroup layout)
     {
         List<LayoutElement> elements = new List<LayoutElement>();
@@ -90,7 +119,6 @@ public static class zExtensionsUI
     //     return r;
     // }
 
-
     public static Texture2D Create(this Texture2D t, Color fillColor, int sixeX = 1, int sizeY = 1) //, bool apply=true
     {
         Texture2D texture = new Texture2D(sixeX, sizeY);
@@ -121,7 +149,6 @@ public static class zExtensionsUI
             colors[i] = colors[i] + fillColor;
         texture.SetPixels32(colors);
         texture.Apply();
-
 
     }
 
