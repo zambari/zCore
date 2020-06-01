@@ -14,11 +14,25 @@ public class ListPopulator : MonoBehaviour
     public ListItem itemTemplate;
     // public Transform content;
     protected List<ListItem> items;
-    
+
     protected virtual void OnValidate()
     {
+        if (zBench.PrefabModeIsActive(gameObject)) return;
         if (itemTemplate == null) itemTemplate = GetComponentInChildren<ListItem>();
-        
+        if (content == null)
+        {
+            if (itemTemplate != null) content = itemTemplate.transform.parent as RectTransform;
+            else
+            {
+                var sr = GetComponent<ScrollRect>();
+                if (sr != null) content = sr.content;
+                else
+                {
+                    var sp = GetComponentInChildren<ScrollPooled>();
+                    if (sp != null) content = sp.content;
+                }
+            }
+        }
         // if (content == null && itemTemplate != null) content = itemTemplate.transform.parent;
     }
 
@@ -30,20 +44,29 @@ public class ListPopulator : MonoBehaviour
         for (int i = itemTemplate.transform.parent.childCount - 1; i >= 0; i--)
         {
             GameObject g = itemTemplate.transform.parent.GetChild(i).gameObject;
-            if ((g != itemTemplate.gameObject/* || g.GetComponent<ListConstant>()!=null*/ ) && g.activeSelf)
+            if ((g != itemTemplate.gameObject /* || g.GetComponent<ListConstant>()!=null*/ ) && g.activeSelf)
             {
 #if UNITY_EDITOR
                 EditorApplication.delayCall += () => DestroyImmediate(g);
 #else
-			Destroy(g);
+                Destroy(g);
 #endif
             }
         }
         items = new List<ListItem>();
     }
+    public RectTransform content;
     protected ListItem CreateItem()
     {
         if (items == null) items = new List<ListItem>();
+        if (itemTemplate == null)
+        {
+            Debug.Log("no template");
+            //return;
+            var thisItem = PrefabProvider.Get(this).GetGameObject(content, "FileItem", "File");
+            if (thisItem != null)
+                itemTemplate = thisItem.GetComponent<ListItem>();;
+        }
         var item = Instantiate(itemTemplate, itemTemplate.transform.parent);
         // Debug.Log($"Created with parent {itemTemplate.transform.parent}");
         items.Add(item);
@@ -76,4 +99,3 @@ public class ListPopulator : MonoBehaviour
 
 #endif
 }
-

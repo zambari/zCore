@@ -20,7 +20,7 @@ public static class FlasherExtension
 }
 
 // [RequireComponent(typeof(Image))]
-public class Flasher : MonoBehaviour, IShowHide
+public class Flasher : MonoBehaviour, IShowHide, IRequestInitLate
 {
     // public TimeRamp timeRamp = new TimeRamp();
     // Use this for initialization
@@ -35,7 +35,7 @@ public class Flasher : MonoBehaviour, IShowHide
 #endif
     }
     Graphic graphic { get { if (_graphic == null) _graphic = GetComponent<Graphic>(); return _graphic; } }
-    Graphic _graphic;
+    public Graphic _graphic;
 
     [Header("Shape")]
     [Range(-3, 0)]
@@ -49,8 +49,6 @@ public class Flasher : MonoBehaviour, IShowHide
 
     CanvasGroup canvasGroup { get { if (_canvasGroup == null) _canvasGroup = GetComponent<CanvasGroup>(); return _canvasGroup; } }
     CanvasGroup _canvasGroup;
-
-    [ReadOnly, SerializeField] bool isrunning;
 
     [SerializeField, ReadOnly] float phase;
     [Header("Limit effect")]
@@ -74,7 +72,7 @@ public class Flasher : MonoBehaviour, IShowHide
     public bool controlCanvasGroupRaycasts = true;
     public bool disableRaycasts = true;
     [Header("Speed, delayedStart")]
-    [Range(0f, 3f)]
+    [Range(0.2f, 2f)]
     public float speed = .7f;
     public float initialDelay = 0;
 
@@ -297,5 +295,10 @@ public class Flasher : MonoBehaviour, IShowHide
     public void Hide()
     {
         Apply(1);
+    }
+
+    public void Init(MonoBehaviour awakenSource)
+    {
+        enabled = true;
     }
 }

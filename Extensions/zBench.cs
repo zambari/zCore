@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+
+//v.02 experimetnal isprefab
+
 public static class zBench
 {
     static Dictionary<string, System.Diagnostics.Stopwatch> stopwatchdict;
@@ -22,10 +25,21 @@ public static class zBench
 
     }
 
+    public static bool PrefabModeIsActive(GameObject gameObject) //https://stackoverflow.com/questions/56155148/how-to-avoid-the-onvalidate-method-from-being-called-in-prefab-mode
+    {
+#if UNITY_EDITOR
+        UnityEditor.Experimental.SceneManagement.PrefabStage prefabStage = UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetPrefabStage(gameObject);
+        if (prefabStage != null)
+            return true;
+        if (UnityEditor.EditorUtility.IsPersistent(gameObject))
+            return true;
+#endif
+        return false;
+
+    }
     public static Dictionary<string, List<float>> callDictionary;
 
-    
-    public static void FlagIfKeepsFiring(string label, int maxCallsInTime = 10, float time=2)
+    public static void FlagIfKeepsFiring(string label, int maxCallsInTime = 10, float time = 2)
     {
         if (callDictionary == null) callDictionary = new Dictionary<string, List<float>>();
         List<float> thisList = null;
@@ -40,7 +54,7 @@ public static class zBench
         {
             thisList.RemoveAt(0);
         }
-        if (Time.time-thisList[0]<time)
+        if (Time.time - thisList[0] < time)
         {
             Debug.Log($"Warning More than {maxCallsInTime} calls labeled '{label} were executed during last {time} ");
         }

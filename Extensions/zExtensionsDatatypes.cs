@@ -41,6 +41,14 @@ namespace Z
             }
 
         }
+
+        public static float InversedSquare(this float f)
+        {
+            f=1-f;
+            f*=f;
+            f=1-f;
+            return f;
+        }
         public static string GetGameObjectPath(this GameObject g)
         {
             string path = g.name;
