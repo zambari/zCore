@@ -7,6 +7,7 @@ using UnityEngine;
 // v.05 get set component
 // v.06 interpolate
 // v.07 GetDimensions<T>(this T[][] vals)
+// v.08 Sort
 
 namespace Z
 {
@@ -14,6 +15,17 @@ namespace Z
     public static class zExtensionsVector
     {
         public enum DirectionsFour { up, right, down, left }
+
+        public static Vector2 Sort(this Vector2 source)
+        {
+            if (source.x > source.y) return new Vector2(source.y, source.x);
+            return source;
+        }
+        public static Vector2Int Sort(this Vector2Int source)
+        {
+            if (source.x > source.y) return new Vector2Int(source.y, source.x);
+            return source;
+        }
         public static DirectionsFour GetMainDirectionFour(Vector2 A, Vector2 B)
         {
             Vector3 delta = B - A;

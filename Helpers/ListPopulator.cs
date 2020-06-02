@@ -8,6 +8,7 @@ using UnityEditor;
 using Z;
 // v.0.05b barebones
 // v.0.06 better template handling
+// v.0.07 ifaplettes
 public class ListPopulator : MonoBehaviour
 {
 
@@ -28,8 +29,11 @@ public class ListPopulator : MonoBehaviour
                 if (sr != null) content = sr.content;
                 else
                 {
+#if PALETTES
                     var sp = GetComponentInChildren<ScrollPooled>();
                     if (sp != null) content = sp.content;
+#endif
+
                 }
             }
         }
@@ -61,11 +65,13 @@ public class ListPopulator : MonoBehaviour
         if (items == null) items = new List<ListItem>();
         if (itemTemplate == null)
         {
+#if PALETTES
             Debug.Log("no template");
             //return;
             var thisItem = PrefabProvider.Get(this).GetGameObject(content, "FileItem", "File");
             if (thisItem != null)
-                itemTemplate = thisItem.GetComponent<ListItem>();;
+                itemTemplate = thisItem.GetComponent<ListItem>();
+#endif
         }
         var item = Instantiate(itemTemplate, itemTemplate.transform.parent);
         // Debug.Log($"Created with parent {itemTemplate.transform.parent}");
