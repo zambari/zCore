@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 ///  v/// oeverrides zRectExtensions
-
+// v..2 setcolor
 public static class zExtensionsColors // to useful to be in namespace1
 {
     public static Color ShiftHue(this Color src, float hueshitamount)
@@ -36,12 +36,30 @@ public static class zExtensionsColors // to useful to be in namespace1
         // return UnityEngine.Random.ColorHSV(0.4f, 0.8f, 0.3f, 0.6f);4
     }
 
-      public static Color SetAlpha(this Color c, float a)
+    public static Color SetAlpha(this Color c, float a)
     {
         c.a = a;
         return c;
     }
-     public  static Color32[] GetParade()
+
+    public static Color SetR(this Color c, float a)
+    {
+        c.r = a;
+        return c;
+    }
+
+    public static Color SetG(this Color c, float a)
+    {
+        c.g = a;
+        return c;
+    }
+
+    public static Color SetB(this Color c, float a)
+    {
+        c.b = a;
+        return c;
+    }
+    public static Color32[] GetParade()
     {
         float Low = 18f / 255;
         float High = 240f / 255;
@@ -57,7 +75,7 @@ public static class zExtensionsColors // to useful to be in namespace1
                 new Color(Low, Low, Low)
         };
     }
-     public static Color Randomize(this Color c, float howMuchHue = 0.15f, float howMuchSat = 0.3f, float howMuchL = 0.2f)
+    public static Color Randomize(this Color c, float howMuchHue = 0.15f, float howMuchSat = 0.3f, float howMuchL = 0.2f)
     {
         float H, S, L;
         Color.RGBToHSV(c, out H, out S, out L);
@@ -69,7 +87,7 @@ public static class zExtensionsColors // to useful to be in namespace1
         newCol.a = c.a;
         return newCol;
     }
-      public static Color Random(this Color c)
+    public static Color Random(this Color c)
     {
         /*  if (c==null) { c =baseColor; }
           float r=c.r;

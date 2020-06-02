@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Z;
+// chyba .02
 public class FadeOnShow : MonoBehaviour, IShowHide //, IShowHideCallback
 {
-    public bool useGraphic;
 
     [Range(0.5f, 4f)]
     public float speed = 2f;
@@ -14,6 +14,8 @@ public class FadeOnShow : MonoBehaviour, IShowHide //, IShowHideCallback
     [Range(0, 1)]
     public float phase;
     public Color savedColor;
+    public enum FadeMode { None, CanvasGroup, Graphic }
+    public FadeMode fadeMode = FadeMode.CanvasGroup;
     Color blank;
     Graphic graphics { get { if (_graphics == null) _graphics = GetComponent<Graphic>(); return _graphics; } }
     Graphic _graphics;
@@ -87,13 +89,34 @@ public class FadeOnShow : MonoBehaviour, IShowHide //, IShowHideCallback
         lockFade = false;
         if (callback != null) callback.Invoke();
     }
+    public Graphic[] graphicList = new Graphic[0];
+    void Reset()
+    {
+        graphicList = GetComponentsInChildren<Graphic>();
+
+    }
     void Fade(float f)
     {
         phase = f;
-        if (useGraphic && graphics != null)
-            graphics.color = Color.Lerp(blank, savedColor, phase);
-        if (canvasGroup != null)
-            canvasGroup.alpha = phase;
+        if (fadeMode == FadeMode.CanvasGroup)
+        {
+            if (canvasGroup != null)
+                canvasGroup.alpha = phase;
+        }
+        else if (fadeMode == FadeMode.Graphic)
+        {
+            Color thisColor = Color.Lerp(blank, savedColor, phase);
+            foreach (var gr in graphicList)
+            {
+                if (gr != null)
+                {
+                    graphics.color = thisColor;
+
+                }
+            }
+
+        }
+
     }
     IEnumerator FadeDn(Action callback)
     {

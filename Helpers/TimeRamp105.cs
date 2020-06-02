@@ -329,7 +329,7 @@ public class TimeRamp
 
     public TimeRamp GoOne()
     {
-        Debug.Log("goone");
+        // Debug.Log("goone");
         switch (rampState)
         {
             case RampState.reachedOne:
@@ -353,7 +353,7 @@ public class TimeRamp
 
     public TimeRamp GoZero()
     {
-        Debug.Log("gozero");
+        // Debug.Log("gozero");
         switch (rampState)
         {
             case RampState.reachedZero:

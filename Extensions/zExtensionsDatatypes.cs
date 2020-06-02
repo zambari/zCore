@@ -49,6 +49,13 @@ namespace Z
             f=1-f;
             return f;
         }
+         public static float InversedSquareRoot(this float f) //beta
+        {
+            f=1-f;
+            f=Mathf.Sqrt(f);
+            f=1-f;
+            return f;
+        }
         public static string GetGameObjectPath(this GameObject g)
         {
             string path = g.name;
