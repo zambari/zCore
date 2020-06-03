@@ -11,6 +11,7 @@ namespace Z {
     // v.03 statechanged
     // v.04 toggles meshrenderer
     // v.05 2018 nested prefab compatflity
+    // v.06 namehelper removed
 
     [ExecuteInEditMode]
     public class ChildrenHide : MonoBehaviour {
@@ -23,7 +24,6 @@ namespace Z {
             set { SetVisState (value); }
         }
         public enum ChildVis { HIDE, SHOW }
-        NameHelper nameHelper;
         [Space]
         [ReadOnly]
         [SerializeField]
@@ -34,7 +34,6 @@ namespace Z {
         [SerializeField] List<GameObject> objectsToHide = new List<GameObject> ();
         //public System.Action<ChildVis> onStateChanged;
         public bool updateName;
-        public int separatorCount;
         void OnTransformChildrenChanged () {
             OnValidate ();
         }
@@ -65,16 +64,15 @@ namespace Z {
 #endif
         void SetVisState (ChildVis newState) {
             HideFlags flag = HideFlags.None;
-            nameHelper = new NameHelper (this);
             childCount = GetChildCount ();
             _childrenVisbility = newState;
             if (transform.childCount == 0) _childrenVisbility = ChildVis.SHOW;
 
             if (newState == ChildVis.HIDE && updateName) {
                 flag = HideFlags.HideInHierarchy;
-                nameHelper.SetTagPost ("【" + childCount + "】");
+                name=name.SetTag( "【" + childCount + "】");
             } else
-                nameHelper.RemoveTag ();
+               name=name.RemoveAllTags();
             if (applyToKnownOnly)
 
             {
@@ -91,7 +89,6 @@ namespace Z {
             if (meshRenderer != null) meshRenderer.enabled = (newState == ChildVis.HIDE);
         }
         void Reset () {
-            nameHelper = new NameHelper (this);
             //  if (GetComponent<MeshFilter>()!=null && GetComponent<MeshFilter>().sharedMesh!=null && GetComponent<MeshRenderer>()==null) gameObject.AddComponent<MeshRenderer>();
             SetVisState (ChildVis.HIDE);
 #if UNITY_EDITOR
@@ -125,13 +122,6 @@ namespace Z {
         void OnValidate () {
 
             if (!gameObject.activeInHierarchy) return; //?
-            {
-                separatorCount = name.Split (NameHelper.seperator).Length;
-            }
-
-            //if (nameHelper == null || updateName) 
-
-            updateName = false;
             if (!applyToKnownOnly)
                 statusString = "Not using";
             else {
@@ -140,6 +130,7 @@ namespace Z {
 
             }
             // Selection not specified ")
+            updateName = false;
 
             SetVisState (_childrenVisbility);
             meshRenderer = GetComponent<MeshRenderer> ();

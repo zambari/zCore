@@ -1,14 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.IO;
-
+using UnityEngine;
+// v.02 plugin exclusion as option
 namespace Z
 {
     public class CodeCounter : MonoBehaviour
     {
         public bool onlyInScripts;
-
+        public bool excludePlugins = true;
+        [HideInInspector]
+        public bool excludeMorePlugins = true;
         [ExposeMethodInEditor]
         void CountCode()
         {
@@ -19,14 +21,18 @@ namespace Z
             int skippedCount = 0;
             for (int i = 0; i < files.Length; i++)
             {
-
-                if (files[i].Contains("plugins") || files[i].Contains("Plugins") || files[i].Contains("PostProcessing ") || files[i].Contains("RainbowFolders") || files[i].Contains("TextMesh Pro)"))
-
-                {
-                    skippedCount++;
-                    continue;
-                }
-
+                if (excludePlugins)
+                    if (files[i].Contains("plugins") || files[i].Contains("Plugins"))
+                    {
+                        skippedCount++;
+                        continue;
+                    }
+                if (excludeMorePlugins)
+                    if (files[i].Contains("PostProcessing ") || files[i].Contains("RainbowFolders") || files[i].Contains("TextMesh Pro)"))
+                    {
+                        skippedCount++;
+                        continue;
+                    }
                 if (onlyInScripts)
                 {
                     if (!files[i].Contains("scripts") && !files[i].Contains("Scripts"))
@@ -35,7 +41,6 @@ namespace Z
                         continue;
 
                     }
-
                 }
                 string thisFile = File.ReadAllText(files[i]);
                 bytes += thisFile.Length;
@@ -43,7 +48,7 @@ namespace Z
                 lines += lineSplit.Length;
                 fileCount++;
             }
-            Debug.Log("found " + lines + " lines " + bytes / 1024 + "k bytes in " + fileCount + " files (plugins excluded)");
+            Debug.Log("found " + lines + " lines " + bytes / 1024 + "k bytes in " + fileCount + " files (plugins " + (excludePlugins? "excluded": "included") + ")");
             Debug.Log("skipped " + skippedCount);
         }
     }

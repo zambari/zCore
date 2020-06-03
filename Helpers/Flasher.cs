@@ -117,8 +117,10 @@ public class Flasher : MonoBehaviour, IShowHide, IRequestInitLate
         // if (graphic != null) flashColor = graphic.color;
         OnValidate();
     }
-    void OnValidate()
+    protected virtual void OnValidate()
     {
+
+        // if (speespeed=1;
 #if LAYOUTPANEL
 #else
         Debug.Log("Uwaga, nie mamy define od layoutpanelu");
