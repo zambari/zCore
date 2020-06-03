@@ -6,6 +6,11 @@ using UnityEngine.UI;
 using Z.LayoutPanel;
 #endif
 // v.02 controls avnas grouyps
+public interface IFlash
+{
+    void Flash();
+    void FlashError();
+}
 public static class FlasherExtension
 {
     /// <summary>

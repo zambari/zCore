@@ -38,9 +38,12 @@ public class ListItem : MonoBehaviour //, IPointerClickHandler
     public RectTransform rectTransform { get { if (_rectTransform == null) _rectTransform = GetComponent<RectTransform>(); return _rectTransform; } }
     RectTransform _rectTransform;
 
-    public Image image { get { if (_image==null) _image=GetComponent<Image>(); return _image;} }
+    public Image image { get { if (_image == null) _image = GetComponent<Image>(); return _image; } }
+
     [SerializeField] Image _image;
+    public Color color { get { return image.color; } set { image.color = color; } }
     
+
     [SerializeField]
     Button _button;
     protected virtual void Reset()
@@ -51,7 +54,7 @@ public class ListItem : MonoBehaviour //, IPointerClickHandler
     }
     public void Populate(string label, UnityAction callback)
     {
-        this.label = Path.GetFileName(label);
+        this.label = "f" + Path.GetFileName(label);
         SetCallback(callback);
     }
     public void AddListener(UnityAction e)

@@ -9,6 +9,8 @@ using Z;
 // v.0.05b barebones
 // v.0.06 better template handling
 // v.0.07 ifaplettes
+// v.0.08 back to conetn
+
 public class ListPopulator : MonoBehaviour
 {
 
@@ -22,7 +24,8 @@ public class ListPopulator : MonoBehaviour
         if (itemTemplate == null) itemTemplate = GetComponentInChildren<ListItem>();
         if (content == null)
         {
-            if (itemTemplate != null) content = itemTemplate.transform.parent as RectTransform;
+            if (itemTemplate != null) 
+             content = itemTemplate.transform.parent as RectTransform;
             else
             {
                 var sr = GetComponent<ScrollRect>();
@@ -73,7 +76,7 @@ public class ListPopulator : MonoBehaviour
                 itemTemplate = thisItem.GetComponent<ListItem>();
 #endif
         }
-        var item = Instantiate(itemTemplate, itemTemplate.transform.parent);
+        var item = Instantiate(itemTemplate,content);
         // Debug.Log($"Created with parent {itemTemplate.transform.parent}");
         items.Add(item);
         item.gameObject.SetActive(true);
