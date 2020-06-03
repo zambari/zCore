@@ -6,21 +6,18 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Z;
+using zUI;
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
+
 // v.02 button listeners
 // v.03 reset adds link
 // v.04 more redux
 // v.05 UIBASe
 // simplified ver
 
-// #if RUNTIME_FRAMEWORK 
-// we use another version there
-// #else 
-
-
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 public class ListItem : UIBase //, IPointerClickHandler
 {
     public void Populate(string label, UnityAction callback)
