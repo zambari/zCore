@@ -13,6 +13,7 @@ using UnityEditor;
 
 namespace zUI
 {
+    #pragma warning disable 649
     [ExecuteInEditMode]
     public class RectAnchorHelper : MonoBehaviour
     {
@@ -107,7 +108,7 @@ namespace zUI
         //         }
         // #endif
     }
-
+#pragma warning restore 649
 
 }
 

@@ -35,7 +35,7 @@ public class ShowBuildVersion : MonoBehaviour
     {
         StartCoroutine(GetBuildVersion());
     }
-
+#pragma warning disable 618
     IEnumerator GetBuildVersion()
     {
 
@@ -60,6 +60,7 @@ public class ShowBuildVersion : MonoBehaviour
                 text.text = "Build " + (buildVersion.buildNr + 1); // gets incremented after succesful build
         }
     }
+    #pragma warning restore 618
     void Reset()
     {
      //   ReadVersionOffline();

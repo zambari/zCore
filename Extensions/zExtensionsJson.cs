@@ -20,6 +20,7 @@ public static class zExtensionsJson
     /// </summary>
     /// 
     /// 
+#pragma warning disable 162
 
     public static int ToJson(this object obj, string path, bool silent = false) // different naming conventino
     {
@@ -114,6 +115,7 @@ public static class zExtensionsJson
     // {
 
     // }
+    
     public static string TryToFindFile(string path)
     {
         path = ReplaceSlashes(path);
@@ -198,4 +200,6 @@ public static class zExtensionsJson
     // }
 
 
+
+    #pragma warning restore 162
 }

@@ -82,6 +82,7 @@ namespace zUI
 		public virtual Color color { get { return image.color; } set { image.color = color; } }
 
 		public Transform content { get { return objectReferences._content; } }
+		public RectTransform contentRect { get { return objectReferences._content as RectTransform; } }
 
 		protected virtual void Reset()
 		{

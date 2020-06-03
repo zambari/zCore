@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 //v.02 experimetnal isprefab
+//v.03 is selectedInEditor
 
 public static class zBench
 {
@@ -23,6 +24,15 @@ public static class zBench
             return newSw;
         }
 
+    }
+    public static bool IsSelected(this Component src)
+    {
+#if UNITY_EDITOR
+        if (src == null) return false;
+        return UnityEditor.Selection.activeGameObject == src.gameObject;
+#else
+        return false;
+#endif
     }
 
     public static bool PrefabModeIsActive(GameObject gameObject) //https://stackoverflow.com/questions/56155148/how-to-avoid-the-onvalidate-method-from-being-called-in-prefab-mode

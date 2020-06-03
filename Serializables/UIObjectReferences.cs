@@ -17,6 +17,17 @@ namespace zUI
 
 		public bool autoSetText = true;
 		public UIObjectReferences() {}
+		public UIObjectReferences(UIObjectReferences src)
+		{
+			_rectTransform = src._rectTransform;
+			_text = src._text;
+			_content = src._content;
+			_button = src._button;
+			autoName = src.autoName;
+			autoFill = src.autoFill;
+			autoSetText = src.autoSetText;
+
+		}
 		public UIObjectReferences(Component component)
 		{
 			AutoFill(component);
@@ -24,6 +35,15 @@ namespace zUI
 		public void AutoFill(Component component)
 		{
 			if (_rectTransform == null) _rectTransform = component.GetComponent<RectTransform>();
+			if (_content == null)
+			{
+				var scrollview = component.GetComponentInChildren<ScrollRect>();
+				if (scrollview != null)
+				{
+					_content = scrollview.content;
+
+				}
+			}
 			if (_content == null) _content = _rectTransform;
 			if (_text == null) _text = component.GetComponentInChildren<Text>();
 			if (_button == null) _button = component.gameObject.GetComponentInChildren<Button>();

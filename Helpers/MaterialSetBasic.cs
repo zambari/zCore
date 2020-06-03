@@ -10,6 +10,8 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class MaterialSetBasic : MonoBehaviour
 {
+
+    #pragma warning disable 0649
     public Material materialToSet;
     public Material materialToSetAlt;
     public Material materialToSetOrg;
@@ -85,4 +87,5 @@ public class MaterialSetBasic : MonoBehaviour
         materialToSetAlt = materialToSet;
         materialToSetOrg = materialToSet;
     }
+    #pragma warning restore 0618
 }

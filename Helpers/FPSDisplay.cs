@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 // v.0.2 show resolutoni
 // v.0.3 resoluton, ip adress, fps combination (source: stackoverflow)
-
+#pragma warning disable 618
 namespace ZUI {
     [RequireComponent (typeof (Text))]
     public class FPSDisplay : MonoBehaviour {
@@ -22,7 +22,6 @@ namespace ZUI {
             text.text = GetLabel ();
         }
 
-        string averageFpstString;
         void Reset () {
             text.text = GetLabel ();
             text.raycastTarget = false;
@@ -114,7 +113,6 @@ namespace ZUI {
                         countBeforeDisplaying++;
                         yield return null;
                     }
-                    averageFpstString = "";
                     text.text = GetLabel ();
                 }
             } else {
@@ -124,3 +122,4 @@ namespace ZUI {
         }
     }
 }
+#pragma warning restore 618

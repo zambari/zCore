@@ -14,7 +14,7 @@ namespace Z
         [Header("can be used as offset in 3d space")]
         public Vector3 relativeAttachmentPoint;
         Vector3 _attachmentPoint;
-        public new  Camera editorCamera;
+        public   Camera editorCamera;
         public void Attach(GameObject g)
         {
             followTransform = (g == null ? null : g.transform);
