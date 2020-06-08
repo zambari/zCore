@@ -35,7 +35,7 @@ namespace zUI
 		public void AutoFill(Component component)
 		{
 			if (_rectTransform == null) _rectTransform = component.GetComponent<RectTransform>();
-			if (_content == null)
+			if (_content == null || _content == _rectTransform)
 			{
 				var scrollview = component.GetComponentInChildren<ScrollRect>();
 				if (scrollview != null)
@@ -44,6 +44,7 @@ namespace zUI
 
 				}
 			}
+
 			if (_content == null) _content = _rectTransform;
 			if (_text == null) _text = component.GetComponentInChildren<Text>();
 			if (_button == null) _button = component.gameObject.GetComponentInChildren<Button>();

@@ -65,9 +65,7 @@ public static class zExtensionsRandom
     public static float Randomize(this float f, float howMuch) // warning this methos has chaned the parameter scaling
     {
         float n = f * UnityEngine.Random.Range(1 - howMuch, 1 + howMuch);
-
         return n;
-
     }
 
   

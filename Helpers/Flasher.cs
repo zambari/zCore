@@ -68,7 +68,8 @@ public class Flasher : MonoBehaviour, IShowHide, IRequestInitLate
     public float inputPreview = 1;
     public FlashMode flashApplyMode = FlashMode.Graphics;
     [Header("Graphics mode:")]
-    public Color flashColor = new Color(0.42f, 0.66f, 0.8f);
+     public Color flashColorNormal = new Color(0.42f, 0.66f, 0.8f);
+    public Color flashColor {get {  if (flashStatusMode==FlashStatusMode.error) return flashColorError; return flashColorNormal;}}
     public Color flashColorError = Color.red;
     public bool useGraphicColor;
 
@@ -141,9 +142,9 @@ public class Flasher : MonoBehaviour, IShowHide, IRequestInitLate
             }
             else
             {
-                if (useGraphicColor)
-                    flashColor = graphic.color;
-                else
+              //  if (useGraphicColor)
+              //      flashColor = graphic.color;
+               // else
                     graphic.color = flashStatusMode == FlashStatusMode.normal ? flashColor : flashColorError;
             }
         }

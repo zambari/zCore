@@ -14,15 +14,33 @@ using UnityEditor.SceneManagement;
 // v.03 linefade
 // v.04 normal line and color wrappers
 // v.05 prefabstaege
+// v.07 cross
 // drawfromray
 public static class zGizmos
 {
 
+    public static void DrawCross2D(Vector3 position, float size = 0.05f)
+    {
+        Gizmos.DrawLine(position + new Vector3(-size, size, 0), position + new Vector3(size, -size, 0));
+        Gizmos.DrawLine(position + new Vector3(size, size, 0), position + new Vector3(-size, -size, 0));
+    }
+
+    [System.Obsolete("Please use DrawPlus")]
     public static void DrawCross(Vector3 position, float size = 0.05f)
+    {
+        DrawPlus(position, size);
+    }
+    public static void DrawPlus(Vector3 position, float size = 0.05f)
     {
         Gizmos.DrawLine(position + new Vector3(-size, 0, 0), position + new Vector3(size, 0, 0));
         Gizmos.DrawLine(position + new Vector3(0, -size, 0), position + new Vector3(0, size, 0));
         Gizmos.DrawLine(position + new Vector3(0, 0, -size), position + new Vector3(0, 0, size));
+    }
+
+    public static void DrawPlus2D(Vector3 position, float size = 0.05f)
+    {
+        Gizmos.DrawLine(position + new Vector3(-size, 0, 0), position + new Vector3(size, 0, 0));
+        Gizmos.DrawLine(position + new Vector3(0, -size, 0), position + new Vector3(0, size, 0));
     }
     public static void DrawStar(Vector3 position, float size = 0.05f)
     {

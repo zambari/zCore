@@ -1,8 +1,6 @@
-﻿
-
-using UnityEngine;
-using System;
+﻿using System;
 using System.IO;
+using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -20,7 +18,6 @@ public static class zExtensionsJson
     /// </summary>
     /// 
     /// 
-#pragma warning disable 162
 
     public static int ToJson(this object obj, string path, bool silent = false) // different naming conventino
     {
@@ -80,7 +77,7 @@ public static class zExtensionsJson
         if (ContainsPersitentDataOrProject(path)) return path;
         return Application.streamingAssetsPath + "/" + path;
 #else
-   if (ContainsPersitentDataOrProject(path)) return path;
+        if (ContainsPersitentDataOrProject(path)) return path;
         return Application.persistentDataPath + "/" + path;
 #endif
     }
@@ -103,7 +100,8 @@ public static class zExtensionsJson
         string parentDir = Path.GetDirectoryName(path);
         if (Directory.Exists(parentDir))
         {
-            Debug.Log("parent exists " + parentDir + " returning "); return limit;
+            Debug.Log("parent exists " + parentDir + " returning ");
+            return limit;
         }
 
         limit--;
@@ -115,7 +113,6 @@ public static class zExtensionsJson
     // {
 
     // }
-    
     public static string TryToFindFile(string path)
     {
         path = ReplaceSlashes(path);
@@ -139,9 +136,9 @@ public static class zExtensionsJson
 
         if (FileExists(Application.persistentDataPath + "/" + path)) return Application.persistentDataPath + "/" + path;
 #else
-   if (FileExists(Application.persistentDataPath+"/"+path)) return Application.persistentDataPath+"/"+path;
-     if (FileExists(Application.streamingAssetsPath+"/"+path)) return Application.streamingAssetsPath+"/"+path;
-    
+        if (FileExists(Application.persistentDataPath + "/" + path)) return Application.persistentDataPath + "/" + path;
+        if (FileExists(Application.streamingAssetsPath + "/" + path)) return Application.streamingAssetsPath + "/" + path;
+
 #endif
         if (FileExists(toucanPath + path)) return toucanPath + path;
         Debug.Log("Could not find path, creating default path " + DefaultSavePath(path));
@@ -153,18 +150,19 @@ public static class zExtensionsJson
     /// Loads an object from json. usage: newObject= newObject.FromJson &lt;typeOfNewObject&gt;(path)
     /// this version adds streamingAssetsPath to path string
     /// </summary>
-    public static T FromJson<T>(this T obj, string path, bool silent = false) // different naming conventino
+    public static T FromJson<T>(this T obj, string path, bool silent = false) where T : class // different naming conventin ow
     {
 
         path = TryToFindFile(path);
         // if (!path.Contains(".json")) path += ".json";
         // if (!path.Contains(Application.streamingAssetsPath)) path = Application.streamingAssetsPath + "/" + path;
-        if (!File.Exists(path)) return default(T);
+        if (!File.Exists(path)) return null; //default(T);
         string dataAsJson = File.ReadAllText(path);
         if (dataAsJson == null || dataAsJson.Length < 2)
         {
             if (!silent)
                 Debug.Log("loading file:" + path + " failed");
+            return null;
         }
         else
             obj = JsonUtility.FromJson<T>(dataAsJson);
@@ -199,7 +197,4 @@ public static class zExtensionsJson
     //     return true;
     // }
 
-
-
-    #pragma warning restore 162
 }
