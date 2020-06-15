@@ -85,6 +85,88 @@ public static class zExtensionsUI
         return result;
 
     }
+
+    	public static void SetParentAndResetScale(this Transform myTransform, Transform newParent)
+		{
+			myTransform.SetParent(newParent);
+			myTransform.localScale = Vector2.one;
+			myTransform.localPosition = Vector3.zero;
+		}
+
+		public static void SetColor(this Transform myTransform, Color newColor)
+		{
+			var myImage = myTransform.GetComponent<Image>();
+			if (myImage != null) myImage.color = newColor;
+		}
+
+		public static RectTransform PadTop(this RectTransform rect, float amount)
+		{
+			var offsetMax = rect.offsetMax;
+			offsetMax.y = -amount;
+			rect.offsetMax = offsetMax;
+			return rect;
+		}
+		public static RectTransform PadLeft(this RectTransform rect, float amount)
+		{
+			var offsetMin = rect.offsetMin;
+			offsetMin.x = amount;
+			rect.offsetMin = offsetMin;
+			return rect;
+		}
+
+		public static RectTransform PadRight(this RectTransform rect, float amount)
+		{
+			var offsetMax = rect.offsetMax;
+			offsetMax.x = -amount;
+			rect.offsetMax = offsetMax;
+			return rect;
+		}
+
+		public static RectTransform PadBottom(this RectTransform rect, float amount)
+		{
+			var offsetMin = rect.offsetMin;
+			offsetMin.y = amount;
+			rect.offsetMin = offsetMin;
+			return rect;
+		}
+		public static RectTransform Pad(this RectTransform rect, float amount)
+		{
+			return rect.PadTop(amount).PadBottom(amount).PadRight(amount).PadLeft(amount);
+		}
+
+		public static RectTransform Pad(this RectTransform rect, float top, float right, float bottom, float left)
+		{
+			return rect.PadTop(top).PadBottom(bottom).PadRight(right).PadLeft(left);
+		}
+
+		public static RectTransform SetAnchorLeft(this RectTransform rect, bool fill = true, bool setPivot = false)
+		{
+			rect.anchorMin = new Vector2(0, fill?0 : 0.5f);
+			rect.anchorMax = new Vector2(0, fill?1 : 0.5f);
+			if (setPivot) rect.pivot = new Vector2(0, .5f);
+			return rect;
+		}
+		public static RectTransform SetAnchorRight(this RectTransform rect, bool fill = true, bool setPivot = false)
+		{
+			rect.anchorMin = new Vector2(1, fill?0 : 0.5f);
+			rect.anchorMax = new Vector2(1, fill?1 : 0.5f);
+			if (setPivot) rect.pivot = new Vector2(1, .5f);
+			return rect;
+		}
+		public static RectTransform SetAnchorTop(this RectTransform rect, bool fill = true, bool setPivot = false)
+		{
+			rect.anchorMin = new Vector2(fill?0 : 0.5f, 1);
+			rect.anchorMax = new Vector2(fill?1 : 0.5f, 1);
+			if (setPivot) rect.pivot = new Vector2(.5f, 1);
+			return rect;
+		}
+		public static RectTransform SetAnchorBottom(this RectTransform rect, bool fill = true, bool setPivot = false)
+		{
+			rect.anchorMin = new Vector2(fill?0 : 0.5f, 0);
+			rect.anchorMax = new Vector2(fill?1 : 0.5f, 0);
+			if (setPivot) rect.pivot = new Vector2(.5f, 1);
+			return rect;
+		}
     public static LayoutElement[] GetActiveElements(this HorizontalLayoutGroup layout)
     {
         List<LayoutElement> elements = new List<LayoutElement>();

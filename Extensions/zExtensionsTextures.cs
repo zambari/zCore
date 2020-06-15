@@ -8,6 +8,8 @@ using UnityEngine;
 // v.05 shif color hue
 // v.06 moved colors 
 // v.07 draw cross , pixel normalized
+
+//getindex
 public static class zExtensionsTextures
 {
 
@@ -20,7 +22,18 @@ public static class zExtensionsTextures
         return t;
     }
 
-
+    public static int GetIndex(int x, int y, Vector2Int dims)
+    {
+        int index = ((dims.y - y + 1) * dims.x) - x;;
+        if (index < 0) index = 0;
+        if (index >= dims.x * dims.y) return 0;
+        return index;
+    }
+    public static int GetIndex(int x, int y, int dimx, int dimy)
+    {
+        return GetIndex(x, y, new Vector2Int(dimx, dimy));
+        //   return (y * textureDimensions.x) + x;
+    }
     public static bool CheckDimensions(this Texture texture, Vector2Int targetDimensions)
     {
         if (texture == null) return false;
@@ -120,13 +133,13 @@ public static class zExtensionsTextures
                 texture.SetPixel(i, j, color);
 
     }
- public static Color GetPixelNormalized(this Texture2D texture, Vector2 xy)
+    public static Color GetPixelNormalized(this Texture2D texture, Vector2 xy)
     {
         return texture.GetPixelNormalized(xy.x, xy.y);
     }
     public static Color GetPixelNormalized(this Texture2D texture, float x, float y)
     {
-        return texture.GetPixel((int)(x * texture.width), (int)(y * texture.height));
+        return texture.GetPixel((int) (x * texture.width), (int) (y * texture.height));
     }
     public static void SetPixelNormalized(this Texture2D texture, Vector2 xy, Color c)
     {
@@ -134,11 +147,11 @@ public static class zExtensionsTextures
     }
     public static void SetPixelNormalized(this Texture2D texture, float x, float y, Color c)
     {
-        texture.SetPixel((int)(x * texture.width), (int)(y * texture.height), c);
+        texture.SetPixel((int) (x * texture.width), (int) (y * texture.height), c);
     }
     public static float Average(this Color32 color)
     {
-        return ((int)color.r + color.g + color.b) / (3f * 255);
+        return ((int) color.r + color.g + color.b) / (3f * 255);
     }
     /// <summary>
     ///  used for test pattern
@@ -310,7 +323,6 @@ public static class zExtensionsTextures
     /// From http://wiki.unity3d.com/index.php/TextureDrawLine
     /// </summary>
 
-
     public static Texture2D DrawLine(this Texture2D tex, int x0, int y0, int x1, int y1, Color col)
     {
         if (tex == null) tex = new Texture2D(defaultTextureDim, defaultTextureDim);
@@ -361,7 +373,7 @@ public static class zExtensionsTextures
         return tex;
     }
 
-     public static void DrawCross(this Texture2D texture, int x, int y, Color color, int len = 3)
+    public static void DrawCross(this Texture2D texture, int x, int y, Color color, int len = 3)
     {
         //texture.SetPixel(x,y,color);
         for (int i = -len; i <= len; i++)
@@ -370,7 +382,6 @@ public static class zExtensionsTextures
             texture.SetPixel(x + i, y, color);
         }
     }
-
 
     public static void DrawCross(this Texture2D texture, int x, int y, Color color, int len, int width)
     {

@@ -1,13 +1,12 @@
-﻿
-
+﻿using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
-using System.IO;
 #if UNITY_EDITOR
 #endif
 
 //v0.2 rect row split
 //v0.3 setpivot now accepts vector2
+//v0.4 setparentandfill
 
 public static class zExtensionsRect
 {
@@ -52,19 +51,19 @@ public static class zExtensionsRect
     {
         RemoveChildren(g.transform, 0);
     }
-    public static void SetParentAndFill(this RectTransform rect, RectTransform parentRect)
+    public static RectTransform SetParentAndFill(this RectTransform rect, Transform parentRect)
     {
         rect.SetParent(parentRect);
         FillParent(rect);
+        return rect;
 
     }
-    public static void FillParent(this RectTransform rect)
+    public static RectTransform FillParent(this RectTransform rect)
     {
         RectTransform parentRect = rect.transform.parent.GetComponent<RectTransform>();
         if (parentRect == null)
         {
             Debug.Log("no parent here", rect);
-
         }
         else
         {
@@ -75,13 +74,12 @@ public static class zExtensionsRect
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
         }
-
+        return rect;
     }
     public static RectTransform AddChild(this RectTransform parentRect)
     {
         GameObject go = new GameObject();
         RectTransform rect = go.GetRect();
-
 
         go.transform.SetParent(parentRect);
 
@@ -101,7 +99,8 @@ public static class zExtensionsRect
     {
         LayoutElement le = g.GetComponent<LayoutElement>();
         if (le == null) le = g.AddComponent<LayoutElement>();
-        le.flexibleHeight = 1; le.flexibleWidth = 1;
+        le.flexibleHeight = 1;
+        le.flexibleWidth = 1;
 #if UNITY_EDITOR
         UnityEditorInternal.InternalEditorUtility.SetIsInspectorExpanded(le, false);
 #endif
@@ -121,8 +120,6 @@ public static class zExtensionsRect
         vl.childForceExpandHeight = false;
         vl.childForceExpandWidth = false;
     }
-
-
 
     public static void SetRelativeSizeX(this RectTransform rect, RectTransform parentRect, float v)
     {

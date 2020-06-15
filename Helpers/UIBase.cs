@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+#if LAYOUT_PANEL
 using LayoutPanelDependencies;
+#endif
 using UnityEngine;
 using UnityEngine.UI;
 using Z;

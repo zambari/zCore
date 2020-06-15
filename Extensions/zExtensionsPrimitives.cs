@@ -9,6 +9,7 @@ using System.Text;
 /// /
 /// v.02 float to vector3 
 /// v.03 float randomize with easier to undestand arithmetic
+/// v.04 makecolor missing # added
 
 public static class zExtensionPrimitives
 {
@@ -69,7 +70,7 @@ public static class zExtensionPrimitives
     }
     public static string Small(this string s)
     {
-        return "<size=8>" + s + "</size>";
+        return "<size=9>" + s + "</size>";
     }
     public static string MakeWhite(this string s, float brightness = 0.9f)
     {
@@ -81,7 +82,7 @@ public static class zExtensionPrimitives
 
     public static string MakeColor(this string s, Color c)
     {
-        return "<color=" + ColorUtility.ToHtmlStringRGB(c) + ">" + s + "</color>";
+        return "<color=#" + ColorUtility.ToHtmlStringRGB(c) + ">" + s + "</color>";
     }
 
 
