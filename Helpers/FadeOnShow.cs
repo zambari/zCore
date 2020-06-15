@@ -21,6 +21,7 @@ public class FadeOnShow : MonoBehaviour, IShowHide //, IShowHideCallback
     Graphic _graphics;
     CanvasGroup canvasGroup { get { if (_canvasGroup == null) _canvasGroup = gameObject.AddOrGetComponent<CanvasGroup>(); return _canvasGroup; } }
     CanvasGroup _canvasGroup;
+    public BoolEvent whenShown;
 
     public void Hide(Action callback)
     {
@@ -43,7 +44,7 @@ public class FadeOnShow : MonoBehaviour, IShowHide //, IShowHideCallback
             StartCoroutine(FadeDn(callback));
         else
             Fade(0);
-        gameObject.SetActive(false);
+      //  gameObject.SetActive(false);
     }
 
     public void Show(Action callback)
@@ -67,6 +68,14 @@ public class FadeOnShow : MonoBehaviour, IShowHide //, IShowHideCallback
             StartCoroutine(FadeUp(callback));
         else
             Fade(1);
+    }
+    void OnDisable()
+    {
+        lockFade = false;
+    }
+    void OnEnable()
+    {
+        lockFade = false;
     }
     IEnumerator FadeUp(Action callback)
     {
@@ -101,7 +110,12 @@ public class FadeOnShow : MonoBehaviour, IShowHide //, IShowHideCallback
         if (fadeMode == FadeMode.CanvasGroup)
         {
             if (canvasGroup != null)
+            {
                 canvasGroup.alpha = phase;
+                canvasGroup.interactable = phase > 0.5f;
+                canvasGroup.blocksRaycasts = phase > 0.5f;
+            }
+
         }
         else if (fadeMode == FadeMode.Graphic)
         {
@@ -111,12 +125,11 @@ public class FadeOnShow : MonoBehaviour, IShowHide //, IShowHideCallback
                 if (gr != null)
                 {
                     graphics.color = thisColor;
-
                 }
             }
-
         }
-
+        // Debug.Log("invoing " + (phase > .5f));
+        whenShown.Invoke(phase > .5f);
     }
     IEnumerator FadeDn(Action callback)
     {
