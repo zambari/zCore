@@ -10,44 +10,44 @@ namespace Z
     public class SmoothFollower : MonoBehaviour
     {
 
-        public Damper3D damperPos;
-        public Damper3DAngle damperAngle;
+        public Damper3D damperPos = new Damper3D();
+        public Damper3DAngle damperAngle = new Damper3DAngle();
         public Transform positionSource;
         public bool instantMode;
         TRS sourceTransformParams;
-        [Range(0,6)]
-        public float smoothTime=0.4f;
+        [Range(0, 6)]
+        public float smoothTime = 0.4f;
         void OnValidate()
         {
-            if (damperPos!=null) damperPos.smoothTime=smoothTime;
-            if (damperAngle!=null) damperAngle.smoothTime=smoothTime;
+            if (damperPos != null) damperPos.smoothTime = smoothTime;
+            if (damperAngle != null) damperAngle.smoothTime = smoothTime;
         }
 
         public bool useLocalSpace = true;
-      
+
         void Start()
         {
             if (positionSource == null) enabled = false;
-            damperPos.smoothTime=smoothTime;
-            damperAngle.smoothTime=smoothTime;
+            damperPos.smoothTime = smoothTime;
+            damperAngle.smoothTime = smoothTime;
         }
         void Update()
         {
             sourceTransformParams = new TRS(positionSource, useLocalSpace);
             if (instantMode)
             {
-                 sourceTransformParams.ApplyNoScale(transform,useLocalSpace);
+                sourceTransformParams.ApplyNoScale(transform, useLocalSpace);
             }
-            else 
+            else
             {
                 damperPos.targetValue = sourceTransformParams.position;
                 damperAngle.targetValue = positionSource.eulerAngles;
                 sourceTransformParams.position = damperPos.UpdatedValue();
                 sourceTransformParams.position = damperPos.UpdatedValue();
-                sourceTransformParams.rotation=Quaternion.Euler(damperAngle.UpdatedValue());
-                sourceTransformParams.ApplyNoScale(transform,useLocalSpace); // noscale verion
+                sourceTransformParams.rotation = Quaternion.Euler(damperAngle.UpdatedValue());
+                sourceTransformParams.ApplyNoScale(transform, useLocalSpace); // noscale verion
             }
-            
+
         }
     }
 }

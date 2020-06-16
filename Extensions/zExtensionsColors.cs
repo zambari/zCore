@@ -3,9 +3,10 @@ using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-///  v/// oeverrides zRectExtensions
-// v..2 setcolor
-// v.3 sat
+///oeverrides zRectExtensions
+// v.0.2 setcolor
+// v.0.3 sat
+// v.0.3a better wrapping for hue
 public static class zExtensionsColors // to useful to be in namespace1
 {
     public static Color ShiftHue(this Color src, float hueshitamount)
@@ -15,8 +16,8 @@ public static class zExtensionsColors // to useful to be in namespace1
         float V;
         Color.RGBToHSV(src, out H, out S, out V);
         H += hueshitamount;
-        if (H < 0) H += 1;
-        if (H > 1) H -= 1;
+        while (H < 0) H += 1;
+        while (H > 1) H -= 1;
 
         return Color.HSVToRGB(H, S, V);
 
