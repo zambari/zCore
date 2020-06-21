@@ -12,6 +12,7 @@ using UnityEngine.UI;
 public static class zBench
 {
     static Dictionary<string, System.Diagnostics.Stopwatch> stopwatchdict;
+    static readonly int throttledDictionaryLimit = 255;
     static Dictionary<string, float> throttledStrings
     {
         get { if (_throttledStrings == null) _throttledStrings = new Dictionary<string, float>(); return _throttledStrings; }
@@ -58,6 +59,10 @@ public static class zBench
 
     public static void DebugOnceInAWhile(string message, GameObject gameObject = null)
     {
+        ThrottledLog(message, gameObject);
+    }
+    public static void ThrottledLog(string message, GameObject gameObject = null)
+    {
         float lastTime = 0;
         if (throttledStrings.TryGetValue(message, out lastTime))
         {
@@ -73,9 +78,9 @@ public static class zBench
         {
             throttledStrings.Add(message, Time.time);
             Debug.Log(message, gameObject);
+            if (throttledStrings.Count > throttledDictionaryLimit) throttledStrings.Clear();
         }
     }
-
     public static void DebugOnce(string message, GameObject gameObject = null)
     {
         if (!throttledStrings.ContainsKey(message))

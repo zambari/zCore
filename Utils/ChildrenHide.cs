@@ -138,7 +138,7 @@ namespace Z {
 #if UNITY_2018_3_OR_NEWER
             var status = UnityEditor.PrefabUtility.GetPrefabInstanceStatus (gameObject);
             if (status == PrefabInstanceStatus.Connected) {
-                Debug.Log ("cannot move component on prefab, aborting.remove this debug ");
+                // Debug.Log ("cannot move component on prefab, aborting.remove this debug ");
                 return;
             }
 #endif

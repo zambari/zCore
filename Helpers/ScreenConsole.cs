@@ -9,6 +9,7 @@ using UnityEngine.UI;
 // v.05 // back to manual line count
 // v.06 // clear made public
 // v.07  more ini
+// v.08 replace newline with space, will it fix formatitng?
 
 namespace Z
 {
@@ -130,6 +131,7 @@ namespace Z
         static void HandleLog(string logString, string stackTrace, LogType type)
         {
             if (instance != null && instance.antiFeedback) return;
+            logString=logString.Replace('\n',' ');
             if (type == LogType.Log && (instance == null || instance.captureMainLog))
                 Log(logString);
             else

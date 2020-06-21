@@ -14,6 +14,10 @@ public class MaterialSetBasic : MonoBehaviour
     #pragma warning disable 0649
     public Material materialToSet;
     public Material materialToSetAlt;
+    public Material materialToSetAlt2;
+    public Material materialToSetAlt3;
+    public Material materialToSetAlt4;
+   public Material materialToSetAlt5;
     public Material materialToSetOrg;
     MeshRenderer[] mrends;
     void SetMaterial(Material m)
@@ -63,17 +67,45 @@ public class MaterialSetBasic : MonoBehaviour
         SetMaterial(materialToSet);
     }
 
-    // [ExposeMethodInEditor]
-    // void SetMaterialAlt()
-    // {
-    //     SetMaterial(materialToSetAlt);
-    // }
+    [ExposeMethodInEditor]
+    void SetMaterialAlt()
+    {
+        SetMaterial(materialToSetAlt);
+    }
+    
+    [ExposeMethodInEditor]
+    void SetMaterialAlt2()
+    {
+        SetMaterial(materialToSetAlt2);
+    }
 
-    // [ExposeMethodInEditor]
-    // void SetMaterialOrg()
-    // {
-    //     SetMaterial(materialToSetOrg);
-    // }
+
+    [ExposeMethodInEditor]
+    void SetMaterialAlt3()
+    {
+        SetMaterial(materialToSetAlt3);
+    }
+
+
+    [ExposeMethodInEditor]
+    void SetMaterialAlt4()
+    {
+        SetMaterial(materialToSetAlt4);
+    }
+
+
+    [ExposeMethodInEditor]
+    void SetMaterialAlt5()
+    {
+        SetMaterial(materialToSetAlt5);
+    }
+
+
+    [ExposeMethodInEditor]
+    void SetMaterialOrg()
+    {
+        SetMaterial(materialToSetOrg);
+    }
     // [ExposeMethodInEditor]
 
     void GetMaterial()

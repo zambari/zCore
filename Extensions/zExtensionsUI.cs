@@ -118,12 +118,12 @@ public static class zExtensionsUI
         if (le != null) le.flexibleWidth = Width;
         return myTransform;
     }
-    public static Transform SetParentAndResetScale(this Transform myTransform, Transform newParent)
+    public static RectTransform SetParentAndResetScale(this Transform myTransform, Transform newParent)
     {
         myTransform.SetParent(newParent);
         myTransform.localScale = Vector2.one;
         myTransform.localPosition = Vector3.zero;
-        return myTransform;
+        return myTransform as RectTransform;
     }
 
     public static void SetColor(this Transform myTransform, Color newColor)
