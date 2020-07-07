@@ -23,11 +23,16 @@ namespace Z
         public float intensity = 1;
         public float a;
 
-
         void OnDrawGizmosSelected()
         {
             if (type == MyLightType.spot)
+            {
+                Gizmos.color=(new Color(1,0.8f,0.6f,0.5f));
                 Gizmos.DrawWireSphere(transform.position, radius);
+                var p = light.transform.position;
+                zGizmos.DrawLineDashed(p, p+light.transform.forward * light.range);
+                zGizmos.DrawPlus( p+light.transform.forward * light.range);
+            }
         }
 
         readonly static string objectName = "SpotlightController";

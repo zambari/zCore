@@ -8,7 +8,7 @@ using UnityEngine.UI;
 using Z;
 namespace zUI
 {
-	public abstract class UIBase : MonoBehaviour, IHasContent
+	public abstract class UIBase : MonoBehaviour//, IHasContent
 	{
 #if LAYOUT_PANEL
 		public DrawInspectorBg draw;

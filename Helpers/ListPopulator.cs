@@ -33,8 +33,8 @@ public class ListPopulator : MonoBehaviour
                 else
                 {
 #if PALETTES
-                    var sp = GetComponentInChildren<ScrollPooled>();
-                    if (sp != null) content = sp.content;
+                    // var sp = GetComponentInChildren<ScrollPooled>();
+                    // if (sp != null) content = sp.content;
 #endif
 
                 }
