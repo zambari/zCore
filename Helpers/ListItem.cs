@@ -22,7 +22,7 @@ public class ListItem : UIBase //, IPointerClickHandler
 {
     public void Populate(string label, UnityAction callback)
     {
-        this.label = "f" + Path.GetFileName(label);
+        this.label = Path.GetFileName(label);
         SetCallback(callback);
     }
     public void AddListener(UnityAction e)
