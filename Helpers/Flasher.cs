@@ -68,8 +68,8 @@ public class Flasher : MonoBehaviour, IShowHide, IRequestInitLate
     public float inputPreview = 1;
     public FlashMode flashApplyMode = FlashMode.Graphics;
     [Header("Graphics mode:")]
-     public Color flashColorNormal = new Color(0.42f, 0.66f, 0.8f);
-    public Color flashColor {get {  if (flashStatusMode==FlashStatusMode.error) return flashColorError; return flashColorNormal;}}
+    public Color flashColorNormal = new Color(0.42f, 0.66f, 0.8f);
+    public Color flashColor { get { if (flashStatusMode == FlashStatusMode.error) return flashColorError; return flashColorNormal; } }
     public Color flashColorError = Color.red;
     public bool useGraphicColor;
 
@@ -85,10 +85,10 @@ public class Flasher : MonoBehaviour, IShowHide, IRequestInitLate
 #if LAYOUTPANEL
     Image[] borderImages;
     Color borderColor;
-
+    List<LayoutBorderDragger> borders;
     Image[] GetBorderImages()
     {
-        List<LayoutBorderDragger> borders = new List<LayoutBorderDragger>();
+        borders = new List<LayoutBorderDragger>();
         for (int i = 0; i < transform.childCount; i++)
         {
             var thisborder = transform.GetChild(i).GetComponent<LayoutBorderDragger>();
@@ -142,10 +142,10 @@ public class Flasher : MonoBehaviour, IShowHide, IRequestInitLate
             }
             else
             {
-              //  if (useGraphicColor)
-              //      flashColor = graphic.color;
-               // else
-                    graphic.color = flashStatusMode == FlashStatusMode.normal ? flashColor : flashColorError;
+                //  if (useGraphicColor)
+                //      flashColor = graphic.color;
+                // else
+                graphic.color = flashStatusMode == FlashStatusMode.normal ? flashColor : flashColorError;
             }
         }
         if (disableRaycasts)
@@ -197,6 +197,16 @@ public class Flasher : MonoBehaviour, IShowHide, IRequestInitLate
         phase = 0;
         enabled = true;
         flashStatusMode = FlashStatusMode.normal;
+#if LAYOUTPANEL
+        if (flashApplyMode == FlashMode.LayoutBorders)
+        {
+            if (borders == null) GetBorderImages();
+            foreach (var b in borders)
+            {
+                b.enabled = false;
+            }
+        }
+#endif
         //if (!isrunning && gameObject.activeInHierarchy)
         //StartCoroutine(FlashRoutine());
     }
@@ -227,6 +237,10 @@ public class Flasher : MonoBehaviour, IShowHide, IRequestInitLate
         {
             phase = 1;
             enabled = false;
+            foreach (var b in borders)
+            {
+                b.enabled = true;
+            }
         }
     }
     // IEnumerator FlashRoutine()
@@ -250,7 +264,7 @@ public class Flasher : MonoBehaviour, IShowHide, IRequestInitLate
 
     public virtual void Apply(float f)
     {
-
+        if (f < 0) f = 0;
         mappedOutput = Evaluate(f);
         if (flashApplyMode == FlashMode.CanvasGroup)
         {
@@ -282,7 +296,10 @@ public class Flasher : MonoBehaviour, IShowHide, IRequestInitLate
         else
         if (flashApplyMode == FlashMode.LayoutBorders)
         {
-            if (borderImages == null) borderImages = GetBorderImages();
+            if (borderImages == null)
+            {
+                borderImages = GetBorderImages();
+            }
             Color flashMulti = flashStatusMode == FlashStatusMode.normal ? flashColor : flashColorError;
             flashMulti.a = intensityMultiplier;
             Color thisColor = Color.Lerp(borderColor, flashMulti, mappedOutput);
@@ -290,8 +307,10 @@ public class Flasher : MonoBehaviour, IShowHide, IRequestInitLate
             {
                 image.color = thisColor;
             }
+
         }
 #endif
+
         //	mappedOutput=1-mappedOutput;
     }
 

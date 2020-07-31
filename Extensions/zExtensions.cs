@@ -115,6 +115,12 @@ public static class zExt
         var dt = System.DateTime.Now;
         return dt.Year.ToString("0000") + "-" + dt.Month.ToString("00") + "-" + dt.Day.ToString("00") + " " + dt.Hour.ToString("00") + "-" + dt.Minute.ToString("00") + "-" + dt.Second.ToString("00");
     }
+	
+	public static string FormatWithTrailingZeros(this DateTime dt, string delimiter, string spacer) // by szymon
+    {
+        return dt.Year.ToString("0000") + delimiter + dt.Month.ToString("00") + delimiter + dt.Day.ToString("00") + spacer + dt.Hour.ToString("00") + delimiter + dt.Minute.ToString("00") + delimiter + dt.Second.ToString("00");
+    }
+
 
     static IEnumerator WaitRoutine(float wait, System.Action Execute, bool unscaled = false)
     {
@@ -194,6 +200,10 @@ public static class zExt
         b = c;
     }
     public static void Sort(ref float a, ref float b)
+    {
+        if (a > b) Swap(ref a, ref b);
+    }
+     public static void Sort(ref int a, ref int b)
     {
         if (a > b) Swap(ref a, ref b);
     }

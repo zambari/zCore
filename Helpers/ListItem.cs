@@ -20,11 +20,13 @@ using UnityEditor;
 #endif
 public class ListItem : UIBase //, IPointerClickHandler
 {
-    public void Populate(string label, UnityAction callback)
+    public virtual void Populate(string label, UnityAction callback)
     {
-        this.label = Path.GetFileName(label);
+
+        this.label = label;
         SetCallback(callback);
     }
+   
     public void AddListener(UnityAction e)
     {
         button.onClick.AddListener(e);

@@ -14,6 +14,7 @@ using UnityEditor;
 
 // v.02 vector random
 // v.03 color random tweak
+// v.04 reduction
 
 public static class zExtensionsRandom
 {

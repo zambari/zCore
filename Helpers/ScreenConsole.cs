@@ -72,7 +72,7 @@ namespace Z
         void OnValidate()
         {
             if (text == null) text = GetComponent<Text>();
-            //    text.supportRichText = useFades;
+            text.supportRichText = useFades;
             text.color = color;
             waiter = new WaitForSeconds(refreshTime);
             string temp = "Log:";
@@ -80,18 +80,21 @@ namespace Z
             temp += "---\n";
             text.text = temp;
         }
+
         [ExposeMethodInEditor]
         void PrintSomeRubbih()
         {
             if (Application.isPlaying)
                 StartCoroutine(RubbishPrinter());
         }
+
         [ExposeMethodInEditor]
         void PrintMoreubbih()
         {
             if (Application.isPlaying)
                 StartCoroutine(RubbishPrinter(40, 10, 50, 5, 30));
         }
+
         [ExposeMethodInEditor]
         void Logerrors()
         {
@@ -131,14 +134,14 @@ namespace Z
         static void HandleLog(string logString, string stackTrace, LogType type)
         {
             if (instance != null && instance.antiFeedback) return;
-            logString=logString.Replace('\n',' ');
+            logString = logString.Replace('\n', ' ');
             if (type == LogType.Log && (instance == null || instance.captureMainLog))
                 Log(logString);
             else
             if (type == LogType.Error && (instance == null || instance.captureMainErrors))
                 Log(useFades ? "<color=#ff0000>" + logString + "</color>" : logString);
             else
-            if (type == LogType.Exception && (instance== null || instance.captureMainExceptions))
+            if (type == LogType.Exception && (instance == null || instance.captureMainExceptions))
                 Log(useFades ? "<color=#ff2020>" + logString + "</color>" : logString);
         }
 
@@ -174,7 +177,6 @@ namespace Z
                 antiFeedback = false;
             }
         }
-
 
         IEnumerator Rebuilder()
         {
@@ -227,7 +229,6 @@ namespace Z
                                 sb.Append(logList[i]);
                         }
 
-
                         sb.Append("\n");
                     }
                     text.text = sb.ToString();
@@ -248,7 +249,6 @@ namespace Z
             Clear();
             StartCoroutine(Rebuilder());
         }
-
 
         void Reset()
         {

@@ -16,7 +16,8 @@ public class ListPopulator : MonoBehaviour
 
     public ListItem itemTemplate;
     // public Transform content;
-    protected List<ListItem> items;
+    [HideInInspector]
+    public List<ListItem> items;
 
     protected virtual void OnValidate()
     {
@@ -24,8 +25,8 @@ public class ListPopulator : MonoBehaviour
         if (itemTemplate == null) itemTemplate = GetComponentInChildren<ListItem>();
         if (content == null)
         {
-            if (itemTemplate != null) 
-             content = itemTemplate.transform.parent as RectTransform;
+            if (itemTemplate != null)
+                content = itemTemplate.transform.parent as RectTransform;
             else
             {
                 var sr = GetComponent<ScrollRect>();
@@ -44,7 +45,7 @@ public class ListPopulator : MonoBehaviour
     }
 
     [ExposeMethodInEditor]
-    protected virtual void ClearList()
+    public virtual void ClearList()
     {
         if (itemTemplate == null) return;
         itemTemplate.gameObject.SetActive(false);
@@ -53,7 +54,7 @@ public class ListPopulator : MonoBehaviour
             GameObject g = itemTemplate.transform.parent.GetChild(i).gameObject;
             if ((g != itemTemplate.gameObject /* || g.GetComponent<ListConstant>()!=null*/ ) && g.activeSelf)
             {
-#if UNITY_EDITOR
+#if UNITY_EDITOR_
                 EditorApplication.delayCall += () => DestroyImmediate(g);
 #else
                 Destroy(g);
@@ -63,7 +64,7 @@ public class ListPopulator : MonoBehaviour
         items = new List<ListItem>();
     }
     public RectTransform content;
-    protected ListItem CreateItem()
+    public ListItem CreateItem()
     {
         if (items == null) items = new List<ListItem>();
         if (itemTemplate == null)
@@ -76,13 +77,13 @@ public class ListPopulator : MonoBehaviour
                 itemTemplate = thisItem.GetComponent<ListItem>();
 #endif
         }
-        var item = Instantiate(itemTemplate,content);
+        var item = Instantiate(itemTemplate, content);
         // Debug.Log($"Created with parent {itemTemplate.transform.parent}");
         items.Add(item);
         item.gameObject.SetActive(true);
         return item;
     }
-    protected void SetListSize(int size)
+    public void SetListSize(int size)
     {
         if (itemTemplate == null) return;
         itemTemplate.gameObject.SetActive(false);

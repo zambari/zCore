@@ -49,7 +49,7 @@ namespace zUI
 			if (_text == null) _text = component.GetComponentInChildren<Text>();
 			if (_button == null) _button = component.gameObject.GetComponentInChildren<Button>();
 			if (_image == null) _image = component.GetComponentInChildren<Image>();
-			if (_image == null || _image.enabled == false && component.transform.childCount > 0)
+			if ((_image == null || _image.enabled == false) && component.transform.childCount > 0)
 				_image = component.transform.GetChild(0).GetComponent<Image>();
 		}
 
