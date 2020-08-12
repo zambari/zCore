@@ -8,7 +8,7 @@ using UnityEngine;
 // v.06 interpolate
 // v.07 GetDimensions<T>(this T[][] vals)
 // v.08 Sort
-
+// v.09 more map overlod
 namespace Z
 {
 
@@ -326,7 +326,21 @@ namespace Z
             return f;
         }
 
+        public static float Map(this float f, Vector2 minMax)
+        {
+            f *= (minMax.y - minMax.x);
+            f += minMax.x;
+            return f;
+        }
+
         public static float MapInversed(this Vector2 minMax, float f)
+        {
+            f /= (minMax.y - minMax.x);
+
+            f -= minMax.x;
+            return f;
+        }
+        public static float MapInversed(this float f, Vector2 minMax)
         {
             f /= (minMax.y - minMax.x);
 

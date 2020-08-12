@@ -237,10 +237,12 @@ public class Flasher : MonoBehaviour, IShowHide, IRequestInitLate
         {
             phase = 1;
             enabled = false;
-            foreach (var b in borders)
-            {
-                b.enabled = true;
-            }
+            #if LAYOUTPANEL
+            // foreach (var b in borders)
+            // {
+            //     b.enabled = true;
+            // }
+            #endif
         }
     }
     // IEnumerator FlashRoutine()

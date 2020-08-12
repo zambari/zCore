@@ -29,6 +29,11 @@ public class ListItem : UIBase //, IPointerClickHandler
    
     public void AddListener(UnityAction e)
     {
+        if (button==null) 
+        {
+            Debug.Log("no button",gameObject);
+            return;
+        }
         button.onClick.AddListener(e);
     }
     public void ClearListeners()

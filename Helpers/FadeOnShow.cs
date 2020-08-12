@@ -23,7 +23,7 @@ public class FadeOnShow : MonoBehaviour, IShowHide //, IShowHideCallback
     CanvasGroup _canvasGroup;
     public BoolEvent whenShown;
 
-    public void Hide(Action callback)
+    public void _Hide(Action callback)
     {
         // if (graphics == null) graphics = GetComponent<Graphic>();
         //  if (canvasGroup == null) canvasGroup = GetComponent<CanvasGroup>();
@@ -41,13 +41,13 @@ public class FadeOnShow : MonoBehaviour, IShowHide //, IShowHideCallback
         }
         StopAllCoroutines();
         if (Application.isPlaying && gameObject.activeInHierarchy)
-            StartCoroutine(FadeDn(callback));
+            StartCoroutine(_FadeDn(callback));
         else
             Fade(0);
-      //  gameObject.SetActive(false);
+        //  gameObject.SetActive(false);
     }
 
-    public void Show(Action callback)
+    public void _Show(Action callback)
     {
         if (lockFade)
         {
@@ -65,21 +65,53 @@ public class FadeOnShow : MonoBehaviour, IShowHide //, IShowHideCallback
 
         StopAllCoroutines();
         if (Application.isPlaying)
-            StartCoroutine(FadeUp(callback));
+            StartCoroutine(_FadeUp(callback));
         else
             Fade(1);
     }
+    bool forcedFade;
     void OnDisable()
     {
         lockFade = false;
+        // if (!forcedFade)
+        // {
+
+        //     forcedFade = true;
+        //     if (scalerTEmp == null)
+        //     {
+        //         scalerTEmp = GameObject.FindObjectOfType<CanvasScaler>() as CanvasScaler;
+        //     }
+        //     scalerTEmp.StartCoroutine(DiablerRoutine());
+        // }
     }
+    IEnumerator DiablerRoutine()
+    {
+        Debug.Log("disblerroutn");
+        yield return null;
+        gameObject.SetActive(true);
+        _FadeDn(null);
+
+    }
+    static CanvasScaler scalerTEmp;
+    static GameObject tempObjet;
     void OnEnable()
     {
         lockFade = false;
+        // if (!forcedFade)
+        //     _FadeUp(null);
+
+        forcedFade = false;
+
     }
-    IEnumerator FadeUp(Action callback)
+    IEnumerator _FadeUp(Action callback)
     {
-        if (lockFade) yield break;
+        if (lockFade)
+        {
+            Debug.Log("breaking");
+            
+              yield break;
+
+        }
         lockFade = true;
         if (graphics != null)
             savedColor = graphics.color;
@@ -129,9 +161,9 @@ public class FadeOnShow : MonoBehaviour, IShowHide //, IShowHideCallback
             }
         }
         // Debug.Log("invoing " + (phase > .5f));
-        whenShown.Invoke(phase > .5f);
+        whenShown.Invoke(phase >.5f);
     }
-    IEnumerator FadeDn(Action callback)
+    IEnumerator _FadeDn(Action callback)
     {
         if (lockFade) yield break;
         lockFade = true;
@@ -148,7 +180,7 @@ public class FadeOnShow : MonoBehaviour, IShowHide //, IShowHideCallback
         while (phase >= 0)
         {
             Fade(phase);
-            phase -= Time.deltaTime * speed * speed;
+            phase -= Time.deltaTime * speed * speed/2;
             yield return null;
         }
         Fade(0);
@@ -159,14 +191,14 @@ public class FadeOnShow : MonoBehaviour, IShowHide //, IShowHideCallback
 
         if (callback != null) callback.Invoke();
     }
-
+[ExposeMethodInEditor]
     public void Show()
     {
-        Show(null);
+        _Show(null);
     }
-
+[ExposeMethodInEditor]
     public void Hide()
     {
-        Hide(null);
+        _Hide(null);
     }
 }

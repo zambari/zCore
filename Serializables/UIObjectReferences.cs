@@ -10,6 +10,15 @@ namespace zUI
 		[SerializeField] public RectTransform _rectTransform;
 		[SerializeField] public Text _text;
 		[SerializeField] public Button _button;
+		[SerializeField] public Toggle _toggle;
+		public Toggle toggle
+		{
+			get
+			{
+				return _toggle;
+			}
+		}
+
 		[SerializeField] public Image _image;
 		[SerializeField] public Transform _content;
 		public bool autoName = true;
@@ -47,6 +56,7 @@ namespace zUI
 
 			if (_content == null) _content = _rectTransform;
 			if (_text == null) _text = component.GetComponentInChildren<Text>();
+			if (_toggle == null) _toggle = component.GetComponentInChildren<Toggle>();
 			if (_button == null) _button = component.gameObject.GetComponentInChildren<Button>();
 			if (_image == null) _image = component.GetComponentInChildren<Image>();
 			if ((_image == null || _image.enabled == false) && component.transform.childCount > 0)
