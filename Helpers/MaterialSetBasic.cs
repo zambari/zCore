@@ -15,11 +15,16 @@ public class MaterialSetBasic : MonoBehaviour
 
 #pragma warning disable 0649
     public Material materialToSet;
-    public Material materialToSetAlt;
-    public Material materialToSetAlt2;
-    public Material materialToSetAlt3;
-    public Material materialToSetAlt4;
-    public Material materialToSetAlt5;
+    [UnityEngine.Serialization.FormerlySerializedAs("MaterialToSetAlt")]
+    public Material materialToSetAlpha;
+    [UnityEngine.Serialization.FormerlySerializedAs("MaterialToSetAlt2")]
+    public Material materialToSetBravo;
+    [UnityEngine.Serialization.FormerlySerializedAs("MaterialToSetAlt3")]
+    public Material materialToSetDelta;
+    [UnityEngine.Serialization.FormerlySerializedAs("MaterialToSetAlt4")]
+    public Material materialToSetFoxtrot;
+    [UnityEngine.Serialization.FormerlySerializedAs("MaterialToSetAlt5")]
+    public Material materialToSetLambda;
     public Material materialToSetOrg;
     List<MeshRenderer> mrends;
     void SetMaterialIfNull_(Material m)
@@ -106,31 +111,31 @@ public class MaterialSetBasic : MonoBehaviour
     [ExposeMethodInEditor]
     void SetMaterialAlt()
     {
-        SetMaterial(materialToSetAlt);
+        SetMaterial(materialToSetAlpha);
     }
 
     [ExposeMethodInEditor]
     void SetMaterialAlt2()
     {
-        SetMaterial(materialToSetAlt2);
+        SetMaterial(materialToSetBravo);
     }
 
     [ExposeMethodInEditor]
     void SetMaterialAlt3()
     {
-        SetMaterial(materialToSetAlt3);
+        SetMaterial(materialToSetDelta);
     }
 
     [ExposeMethodInEditor]
     void SetMaterialAlt4()
     {
-        SetMaterial(materialToSetAlt4);
+        SetMaterial(materialToSetFoxtrot);
     }
 
     [ExposeMethodInEditor]
     void SetMaterialAlt5()
     {
-        SetMaterial(materialToSetAlt5);
+        SetMaterial(materialToSetLambda);
     }
 
     [ExposeMethodInEditor]
@@ -148,7 +153,7 @@ public class MaterialSetBasic : MonoBehaviour
     void Reset()
     {
         GetMaterial();
-        materialToSetAlt = materialToSet;
+        materialToSetAlpha = materialToSet;
         materialToSetOrg = materialToSet;
     }
 #pragma warning restore 0618

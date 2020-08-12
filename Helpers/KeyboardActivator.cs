@@ -21,7 +21,7 @@ public class KeyboardActivator : MonoBehaviour
             {
                 if (objectMappings[i].gameObject != null)
                 {
-                    help += $"[{objectMappings[i].keycode}] ➔ {objectMappings[i].gameObject.name}\r\n";
+                    help += "["+objectMappings[i].keycode+"+] ➔ "+objectMappings[i].gameObject.name+"\r\n";
                 }
             }
             helpTextObject.text = help;
