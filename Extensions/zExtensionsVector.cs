@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 // zambari 2019
@@ -8,7 +9,9 @@ using UnityEngine;
 // v.06 interpolate
 // v.07 GetDimensions<T>(this T[][] vals)
 // v.08 Sort
-// v.09 more map overlod
+// v.09 maptoindex
+// v.10 more map extensions
+
 namespace Z
 {
 
@@ -19,6 +22,32 @@ namespace Z
         public static Vector2 Sort(this Vector2 source)
         {
             if (source.x > source.y) return new Vector2(source.y, source.x);
+            return source;
+        }
+        public static int MapToIndex(this float source, int range)
+        {
+            if (source < 0) source = 0;
+            else
+            if (source > 1) source = 1;
+            int index = Mathf.FloorToInt(source * range);
+            if (index == range) index--;
+            return index;
+        }
+        public static int MapToIndex(this IList source, float value)
+        {
+            int count = source.Count;
+            if (value < 0) value = 0;
+
+            int index = Mathf.FloorToInt(count * value);
+            if (index >= count) index = count - 1;
+            return index;
+        }
+        public static Vector2 ClampRange(this Vector2 source)
+        {
+            if (source.x < 0) source.x = 0;
+            if (source.y < 0) source.y = 0;
+            if (source.x > 1) source.x = 1;
+            if (source.y > 1) source.y = 1;
             return source;
         }
         public static Vector2Int Sort(this Vector2Int source)
@@ -46,6 +75,19 @@ namespace Z
             }
             return DirectionsFour.down;
 
+        }
+		  public static float MapInversed(this float f, Vector2 minMax)
+        {
+            f /= (minMax.y - minMax.x);
+
+            f -= minMax.x;
+            return f;
+        }
+		   public static float Map(this float f, Vector2 minMax)
+        {
+            f *= (minMax.y - minMax.x);
+            f += minMax.x;
+            return f;
         }
         public enum VectorComponent { none, x, y, z }
         public static Vector3 SetComponent(this Vector3 vector, VectorComponent component, float f)
@@ -326,21 +368,7 @@ namespace Z
             return f;
         }
 
-        public static float Map(this float f, Vector2 minMax)
-        {
-            f *= (minMax.y - minMax.x);
-            f += minMax.x;
-            return f;
-        }
-
         public static float MapInversed(this Vector2 minMax, float f)
-        {
-            f /= (minMax.y - minMax.x);
-
-            f -= minMax.x;
-            return f;
-        }
-        public static float MapInversed(this float f, Vector2 minMax)
         {
             f /= (minMax.y - minMax.x);
 
