@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 namespace Z
 {
-// v.02 more syntax shortcus
-
+    // v.02 more syntax shortcus
+    // v.03 GetRandomChild
     public enum TransformType { none, TransformVector, InverseTransformVector, TransformDirection, InverseTransformDirection, TransformPoint, InverseTransformPoint }
     public enum TransformAxis { none, X, Y, Z }
 
@@ -50,6 +50,13 @@ namespace Z
         // {
         //     return GetTransformation(transform, type, source);
         // }
+
+
+        public static Transform GetRandomChild(this Transform transform)
+        {
+            if (transform.childCount == 0) return null;
+            return transform.GetChild(Random.Range(0, transform.childCount));
+        }
         public static Vector3 GetTransformation(this Transform transform, TransformType type, Vector3 source)
         {
 
