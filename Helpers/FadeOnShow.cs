@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Z;
 // chyba .02
+// chyba .03
 public class FadeOnShow : MonoBehaviour, IShowHide //, IShowHideCallback
 {
 
@@ -21,7 +22,8 @@ public class FadeOnShow : MonoBehaviour, IShowHide //, IShowHideCallback
     Graphic _graphics;
     CanvasGroup canvasGroup { get { if (_canvasGroup == null) _canvasGroup = gameObject.AddOrGetComponent<CanvasGroup>(); return _canvasGroup; } }
     CanvasGroup _canvasGroup;
-    public BoolEvent whenShown;
+    public BoolEvent whenShown=new BoolEvent();
+    // public BoolEvent whenHidden= new BoolEvent();
 
     public void _Hide(Action callback)
     {
@@ -43,7 +45,10 @@ public class FadeOnShow : MonoBehaviour, IShowHide //, IShowHideCallback
         if (Application.isPlaying && gameObject.activeInHierarchy)
             StartCoroutine(_FadeDn(callback));
         else
+        {
             Fade(0);
+            // whenHidden.Invoke();
+        }
         //  gameObject.SetActive(false);
     }
 
@@ -108,8 +113,8 @@ public class FadeOnShow : MonoBehaviour, IShowHide //, IShowHideCallback
         if (lockFade)
         {
             Debug.Log("breaking");
-            
-              yield break;
+
+            yield break;
 
         }
         lockFade = true;
@@ -180,7 +185,7 @@ public class FadeOnShow : MonoBehaviour, IShowHide //, IShowHideCallback
         while (phase >= 0)
         {
             Fade(phase);
-            phase -= Time.deltaTime * speed * speed/2;
+            phase -= Time.deltaTime * speed * speed / 2;
             yield return null;
         }
         Fade(0);
@@ -191,12 +196,14 @@ public class FadeOnShow : MonoBehaviour, IShowHide //, IShowHideCallback
 
         if (callback != null) callback.Invoke();
     }
-[ExposeMethodInEditor]
+
+    [ExposeMethodInEditor]
     public void Show()
     {
         _Show(null);
     }
-[ExposeMethodInEditor]
+
+    [ExposeMethodInEditor]
     public void Hide()
     {
         _Hide(null);

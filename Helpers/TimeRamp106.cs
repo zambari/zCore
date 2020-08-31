@@ -1,4 +1,11 @@
-﻿// v.1.1
+﻿// v.1.0.1
+// 1.0.6 more curves
+
+
+// v1.03
+    // changelog: 1.02-1.03-> removed flashflag, introduced new forcerunning flag instead, introduced ipl dependency, regions
+    // BEGIN optional, introduces settings dependency !!! remove to use outside IPL
+
 /*  
  *  List of available methods
     public TimeRamp JumpZero()
@@ -29,10 +36,7 @@ using UnityEngine;
 [System.Serializable]
 public class TimeRamp
 {
-    // v1.03
-    // changelog: 1.02-1.03-> removed flashflag, introduced new forcerunning flag instead, introduced ipl dependency, regions
-    // BEGIN optional, introduces settings dependency !!! remove to use outside IPL
-
+    
     public static float overShootCurve(float f)
     {
         return (2 - f) * (2 - f) * f;
@@ -60,9 +64,30 @@ public class TimeRamp
 
     #region variables   
     // public bool debugFlag;
-    public float startTime;
+    public float startTime
+    {
+        get { return _startTime; } set
+        {
+            if (value == 1)
+            {
+                rampState = RampState.reachedOne;
+            }
+            else
+            if (value == 0)
+            {
+                rampState = RampState.reachedZero;
+            }
+            // if (value>.6f)
+
+            _startTime = value;
+        }
+
+    }
+
+    [SerializeField]
+    float _startTime;
     public enum RampState { reachedZero, goingUp, reachedOne, goingDown }
-    public enum CurveShapes { linear, smooth, overshoot }
+    public enum CurveShapes { linear, smooth, doubleSmoothStep, overshoot }
     public CurveShapes curveShape;
 
     public RampState rampState;
@@ -162,6 +187,9 @@ public class TimeRamp
                 return f;
             case CurveShapes.smooth:
                 return Mathf.SmoothStep(0, 1, f);
+            case CurveShapes.doubleSmoothStep:
+                return Mathf.SmoothStep(0, 1, Mathf.SmoothStep(0, 1, f));
+
             case CurveShapes.overshoot:
                 return overShootCurve(f);
         }
@@ -263,6 +291,11 @@ public class TimeRamp
             _value = GetValue();
             return (_value);
         }
+        // set {
+
+        //     _value=value;
+
+        // }
     }
     public bool isZero { get { return (rampState == RampState.reachedZero); } }
     public bool isOne { get { return (rampState == RampState.reachedOne); } }

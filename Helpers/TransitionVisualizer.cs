@@ -45,7 +45,7 @@ public class TransitionVisualizer : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        if (Application.isPlaying) return;
+        // if (Application.isPlaying) return;
         //RecalculteLine();
         if (thisRect == null) thisRect = GetComponent<RectTransform>();
         if (target != null && isActiveAndEnabled)

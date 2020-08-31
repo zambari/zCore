@@ -31,7 +31,7 @@ public class ListItem : UIBase //, IPointerClickHandler
     {
         if (button==null) 
         {
-            Debug.Log("no button",gameObject);
+            Debug.Log("no button on listiem "+name,gameObject);
             return;
         }
         button.onClick.AddListener(e);

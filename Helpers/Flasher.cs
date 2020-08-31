@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using Z.LayoutPanel;
 #endif
 // v.02 controls avnas grouyps
+// v.03 beterextens
 public interface IFlash
 {
     void Flash();
@@ -21,11 +22,16 @@ public static class FlasherExtension
     {
         if (flasher != null) flasher.Flash();
     }
+   public static void Flash(this GameObject go)
+    {
+        var flasher=go.GetComponentInParent<Flasher>();
 
+        if (flasher != null) flasher.Flash();
+    }
 }
 
 // [RequireComponent(typeof(Image))]
-public class Flasher : MonoBehaviour, IShowHide, IRequestInitLate
+public class Flasher : MonoBehaviour, IRequestInitLate //IShowHide
 {
     // public TimeRamp timeRamp = new TimeRamp();
     // Use this for initialization
