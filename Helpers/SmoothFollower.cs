@@ -4,8 +4,7 @@ using UnityEngine;
 using Z;
 
 // v .03 merged with delayed transform follower
-
-
+// v.04 useposition
 public class SmoothFollower : MonoBehaviour
 {
 
@@ -31,6 +30,7 @@ public class SmoothFollower : MonoBehaviour
     public bool useDelay = true;
     [Header("Apply")]
     public bool useRotation = true;
+    public bool usePosition = true;
     public bool useScale = false;
     public bool useLocal = true;
     public bool keepposOffsetitions = true;
@@ -117,7 +117,11 @@ public class SmoothFollower : MonoBehaviour
             if (keepStartRotations) r *= startRot;
             transform.localRotation = r;
         }
-        transform.localPosition = thisTrs.position - (keepposOffsetitions ? posOffset : Vector3.zero);
+        if (usePosition)
+        {
+            transform.localPosition = thisTrs.position - (keepposOffsetitions ? posOffset : Vector3.zero);
+             //  transform.localPosition = thisTrs.position - (keepposOffsetitions ? posOffset : Vector3.zero);
+        }
         if (useScale) transform.localScale = thisTrs.scale;
         // pending = false;
     }

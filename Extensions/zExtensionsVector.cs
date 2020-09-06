@@ -11,6 +11,7 @@ using UnityEngine;
 // v.08 Sort
 // v.09 maptoindex
 // v.10 more map extensions
+// v.11 more map Inverse fixed
 
 namespace Z
 {
@@ -76,14 +77,14 @@ namespace Z
             return DirectionsFour.down;
 
         }
-		  public static float MapInversed(this float f, Vector2 minMax)
+        public static float MapInversed(this float f, Vector2 minMax)
         {
             f /= (minMax.y - minMax.x);
 
             f -= minMax.x;
             return f;
         }
-		   public static float Map(this float f, Vector2 minMax)
+        public static float Map(this float f, Vector2 minMax)
         {
             f *= (minMax.y - minMax.x);
             f += minMax.x;
@@ -244,9 +245,15 @@ namespace Z
         public static float DeadZone(this float v, float zone)
         {
             if (v > 0)
+            {
                 v -= zone;
-            if (v < 0) v = 0;
-            else { v += zone; if (v > 0) v = 0; }
+                if (v < 0) v = 0;
+            }
+            else
+            {
+                v += zone;
+                if (v > 0) v = 0;
+            }
             return v;
         }
         public static float DeadZone(this float v, float zone, out bool wasOutside)
@@ -370,9 +377,9 @@ namespace Z
 
         public static float MapInversed(this Vector2 minMax, float f)
         {
+            f -= minMax.x;
             f /= (minMax.y - minMax.x);
 
-            f -= minMax.x;
             return f;
         }
         public static void SetScale(this Transform transform, float scale)
