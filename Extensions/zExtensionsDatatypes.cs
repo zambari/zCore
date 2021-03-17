@@ -13,7 +13,8 @@ using UnityEngine;
 /// v.06 ItemBasedOnNormalized
 /// v.07 aarr to sring
 /// v.07 b maxlen
-/// 
+/// v.08 list extensoins removed and moved to seperate class
+
 namespace Z
 {
     public interface IEndianReverse
@@ -117,37 +118,7 @@ namespace Z
             return src[0];
         }
 
-        public static T LastItem<T>(this IList<T> src)
-        {
-            if (src == null || src.Count == 0) return default(T);
-            return src[src.Count - 1];
-        }
-        public static T MiddleItem<T>(this IList<T> src)
-        {
-            if (src == null || src.Count == 0) return default(T);
-            return src[src.Count / 2];
-        }
-
-        public static T RandomItem<T>(this IList<T> src)
-        {
-            if (src == null || src.Count == 0) return default(T);
-            return src[UnityEngine.Random.Range(0, src.Count)];
-        }
-
-        public static T ItemBasedOnNormalized<T>(this IList<T> src, float lerpAmt)
-        {
-            if (src == null || src.Count == 0) return default(T);
-
-            return src[IndexBasedOnNormalized(src, lerpAmt)];
-        }
-        public static int IndexBasedOnNormalized<T>(this IList<T> src, float lerpAmt)
-        {
-            if (src == null || src.Count == 0) return 0;
-            int index = Mathf.RoundToInt(lerpAmt * src.Count);
-            if (index < 0) index = 0;
-            if (index >= src.Count) index = src.Count - 1;
-            return index;
-        }
+     
 
         public static float NormalizedFromIndex<T>(this IList<T> src, int index)
         {

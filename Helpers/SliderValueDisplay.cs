@@ -11,26 +11,28 @@ namespace Z
     // v0.22a getslider
     // v0.22b nullchek
     // v0.3 set on start
-    // v0.4 not only in parent
+    // v0.4 squared, percent
+
     [RequireComponent(typeof(Text))]
     [ExecuteInEditMode]
     public class SliderValueDisplay : MonoBehaviour
     {
 
         Text text;
-        [SerializeField] Slider slider;
+        Slider slider;
         public string unit;
         public bool wholeNumbers;
         public int multiplier = 1;
+        public bool asPercent;
+        public bool squared;
         // Use this for initialization
         void OnValidate()
         {
-            if (slider == null) slider = GetComponentInParent<Slider>();
             Start();
         }
         void OnEnable()
         {
-            if (slider == null) slider = GetComponentInParent<Slider>();
+            slider = GetComponentInParent<Slider>();
             // if (slider == null) { enabled = false; return; }
             text = GetComponent<Text>();
             Invoke("UpdateValue", .1f);
@@ -39,7 +41,11 @@ namespace Z
         {
             slider = GetComponentInParent<Slider>();
             if (slider != null)
+            {
                 slider.onValueChanged.AddListener(OnSliderValueChanged);
+                
+                OnSliderValueChanged(slider.value);
+            }
         }
         void UpdateValue()
         {
@@ -49,6 +55,8 @@ namespace Z
         void OnSliderValueChanged(float f)
         {
             f *= multiplier;
+            if (squared) f *= f;
+            if (asPercent) f *= 100;
             string val = wholeNumbers ? ((int) f).ToString() : f.ToShortString();
             if (text != null)
             {

@@ -130,7 +130,7 @@ public class Flasher : MonoBehaviour, IRequestInitLate //IShowHide
         // if (speespeed=1;
 #if LAYOUTPANEL
 #else
-        Debug.Log("Uwaga, nie mamy define od layoutpanelu");
+//        Debug.Log("Uwaga, nie mamy define od layoutpanelu");
 #endif
         // inputPreview=1;
         //	intensityMultiplier=.7;

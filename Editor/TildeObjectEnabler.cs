@@ -23,7 +23,7 @@ namespace Z
                }
            }*/
         static GameObject selectedObject;
-        [MenuItem("Tools/Actions/Toggle Enabled  _`")]
+        //[MenuItem("Tools/Actions/Toggle Enabled  _`")]
         static void ToggleEnabled()
         {
             if (Selection.activeGameObject != null)
@@ -33,7 +33,7 @@ namespace Z
                     ToggleActiveStatus(Selection.gameObjects[i], newActiveStatus);
             }
         }
-        [MenuItem("Tools/Actions/Select favourite Togglable object  _%#`")]
+       // [MenuItem("Tools/Actions/Select favourite Togglable object  _%#`")]
         static void SelectTogglable()
         {
             if (Selection.activeGameObject != null)
@@ -42,7 +42,7 @@ namespace Z
                 Debug.Log(selectedObject.name + " was marked for control tilde toggle");
             }
         }
-        [MenuItem("Tools/Actions/Toggle favourite object  _#`")]
+      //  [MenuItem("Tools/Actions/Toggle favourite object  _#`")]
         static void SelectedTogglableToggle()
         {
             if (selectedObject != null)

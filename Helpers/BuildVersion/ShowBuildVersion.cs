@@ -1,4 +1,6 @@
-﻿/// <summary>
+﻿// v.02 does not increase version shown in editor
+
+/// <summary>
 /// This class is meant to be attached to a Text object - will read and display lastest build version
 /// </summary>
 
@@ -17,7 +19,7 @@ public class ShowBuildVersion : MonoBehaviour
         ReadVersionOffline();
     }
 #endif
-    public bool addUntiyVersion = true;
+    public bool addUntiyVersion = false;
     [System.Serializable]
     public class BuildVersion
     {
@@ -31,10 +33,12 @@ public class ShowBuildVersion : MonoBehaviour
     }
 
     // Use this for initialization
+    #if !UNITY_EDITOR
     void Start()
     {
         StartCoroutine(GetBuildVersion());
     }
+    #endif
 #pragma warning disable 618
     IEnumerator GetBuildVersion()
     {
@@ -74,7 +78,7 @@ public class ShowBuildVersion : MonoBehaviour
         buildVersion = buildVersion.FromJson(IncrementBuildVersion.fileName);
 
         if (buildVersion != null)
-            text.text = "Build " + (buildVersion.buildNr + 1); // gets incremented after succesful build\
+            text.text = "Build " + (buildVersion.buildNr ); // gets incremented after succesful build\
         if (addUntiyVersion)
             text.text += " Unity: " + Application.unityVersion;
 #endif

@@ -1,3 +1,5 @@
+// moded for realtime framework 
+
 //
 // Klak - Utilities for creative coding with Unity
 //
@@ -24,27 +26,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
-// v.02 ranges modded agin
 using Klak.Math;
 using UnityEngine;
-
+// transform gizmo version
+// hexagon psytrance verions
+// [DisallowMultipleComponent]
 public class BrownianMotionZ : MonoBehaviour
 {
     #region Editable Properties
+    [Space]
+    [Header("Crazy festrival Edition")]
+    [Space]
+    [Header("Position")]
+    public bool _enablePositionNoise = false;
+    [Range(0, 2f)]
+    public float _positionFrequency = 0.5f;
 
-    [SerializeField] bool _enablePositionNoise = true;
-    [SerializeField] bool _enableRotationNoise = true;
-    [Range(0, 0.5f)]
-    [SerializeField] float _positionFrequency = 0.2f;
-    [Range(0.01f, .5f)]
-    [SerializeField] float _rotationFrequency = 0.2f;
     [Range(0, 5)]
-    [SerializeField] float _positionAmplitude = 0.5f;
+    public float _positionAmplitude = 0.5f;
+    [Space]
+    [Header("Rotationf")]
+    public bool _enableRotationNoise = false;
+    [Range(0, 1.5f)]
+    public float _rotationFrequency = 0.5f;
     [Range(0, 180f)]
-    [SerializeField] float _rotationAmplitude = 10.0f;
-
-    [SerializeField] Vector3 _positionScale = Vector3.one;
-    [SerializeField] Vector3 _rotationScale = new Vector3(0, 1, 1);
+    public float _rotationAmplitude = 10.0f;
+    public Vector3 _positionScale = Vector3.one;
+    public Vector3 _rotationScale = new Vector3(0, 1, 1);
 
     [SerializeField, Range(1, 8)] int _positionFractalLevel = 3;
     [SerializeField, Range(1, 8)] int _rotationFractalLevel = 3;
@@ -137,18 +145,45 @@ public class BrownianMotionZ : MonoBehaviour
     #endregion
 
     #region MonoBehaviour Functions
-
     void Start()
     {
         _time = new float[6];
-        Rehash();
-    }
-
-    void OnEnable()
-    {
+        // TransformGizmo.onSelectionChanged += OnTransformGizmoSelection;
         _initialPosition = transform.localPosition;
         _initialRotation = transform.localRotation;
+        Rehash();
     }
+    bool wasEnabled = true;
+    void OnTransformGizmoSelection()
+    {
+        if (this == null)
+        {
+            //            Debug.Log("zombie");
+            return;
+        }
+        // if (TransformGizmo.mainTargetRoot == transform)
+        // {
+        //     wasEnabled = enabled;
+        //     enabled = false;
+        // }
+        // else
+        // {
+        //     enabled = wasEnabled;
+        // }
+        // Debug.Log("brownian looks");
+    }
+
+    // void OnEnable()
+    // {
+    //     _initialPosition = transform.localPosition;
+    //     _initialRotation = transform.localRotation;
+    // }
+
+    // void OnDisable()
+    // {
+    //     _initialPosition = transform.localPosition;
+    //     _initialRotation = transform.localRotation;
+    // }
 
     void Update()
     {
@@ -157,7 +192,7 @@ public class BrownianMotionZ : MonoBehaviour
         if (_enablePositionNoise)
         {
             for (var i = 0; i < 3; i++)
-                _time[i] += _positionFrequency * dt;
+                _time[i] += _positionFrequency * _positionFrequency * _positionFrequency * dt;
 
             var n = new Vector3(
                 Perlin.Fbm(_time[0], _positionFractalLevel),
@@ -173,7 +208,7 @@ public class BrownianMotionZ : MonoBehaviour
         if (_enableRotationNoise)
         {
             for (var i = 0; i < 3; i++)
-                _time[i + 3] += _rotationFrequency * _rotationFrequency * dt;
+                _time[i + 3] += _rotationFrequency * _rotationFrequency * _rotationFrequency * dt;
 
             var n = new Vector3(
                 Perlin.Fbm(_time[3], _rotationFractalLevel),

@@ -8,7 +8,7 @@ using UnityEngine;
 // v.05 shif color hue
 // v.06 moved colors 
 // v.07 draw cross , pixel normalized
-
+// v.08 to texture2d
 //getindex
 public static class zExtensionsTextures
 {
@@ -194,6 +194,19 @@ public static class zExtensionsTextures
 
         File.WriteAllBytes(pngOutPath, tex.EncodeToPNG());
         RenderTexture.active = oldRT;
+    }
+
+    public static Texture2D ToTexture2D(this RenderTexture rt)
+    {
+        var oldRT = RenderTexture.active;
+
+        var tex = new Texture2D(rt.width, rt.height);
+        RenderTexture.active = rt;
+        tex.name = rt.name + " converted";
+        tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+        tex.Apply();
+        RenderTexture.active = oldRT;
+        return tex;
     }
     public static RenderTexture DestroyIfNotNull(this RenderTexture rt)
     {

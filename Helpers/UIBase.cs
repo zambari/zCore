@@ -6,9 +6,11 @@ using LayoutPanelDependencies;
 using UnityEngine;
 using UnityEngine.UI;
 using Z;
+// v.02 name ignores newline\
+
 namespace zUI
 {
-	public abstract class UIBase : MonoBehaviour//, IHasContent
+	public abstract class UIBase : MonoBehaviour //, IHasContent
 	{
 #if LAYOUT_PANEL
 		public DrawInspectorBg draw;
@@ -35,13 +37,28 @@ namespace zUI
 					_label = value;
 					_lastlabel = value;
 					if (objectReferences.autoSetText)
+					{
 						text.SetText(value);
+						// Debug.Log("set val " + value);
+					}
+					else
+					{
+						// Debug.Log("not set val " + value);
+					}
 					if (!zBench.PrefabModeIsActive(gameObject))
 					{
 						if (objectReferences.autoName)
+						{
+							if (value.Contains("\n"))
+								value = value.Split('\n') [0];
 							if (name != value)
 								name = value;
+						}
 					}
+				}
+				else
+				{
+					// Debug.Log("nochange "+value,gameObject);
 				}
 			}
 		}

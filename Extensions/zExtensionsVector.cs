@@ -109,12 +109,12 @@ namespace Z
         }
 
         [System.Obsolete("use SetVectorComponent, less confusion")]
-        public static Vector3 SetComponent(this Vector3 vector, VectorComponent component, float f, bool invert)
+        public static Vector3 SetComponent(this Vector3 vector, VectorComponent component, float f, bool invert = false)
         {
             return SetVectorComponent(vector, component, f, invert);
         }
 
-        public static Vector3 SetVectorComponent(this Vector3 vector, VectorComponent component, float f, bool invert)
+        public static Vector3 SetVectorComponent(this Vector3 vector, VectorComponent component, float f, bool invert = false)
         {
             if (invert) f *= -1;
             switch (component)
