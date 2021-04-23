@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 // can be used to provide drag and drop gameobject field, verifyng that tehre is an interface listener present (specified by the generic argument).
 // really only useful for interfaces as monobehaviours dont need this
-
+// v.02 
 [System.Serializable]
 
 public class GenericSelector<T>
@@ -28,7 +28,7 @@ public class GenericSelector<T>
     public T valueSource;
 
     public Transform referenceGameObjectTransform { get { if (referenceGameObject == null) return null; return referenceGameObject.transform; } }
-
+    public bool hasValue { get { return valueSource != null; } }
     public virtual void OnValidate(MonoBehaviour source)
     {
 

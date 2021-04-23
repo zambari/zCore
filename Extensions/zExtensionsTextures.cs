@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Events;
 // v.02 check dimeniosn
 // v.02b check dimeniosn update
 // v.03 testpattern, circle
@@ -9,11 +10,25 @@ using UnityEngine;
 // v.06 moved colors 
 // v.07 draw cross , pixel normalized
 // v.08 to texture2d
+// v.10 rt events
 //getindex
+namespace Z
+{
+    [System.Serializable]
+    public class RenderTexureEvent : UnityEvent<RenderTexture> { };
+    public interface IRenderTexture
+    {
+        RenderTexture renderTexture { get; set; }
+        RenderTexureEvent renderTexureEvent { get; }
+        Transform transform { get; }
+        string name { get;}
+    }
+}
 public static class zExtensionsTextures
 {
 
     // public static Color baseColor = new Color(1f / 6, 1f / 2, 1f / 2, 1f / 2); //?
+
 
     public static Texture2D CreateAndFill(this Texture2D t, Color c, int x = 1, int y = 1) //, bool apply=true
     {
@@ -24,7 +39,7 @@ public static class zExtensionsTextures
 
     public static int GetIndex(int x, int y, Vector2Int dims)
     {
-        int index = ((dims.y - y + 1) * dims.x) - x;;
+        int index = ((dims.y - y + 1) * dims.x) - x; ;
         if (index < 0) index = 0;
         if (index >= dims.x * dims.y) return 0;
         return index;
@@ -139,7 +154,7 @@ public static class zExtensionsTextures
     }
     public static Color GetPixelNormalized(this Texture2D texture, float x, float y)
     {
-        return texture.GetPixel((int) (x * texture.width), (int) (y * texture.height));
+        return texture.GetPixel((int)(x * texture.width), (int)(y * texture.height));
     }
     public static void SetPixelNormalized(this Texture2D texture, Vector2 xy, Color c)
     {
@@ -147,11 +162,11 @@ public static class zExtensionsTextures
     }
     public static void SetPixelNormalized(this Texture2D texture, float x, float y, Color c)
     {
-        texture.SetPixel((int) (x * texture.width), (int) (y * texture.height), c);
+        texture.SetPixel((int)(x * texture.width), (int)(y * texture.height), c);
     }
     public static float Average(this Color32 color)
     {
-        return ((int) color.r + color.g + color.b) / (3f * 255);
+        return ((int)color.r + color.g + color.b) / (3f * 255);
     }
     /// <summary>
     ///  used for test pattern
@@ -260,9 +275,9 @@ public static class zExtensionsTextures
         for (int u = 0; u < tex.width; u++)
             for (int v = 0; v < tex.height; v++)
                 tex.SetPixel(u, v, Color.Lerp(
-                    Color.Lerp(color0, color3, u / (float) tex.width),
-                    Color.Lerp(color1, color2, u / (float) tex.width),
-                    v / (float) tex.height));
+                    Color.Lerp(color0, color3, u / (float)tex.width),
+                    Color.Lerp(color1, color2, u / (float)tex.width),
+                    v / (float)tex.height));
 
         return tex;
     }
@@ -339,8 +354,8 @@ public static class zExtensionsTextures
     public static Texture2D DrawLine(this Texture2D tex, int x0, int y0, int x1, int y1, Color col)
     {
         if (tex == null) tex = new Texture2D(defaultTextureDim, defaultTextureDim);
-        int dy = (int) (y1 - y0);
-        int dx = (int) (x1 - x0);
+        int dy = (int)(y1 - y0);
+        int dx = (int)(x1 - x0);
         int stepx, stepy;
 
         if (dy < 0) { dy = -dy; stepy = -1; }

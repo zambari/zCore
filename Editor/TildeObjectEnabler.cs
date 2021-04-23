@@ -23,7 +23,7 @@ namespace Z
                }
            }*/
         static GameObject selectedObject;
-        //[MenuItem("Tools/Actions/Toggle Enabled  _`")]
+        [MenuItem("Tools/Actions/Toggle Enabled  _`")]
         static void ToggleEnabled()
         {
             if (Selection.activeGameObject != null)
