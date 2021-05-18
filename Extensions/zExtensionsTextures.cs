@@ -12,6 +12,7 @@ using UnityEngine.Events;
 // v.08 to texture2d
 // v.10 rt events
 //getindex
+// v.11 are same
 namespace Z
 {
     [System.Serializable]
@@ -259,6 +260,13 @@ public static class zExtensionsTextures
         Graphics.Blit(texture, renderTexture);
         return renderTexture;
 
+    }
+    public static bool IsSameSize(this Texture source, Texture target)
+    {
+        if (source==target) return true;
+        if ((source==null&& target !=null) || (source!=null && target!=null))return false;
+        return source.width==target.width && source.height==target.height;
+    
     }
     // From StackOverflow https://stackoverflow.com/questions/30410317/how-to-draw-circle-on-texture-in-unity
     public static Texture2D Circle(this Texture2D tex, int x, int y, float r, Color color)
