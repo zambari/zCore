@@ -16,6 +16,7 @@ using UnityEditor.SceneManagement;
 // v.05 prefabstaege
 // v.07 cross
 // drawfromray
+// v.08 moved from zextf
 public static class zGizmos
 {
 
@@ -320,6 +321,25 @@ public static class zGizmos
         if (pos == null) return true;
         if (pos.Count <= 2) return true;
         return false;
+    }
+    public static void DrawMarkerGizmo(this Transform transform, Color color, float size = 0.15f)
+    {
+        Vector3 pos = transform.position;
+        float smaller = size / 15;
+        Gizmos.color = color;
+        Gizmos.DrawWireCube(pos, new Vector3(size, smaller, smaller));
+        Gizmos.DrawWireCube(pos, new Vector3(smaller, size, smaller));
+        Gizmos.DrawWireCube(pos, new Vector3(smaller, smaller, size));
+
+    }
+
+    public static void DrawGizmoCross(this Vector3 pos, float size = 0.07f)
+    {
+        float smaller = size / 15;
+
+        Gizmos.DrawCube(pos, new Vector3(size, smaller, smaller));
+        Gizmos.DrawCube(pos, new Vector3(smaller, size, smaller));
+        Gizmos.DrawCube(pos, new Vector3(smaller, smaller, size));
     }
 }
 // }

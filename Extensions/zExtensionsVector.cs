@@ -12,6 +12,7 @@ using UnityEngine;
 // v.09 maptoindex
 // v.10 more map extensions
 // v.11 more map Inverse fixed
+// v.12 ToVector3
 
 namespace Z
 {
@@ -186,6 +187,10 @@ namespace Z
                 if (dirRight > dirDn) return Vector2.right;
             }
             return Vector2.down;
+        }
+        public static Vector3 ToVector3(this float value)
+        {
+            return new Vector3(value, value, value);
         }
 
         public static Vector3 Interpolate(this IList<Vector3> positions, float lerpAmt)
@@ -408,10 +413,7 @@ namespace Z
         {
             return new Vector2(v.y, v.x);
         }
-        public static Vector3 ToVector3(this float f)
-        {
-            return new Vector3(f, f, f);
-        }
+      
         public static Vector3 ToVector3FromInt(this int f)
         {
             return new Vector3(f, f, f);

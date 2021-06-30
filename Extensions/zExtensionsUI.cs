@@ -10,8 +10,8 @@ using UnityEditor;
 #endif
 // v.02 setcallback on butotn
 // v.03 inputfield getstint float
-/// oeverrides zRectExtensions
-///v.04 changes
+// v.04 changes
+// v.05 some extensions moved to other class
 
 public static class zExtensionsUI
 {
@@ -136,85 +136,11 @@ public static class zExtensionsUI
     {
         if (myImage != null) myImage.color = newColor;
     }
-
-    public static RectTransform PadTop(this RectTransform rect, float amount, bool additive = true)
+  public static void SetColor(this RawImage myImage, Color newColor)
     {
-        var offsetMax = rect.offsetMax;
-        offsetMax.y = -amount;
-        rect.offsetMax = offsetMax;
-        return rect;
+        if (myImage != null) myImage.color = newColor;
     }
-    public static RectTransform PadLeft(this RectTransform rect, float amount, bool additive = true)
-    {
-
-        var offsetMin = rect.offsetMin;
-        if (additive)
-            offsetMin.x += amount;
-        else
-            offsetMin.x = amount;
-        rect.offsetMin = offsetMin;
-        return rect;
-    }
-
-    public static RectTransform PadRight(this RectTransform rect, float amount, bool additive = true)
-    {
-        var offsetMax = rect.offsetMax;
-        if (additive)
-            offsetMax.x -= amount;
-        else
-            offsetMax.x = -amount;
-        rect.offsetMax = offsetMax;
-        return rect;
-    }
-
-    public static RectTransform PadBottom(this RectTransform rect, float amount, bool additive = true)
-    {
-        var offsetMin = rect.offsetMin;
-        if (additive)
-            offsetMin.y += amount;
-        else
-            offsetMin.y = amount;
-        rect.offsetMin = offsetMin;
-        return rect;
-    }
-    public static RectTransform Pad(this RectTransform rect, float amount, bool additive = true)
-    {
-        return rect.PadTop(amount, additive).PadBottom(amount, additive).PadRight(amount, additive).PadLeft(amount, additive);
-    }
-
-    public static RectTransform Pad(this RectTransform rect, float top, float right, float bottom, float left)
-    {
-        return rect.PadTop(top).PadBottom(bottom).PadRight(right).PadLeft(left);
-    }
-
-    public static RectTransform SetAnchorLeft(this RectTransform rect, bool fill = true, bool setPivot = false)
-    {
-        rect.anchorMin = new Vector2(0, fill ? 0 : 0.5f);
-        rect.anchorMax = new Vector2(0, fill ? 1 : 0.5f);
-        if (setPivot) rect.pivot = new Vector2(0, .5f);
-        return rect;
-    }
-    public static RectTransform SetAnchorRight(this RectTransform rect, bool fill = true, bool setPivot = false)
-    {
-        rect.anchorMin = new Vector2(1, fill ? 0 : 0.5f);
-        rect.anchorMax = new Vector2(1, fill ? 1 : 0.5f);
-        if (setPivot) rect.pivot = new Vector2(1, .5f);
-        return rect;
-    }
-    public static RectTransform SetAnchorTop(this RectTransform rect, bool fill = true, bool setPivot = false)
-    {
-        rect.anchorMin = new Vector2(fill ? 0 : 0.5f, 1);
-        rect.anchorMax = new Vector2(fill ? 1 : 0.5f, 1);
-        if (setPivot) rect.pivot = new Vector2(.5f, 1);
-        return rect;
-    }
-    public static RectTransform SetAnchorBottom(this RectTransform rect, bool fill = true, bool setPivot = false)
-    {
-        rect.anchorMin = new Vector2(fill ? 0 : 0.5f, 0);
-        rect.anchorMax = new Vector2(fill ? 1 : 0.5f, 0);
-        if (setPivot) rect.pivot = new Vector2(.5f, 1);
-        return rect;
-    }
+   
     public static LayoutElement[] GetActiveElements(this HorizontalLayoutGroup layout)
     {
         List<LayoutElement> elements = new List<LayoutElement>();
@@ -231,55 +157,5 @@ public static class zExtensionsUI
         return elements.ToArray();
     }
 
-    // public static Image Image(this RectTransform rect, float transparency = 1)
-    // {
-    //     Image thisImage = rect.GetComponent<Image>();
-    //     if (thisImage == null)
-    //     {
-    //         thisImage = rect.gameObject.AddComponent<Image>();
-    //         thisImage.color = thisImage.color.Random();
-    //     }
-    //     return thisImage;
-    // }
-    // public static RectTransform rect(this GameObject go)
-    // {
-
-    //     RectTransform r = go.GetComponent<RectTransform>();
-    //     if (r == null) r = go.AddComponent<RectTransform>();
-    //     return r;
-    // }
-
-    public static Texture2D Create(this Texture2D t, Color fillColor, int sixeX = 1, int sizeY = 1) //, bool apply=true
-    {
-        Texture2D texture = new Texture2D(sixeX, sizeY);
-        Color32[] black = new Color32[texture.width * texture.height];
-        for (int i = 0; i < black.Length; i++)
-            black[i] = fillColor;
-
-        texture.SetPixels32(black);
-        texture.Apply();
-        return texture;
-
-    }
-    public static void Multiply(this Texture2D texture, Color fillColor) //, bool apply=true
-    {
-        Color32[] colors = texture.GetPixels32();
-        for (int i = 0; i < colors.Length; i++)
-            colors[i] = colors[i] * fillColor;
-
-        texture.SetPixels32(colors);
-        texture.Apply();
-
-    }
-
-    public static void Add(this Texture2D texture, Color fillColor) //, bool apply=true
-    {
-        Color32[] colors = texture.GetPixels32();
-        for (int i = 0; i < colors.Length; i++)
-            colors[i] = colors[i] + fillColor;
-        texture.SetPixels32(colors);
-        texture.Apply();
-
-    }
-
+    
 }

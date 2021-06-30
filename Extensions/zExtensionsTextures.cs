@@ -431,6 +431,38 @@ public static class zExtensionsTextures
             }
         }
     }
+public static Texture2D Create(this Texture2D t, Color fillColor, int sixeX = 1, int sizeY = 1) //, bool apply=true
+    {
+        Texture2D texture = new Texture2D(sixeX, sizeY);
+        Color32[] black = new Color32[texture.width * texture.height];
+        for (int i = 0; i < black.Length; i++)
+            black[i] = fillColor;
+
+        texture.SetPixels32(black);
+        texture.Apply();
+        return texture;
+
+    }
+    public static void Multiply(this Texture2D texture, Color fillColor) //, bool apply=true
+    {
+        Color32[] colors = texture.GetPixels32();
+        for (int i = 0; i < colors.Length; i++)
+            colors[i] = colors[i] * fillColor;
+
+        texture.SetPixels32(colors);
+        texture.Apply();
+
+    }
+
+    public static void Add(this Texture2D texture, Color fillColor) //, bool apply=true
+    {
+        Color32[] colors = texture.GetPixels32();
+        for (int i = 0; i < colors.Length; i++)
+            colors[i] = colors[i] + fillColor;
+        texture.SetPixels32(colors);
+        texture.Apply();
+
+    }
 
     public static void DrawCross(this Texture2D texture, int x, int y, Color color, int len, int width, int deadzonecenter)
     {

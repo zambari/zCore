@@ -1,27 +1,13 @@
-﻿
-
+using System.IO;
 using UnityEngine;
-using System;
-using System.Text;
+using UnityEngine.UI;
+#if UNITY_EDITOR
+#endif
 
-/// 
-/// zExtensionPrimitives-  Extensions to string, float etc
-/// /
-/// v.02 float to vector3 
-/// v.03 float randomize with easier to undestand arithmetic
-/// v.04 makecolor missing # added
 
-public static class zExtensionPrimitives
+public static class zExtensionsString
 {
-    public static bool IsNullOrEmpty(this Array source)
-    {
-        return (source == null || source.Length == 0);
-    }
-    public static bool IsNullOrSmallerThan(this Array source, int len)
-    {
-        return (source == null || source.Length < len); // <=?
-    }
-    public static bool IsNullOrEmpty(this string source)
+  public static bool IsNullOrEmpty(this string source)
     {
         return string.IsNullOrEmpty(source);
     }
@@ -32,13 +18,7 @@ public static class zExtensionPrimitives
         //return (Mathf.Round(f * 100) / 100).ToString();
     }
 
-    [Obsolete("Use ToShortString instead")]
-    public static string ToStringShort(this float f)
-    {
-        return (Mathf.Round(f * 100) / 100).ToString();
-
-    }
-
+   
     public static string MakeGreen(this string s)
     {
         return "<color=green>" + s + "</color>";
@@ -85,49 +65,6 @@ public static class zExtensionPrimitives
         return "<color=#" + ColorUtility.ToHtmlStringRGB(c) + ">" + s + "</color>";
     }
 
-
-
-
-    public static bool CheckFloat(this float f)
-    {
-        if (Single.IsNaN(f))
-        {
-            Debug.Log("invalid float (NAN), dividing by zero? !");
-            return false;
-        }
-        return true;
-    }
-
-
-    public static Vector3 ToVector3(this float value)
-    {
-        return new Vector3(value, value, value);
-    }
-
-
-    public static string RandomString(int length)
-    {
-        const string pool = "abcdefghijklmnopqrstuvwxyz0123456789";
-        var builder = new StringBuilder();
-
-        for (var i = 0; i < length; i++)
-        {
-            var c = pool[UnityEngine.Random.Range(0, pool.Length - 1)];
-            builder.Append(c);
-        }
-
-        return builder.ToString();
-    }
-
-    public static bool ToBool(this int b)
-    {
-        return (b == 1);
-    }
-    public static int ToInt(this bool b)
-    {
-        return (b ? 1 : 0);
-    }
-
     public static string PadString(this string s, int len)
     {
         if (string.IsNullOrEmpty(s)) s = "";
@@ -136,3 +73,6 @@ public static class zExtensionPrimitives
         return s;
     }
 }
+
+
+

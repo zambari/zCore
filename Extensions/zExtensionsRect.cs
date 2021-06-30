@@ -387,7 +387,84 @@ namespace Z
             return rect;
 
         }
+ public static RectTransform PadTop(this RectTransform rect, float amount, bool additive = true)
+    {
+        var offsetMax = rect.offsetMax;
+        offsetMax.y = -amount;
+        rect.offsetMax = offsetMax;
+        return rect;
+    }
+    public static RectTransform PadLeft(this RectTransform rect, float amount, bool additive = true)
+    {
 
+        var offsetMin = rect.offsetMin;
+        if (additive)
+            offsetMin.x += amount;
+        else
+            offsetMin.x = amount;
+        rect.offsetMin = offsetMin;
+        return rect;
+    }
+
+    public static RectTransform PadRight(this RectTransform rect, float amount, bool additive = true)
+    {
+        var offsetMax = rect.offsetMax;
+        if (additive)
+            offsetMax.x -= amount;
+        else
+            offsetMax.x = -amount;
+        rect.offsetMax = offsetMax;
+        return rect;
+    }
+
+    public static RectTransform PadBottom(this RectTransform rect, float amount, bool additive = true)
+    {
+        var offsetMin = rect.offsetMin;
+        if (additive)
+            offsetMin.y += amount;
+        else
+            offsetMin.y = amount;
+        rect.offsetMin = offsetMin;
+        return rect;
+    }
+    public static RectTransform Pad(this RectTransform rect, float amount, bool additive = true)
+    {
+        return rect.PadTop(amount, additive).PadBottom(amount, additive).PadRight(amount, additive).PadLeft(amount, additive);
+    }
+
+    public static RectTransform Pad(this RectTransform rect, float top, float right, float bottom, float left)
+    {
+        return rect.PadTop(top).PadBottom(bottom).PadRight(right).PadLeft(left);
+    }
+
+    public static RectTransform SetAnchorLeft(this RectTransform rect, bool fill = true, bool setPivot = false)
+    {
+        rect.anchorMin = new Vector2(0, fill ? 0 : 0.5f);
+        rect.anchorMax = new Vector2(0, fill ? 1 : 0.5f);
+        if (setPivot) rect.pivot = new Vector2(0, .5f);
+        return rect;
+    }
+    public static RectTransform SetAnchorRight(this RectTransform rect, bool fill = true, bool setPivot = false)
+    {
+        rect.anchorMin = new Vector2(1, fill ? 0 : 0.5f);
+        rect.anchorMax = new Vector2(1, fill ? 1 : 0.5f);
+        if (setPivot) rect.pivot = new Vector2(1, .5f);
+        return rect;
+    }
+    public static RectTransform SetAnchorTop(this RectTransform rect, bool fill = true, bool setPivot = false)
+    {
+        rect.anchorMin = new Vector2(fill ? 0 : 0.5f, 1);
+        rect.anchorMax = new Vector2(fill ? 1 : 0.5f, 1);
+        if (setPivot) rect.pivot = new Vector2(.5f, 1);
+        return rect;
+    }
+    public static RectTransform SetAnchorBottom(this RectTransform rect, bool fill = true, bool setPivot = false)
+    {
+        rect.anchorMin = new Vector2(fill ? 0 : 0.5f, 0);
+        rect.anchorMax = new Vector2(fill ? 1 : 0.5f, 0);
+        if (setPivot) rect.pivot = new Vector2(.5f, 1);
+        return rect;
+    }
         /// <summary>
         /// Creates a child recttransorm
         /// </summary>

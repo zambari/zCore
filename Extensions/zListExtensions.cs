@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 // superseds zextensiondatypes
 // v.02 shift by one / minusone
+// v.03 getFrom float
 
 namespace Z
 {
@@ -63,7 +64,7 @@ namespace Z
         public static void ShiftMinusOne<T>(this IList<T> list)
         {
             T last = list[list.Count - 1];
-            for (int i = list.Count - 1; i >0; i--)
+            for (int i = list.Count - 1; i > 0; i--)
                 list[i] = list[i - 1];
             list[0] = last;
         }
@@ -90,5 +91,32 @@ namespace Z
             return item;
 
         }
+        public static T GetFromNormalized<T>(this IList<T> list, float normalizedPointer)
+        {
+            if (normalizedPointer < 0) normalizedPointer = 0;
+            int index = Mathf.FloorToInt(normalizedPointer * (list.Count - 1));
+            if (index >= list.Count) index = list.Count - 1;
+            return list[index]; //range check, and 1.0f border case handling
+
+
+        }
+        // public static int ClampedMul(int arrayLength, float normalizedPointer)
+        // {
+        //     if (normalizedPointer < 0) normalizedPointer = 0;
+        //     int result = Mathf.FloorToInt(arrayLength * normalizedPointer);
+        //     if (result > arrayLength) //range check, and 1.0f border case handling
+        //         return arrayLength;
+        //     return result;
+        // }
+
+        // public static int ClampedMulFromInt(this int arrayLength, float normalizedPointer)
+        // {
+        //     return ClampedMul(arrayLength, normalizedPointer);
+        // }
+        // public static int ClampedMulFromFloat(this float normalizedPointer, int arrayLength)
+        // {
+        //     return ClampedMul(arrayLength, normalizedPointer);
+        // }
+
     }
 }

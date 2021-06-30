@@ -47,6 +47,7 @@
 // v0.82 name or null on gameobjects
 // v0.83 float sort
 // v0.84 swap generic
+// v0.85 some extensions moved
 
 /// zExtensionsRandom - randomizin floats, strings etc
 /// zExtensionsComponents component adding, removing, moving order
@@ -66,22 +67,160 @@ using UnityEditor;
 #endif
 public static class zExt
 {
-    public static int ClampedMulFromInt(this int arrayLength, float normalizedPointer)
+ 
+
+     public static string RandomString(int length)
     {
-        return ClampedMul(arrayLength, normalizedPointer);
+        var builder = new System.Text.StringBuilder();
+        for (var i = 0; i < length; i++)
+        {
+            var c = pool[UnityEngine.Random.Range(0, pool.Length - 1)];
+            builder.Append(c);
+        }
+        return builder.ToString();
     }
-    public static int ClampedMulFromFloat(this float normalizedPointer, int arrayLength)
+    static readonly string pool = "abcdefghijklmnopqrstuvwxyz0123456789";
+    static readonly string poolLetters = "abcdefghijklmnopqrstuvwxyz";
+    public static string RandomString(int length, float upperToLowerRatio)
     {
-        return ClampedMul(arrayLength, normalizedPointer);
+        var builder = new System.Text.StringBuilder();
+        for (var i = 0; i < length; i++)
+        {
+            var c = pool[UnityEngine.Random.Range(0, pool.Length - 1)];
+            string s = c + "";
+            if (UnityEngine.Random.value > upperToLowerRatio) s = s.ToLower();
+            else s = s.ToUpper();
+            builder.Append(c);
+        }
+        return builder.ToString();
     }
-    public static int ClampedMul(int arrayLength, float normalizedPointer)
+
+public static void Swap<T>(ref T a, ref T b)
     {
-        if (normalizedPointer < 0) normalizedPointer = 0;
-        int result = Mathf.FloorToInt(arrayLength * normalizedPointer);
-        if (result > arrayLength) //range check, and 1.0f border case handling
-            return arrayLength;
-        return result;
+        T c = a;
+        a = b;
+        b = c;
     }
+    public static void Sort(ref float a, ref float b)
+    {
+        if (a > b) Swap(ref a, ref b);
+    }
+     public static void Sort(ref int a, ref int b)
+    {
+        if (a > b) Swap(ref a, ref b);
+    }
+
+    
+    /// <summary>
+    /// Creates an animation curve that contains pre-zero full range step, and ones in the normal range
+    /// </summary>
+    /// <returns></returns>
+
+    public static AnimationCurve StepCurve()
+    {
+        return new AnimationCurve(new Keyframe(-0.02f, 1f, 0, 0), new Keyframe(-0.01f, 0.0f, 0, 0), new Keyframe(0f, 1f, 0f, 0f), new Keyframe(1f, 1f, 0f, 0f));
+    }
+    public static AnimationCurve OneCurve()
+    {
+        return new AnimationCurve(new Keyframe(0, 1), new Keyframe(1, 1));
+    }
+    /// <summary>
+    /// Creates an (0-1) animation curve S
+    /// </summary>
+    /// <returns></returns>
+
+    public static AnimationCurve SweepCurve()
+    {
+        return new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
+    }
+
+    /// <summary>
+    /// Creates an (0-1) animation curve Linear
+    /// </summary>
+    /// <returns></returns>
+    public static AnimationCurve LinearCurve()
+    {
+        return new AnimationCurve(new Keyframe(0, 0, 1, 1), new Keyframe(1, 1, 1, 1));
+    }
+
+    public static AnimationCurve LinearCurveDown()
+    {
+        return new AnimationCurve(new Keyframe(1, 1, 1, 1), new Keyframe(0, 0, 1, 1));
+    }
+
+    public static AnimationCurve BellCurve()
+    {
+        return new AnimationCurve(new Keyframe(0, 0, 1, 0), new Keyframe(0.5f, 1f, 0, 0), new Keyframe(1, 0, 0, 0));
+
+    }
+    public static AnimationCurve SCurve()
+    {
+        return new AnimationCurve(new Keyframe(0, 0, 1, 0), new Keyframe(1f, 1f, 0, 0));
+
+    }
+    public static float EvaluateSymmetrical(this AnimationCurve animationCurve, float t)
+    {
+        t = t * 2;
+        if (t > 1) t = 2 - t;
+        return animationCurve.Evaluate(t);
+    }
+
+    /// <summary>
+    /// prints a list of keyframes, 
+    /// </summary>
+    public static void DumpKeys(this Gradient a, string name = null)
+    {
+        string s = " GradientColorKey[] colorKey= new GradientColorKey[]{";
+        GradientColorKey[] colorKey = a.colorKeys;
+        foreach (GradientColorKey k in colorKey)
+        {
+            s += "new GradientColorKey(" + k.color.ToConstructorString() + "," + k.time + "f),";
+        }
+        //ToConstructorString
+
+        s = s.Substring(0, s.Length - 1);
+        s += "};";
+        Debug.Log(s);
+        s = " GradientAlphaKey[] alphaKey= new GradientAlphaKey[]{";
+        GradientAlphaKey[] alphaKey = a.alphaKeys;
+        foreach (GradientAlphaKey k in alphaKey)
+        {
+            s += "new GradientAlphaKey(" + k.alpha + "," + k.time + "),";
+        }
+        s = s.Substring(0, s.Length - 1);
+        s += "};";
+        Debug.Log(s);
+    }
+    /// <summary>
+    /// prints a list of keyframes, in a formsuitable for copy and pasting back to the code to recreate
+    /// add a name for it to be present in the output
+    /// </summary>
+    public static void DumpKeys(this AnimationCurve a, string name = null)
+    {
+        int i = 0;
+        string s = "=new AnimationCurve(";
+        foreach (Keyframe k in a.keys)
+        {
+            s += name + "new Keyframe(" + k.time + "f," + k.value + "f," + k.inTangent + "f," + k.outTangent + "f),";
+            i++;
+        }
+        s = s.Substring(0, s.Length - 1);
+        s += ");";
+        Debug.Log(s);
+    }
+
+    public static bool Contains(this Vector2 range, float parameter)
+    {
+        return (parameter >= range.x && parameter <= range.y);
+    }
+    public static float Clamp(this Vector2 range, float parameter)
+    {
+        if (parameter < range.x) parameter = range.x;
+        if (parameter > range.y) parameter = range.y;
+        return parameter;
+    }
+
+
     public static void Animate(this MonoBehaviour source, System.Action<float> Execute, float animTime, System.Action onComplete = null, bool unscaled = false)
     {
         source.StartCoroutine(Animator(Execute, animTime, onComplete, (x) => { return x; }, unscaled));
@@ -142,104 +281,15 @@ public static class zExt
         }
         return builder.ToString();
     }
-    public static string RandomString(int length)
-    {
-        var builder = new System.Text.StringBuilder();
-        for (var i = 0; i < length; i++)
-        {
-            var c = pool[UnityEngine.Random.Range(0, pool.Length - 1)];
-            builder.Append(c);
-        }
-        return builder.ToString();
-    }
+   
 
-    public static string RandomString(int length, float upperToLowerRatio)
-    {
-        var builder = new System.Text.StringBuilder();
-        for (var i = 0; i < length; i++)
-        {
-            var c = pool[UnityEngine.Random.Range(0, pool.Length - 1)];
-            string s = c + "";
-            if (UnityEngine.Random.value > upperToLowerRatio) s = s.ToLower();
-            else s = s.ToUpper();
-            builder.Append(c);
-        }
-        return builder.ToString();
-    }
-    static readonly string pool = "abcdefghijklmnopqrstuvwxyz0123456789";
-    static readonly string poolLetters = "abcdefghijklmnopqrstuvwxyz";
 
-    // public static void Swap(ref Vector3 a, ref Vector3 b)
-    // {
-    //     Vector3 temp = b;
-    //     b = a;
-    //     a = temp;
-    // }
-    // public static void Swap(ref float a, ref float b)
-    // {
-    //     var temp = b;
-    //     b = a;
-    //     a = temp;
-    // }
-    // public static void Swap(ref int a, ref int b)
-    // {
-    //     var temp = b;
-    //     b = a;
-    //     a = temp;
-    // }
-    // public static void Swap(ref string a, ref string b)
-    // {
-    //     var temp = b;
-    //     b = a;
-    //     a = temp;
-    // }
-    public static void Swap<T>(ref T a, ref T b)
-    {
-        T c = a;
-        a = b;
-        b = c;
-    }
-    public static void Sort(ref float a, ref float b)
-    {
-        if (a > b) Swap(ref a, ref b);
-    }
-     public static void Sort(ref int a, ref int b)
-    {
-        if (a > b) Swap(ref a, ref b);
-    }
-    public static bool Contains(this Vector2 range, float parameter)
-    {
-        return (parameter >= range.x && parameter <= range.y);
-    }
-    public static float Clamp(this Vector2 range, float parameter)
-    {
-        if (parameter < range.x) parameter = range.x;
-        if (parameter > range.y) parameter = range.y;
-        return parameter;
-    }
+
     public static Vector2 NormalizeToScreenSize(this Vector2 input)
     {
         return new Vector2(input.x / Screen.width, input.y / Screen.height);
     }
-    public static void DrawMarkerGizmo(this Transform transform, Color color, float size = 0.15f)
-    {
-        Vector3 pos = transform.position;
-        float smaller = size / 15;
-        Gizmos.color = color;
-        Gizmos.DrawWireCube(pos, new Vector3(size, smaller, smaller));
-        Gizmos.DrawWireCube(pos, new Vector3(smaller, size, smaller));
-        Gizmos.DrawWireCube(pos, new Vector3(smaller, smaller, size));
-
-    }
-
-    public static void DrawGizmoCross(this Vector3 pos, float size = 0.07f)
-    {
-        float smaller = size / 15;
-
-        Gizmos.DrawCube(pos, new Vector3(size, smaller, smaller));
-        Gizmos.DrawCube(pos, new Vector3(smaller, size, smaller));
-        Gizmos.DrawCube(pos, new Vector3(smaller, smaller, size));
-    }
+    
 
     //taken from : https://gist.github.com/AlexanderDzhoganov/d795b897005389071e2a
 
@@ -306,140 +356,16 @@ public static class zExt
     }
 #endif
 
-    /// <summary>
-    /// Copied from https://gist.github.com/maxattack/4c7b4de00f5c1b95a33b
-    /// </summary>
-    public static Quaternion SmoothDamp(Quaternion rot, Quaternion target, ref Quaternion deriv, float time)
-    {
-        // account for double-cover
-        var Dot = Quaternion.Dot(rot, target);
-        var Multi = Dot > 0f ? 1f : -1f;
-        target.x *= Multi;
-        target.y *= Multi;
-        target.z *= Multi;
-        target.w *= Multi;
-        // smooth damp (nlerp approx)
-        var Result = new Vector4(
-            Mathf.SmoothDamp(rot.x, target.x, ref deriv.x, time),
-            Mathf.SmoothDamp(rot.y, target.y, ref deriv.y, time),
-            Mathf.SmoothDamp(rot.z, target.z, ref deriv.z, time),
-            Mathf.SmoothDamp(rot.w, target.w, ref deriv.w, time)
-        ).normalized;
-        // compute deriv
-        var dtInv = 1f / Time.deltaTime;
-        deriv.x = (Result.x - rot.x) * dtInv;
-        deriv.y = (Result.y - rot.y) * dtInv;
-        deriv.z = (Result.z - rot.z) * dtInv;
-        deriv.w = (Result.w - rot.w) * dtInv;
-        return new Quaternion(Result.x, Result.y, Result.z, Result.w);
-    }
-    /// <summary>
-    /// prints a list of keyframes, 
-    /// </summary>
-    public static void DumpKeys(this Gradient a, string name = null)
-    {
-        string s = " GradientColorKey[] colorKey= new GradientColorKey[]{";
-        GradientColorKey[] colorKey = a.colorKeys;
-        foreach (GradientColorKey k in colorKey)
-        {
-            s += "new GradientColorKey(" + k.color.ToConstructorString() + "," + k.time + "f),";
-        }
-        //ToConstructorString
-
-        s = s.Substring(0, s.Length - 1);
-        s += "};";
-        Debug.Log(s);
-        s = " GradientAlphaKey[] alphaKey= new GradientAlphaKey[]{";
-        GradientAlphaKey[] alphaKey = a.alphaKeys;
-        foreach (GradientAlphaKey k in alphaKey)
-        {
-            s += "new GradientAlphaKey(" + k.alpha + "," + k.time + "),";
-        }
-        s = s.Substring(0, s.Length - 1);
-        s += "};";
-        Debug.Log(s);
-    }
-    /// <summary>
-    /// prints a list of keyframes, in a formsuitable for copy and pasting back to the code to recreate
-    /// add a name for it to be present in the output
-    /// </summary>
-    public static void DumpKeys(this AnimationCurve a, string name = null)
-    {
-        int i = 0;
-        string s = "=new AnimationCurve(";
-        foreach (Keyframe k in a.keys)
-        {
-            s += name + "new Keyframe(" + k.time + "f," + k.value + "f," + k.inTangent + "f," + k.outTangent + "f),";
-            i++;
-        }
-        s = s.Substring(0, s.Length - 1);
-        s += ");";
-        Debug.Log(s);
-    }
-
-    /// <summary>
-    /// Creates an animation curve that contains pre-zero full range step, and ones in the normal range
-    /// </summary>
-    /// <returns></returns>
-
-    public static AnimationCurve StepCurve()
-    {
-        return new AnimationCurve(new Keyframe(-0.02f, 1f, 0, 0), new Keyframe(-0.01f, 0.0f, 0, 0), new Keyframe(0f, 1f, 0f, 0f), new Keyframe(1f, 1f, 0f, 0f));
-    }
-    public static AnimationCurve OneCurve()
-    {
-        return new AnimationCurve(new Keyframe(0, 1), new Keyframe(1, 1));
-    }
-    /// <summary>
-    /// Creates an (0-1) animation curve S
-    /// </summary>
-    /// <returns></returns>
-
-    public static AnimationCurve SweepCurve()
-    {
-        return new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
-    }
-
-    /// <summary>
-    /// Creates an (0-1) animation curve Linear
-    /// </summary>
-    /// <returns></returns>
-    public static AnimationCurve LinearCurve()
-    {
-        return new AnimationCurve(new Keyframe(0, 0, 1, 1), new Keyframe(1, 1, 1, 1));
-    }
-
-    public static AnimationCurve LinearCurveDown()
-    {
-        return new AnimationCurve(new Keyframe(1, 1, 1, 1), new Keyframe(0, 0, 1, 1));
-    }
-
-    public static AnimationCurve BellCurve()
-    {
-        return new AnimationCurve(new Keyframe(0, 0, 1, 0), new Keyframe(0.5f, 1f, 0, 0), new Keyframe(1, 0, 0, 0));
-
-    }
-    public static AnimationCurve SCurve()
-    {
-        return new AnimationCurve(new Keyframe(0, 0, 1, 0), new Keyframe(1f, 1f, 0, 0));
-
-    }
-    public static float EvaluateSymmetrical(this AnimationCurve animationCurve, float t)
-    {
-        t = t * 2;
-        if (t > 1) t = 2 - t;
-        return animationCurve.Evaluate(t);
-    }
 
     public static string ToConstructorString(this Color c)
     {
         return "new Color(" + c.r + "f," + c.g + "f," + c.b + "f," + c.a + "f)";
     }
 
-    public static float Duration(this UnityEngine.Video.VideoPlayer videoPlayer)
-    {
-        return videoPlayer.frameCount / videoPlayer.frameRate;
-    }
+    // public static float Duration(this UnityEngine.Video.VideoPlayer videoPlayer)
+    // {
+    //     return videoPlayer.frameCount / videoPlayer.frameRate;
+    // }
 
     public static bool ShiftPressed()
     {
@@ -487,6 +413,66 @@ public static class zExt
     public static string NameOrNull(this GameObject source)
     {
         return (source == null ? "null" : source.name);
+    }
+
+    
+    /// <summary>
+    /// Copied from https://gist.github.com/maxattack/4c7b4de00f5c1b95a33b
+    /// </summary>
+    public static Quaternion SmoothDamp(Quaternion rot, Quaternion target, ref Quaternion deriv, float time)
+    {
+        // account for double-cover
+        var Dot = Quaternion.Dot(rot, target);
+        var Multi = Dot > 0f ? 1f : -1f;
+        target.x *= Multi;
+        target.y *= Multi;
+        target.z *= Multi;
+        target.w *= Multi;
+        // smooth damp (nlerp approx)
+        var Result = new Vector4(
+            Mathf.SmoothDamp(rot.x, target.x, ref deriv.x, time),
+            Mathf.SmoothDamp(rot.y, target.y, ref deriv.y, time),
+            Mathf.SmoothDamp(rot.z, target.z, ref deriv.z, time),
+            Mathf.SmoothDamp(rot.w, target.w, ref deriv.w, time)
+        ).normalized;
+        // compute deriv
+        var dtInv = 1f / Time.deltaTime;
+        deriv.x = (Result.x - rot.x) * dtInv;
+        deriv.y = (Result.y - rot.y) * dtInv;
+        deriv.z = (Result.z - rot.z) * dtInv;
+        deriv.w = (Result.w - rot.w) * dtInv;
+        return new Quaternion(Result.x, Result.y, Result.z, Result.w);
+    }
+
+     public static bool IsNullOrEmpty(this Array source)
+    {
+        return (source == null || source.Length == 0);
+    }
+    public static bool IsNullOrSmallerThan(this Array source, int len)
+    {
+        return (source == null || source.Length < len); // <=?
+    }
+
+
+    public static bool CheckFloat(this float f)
+    {
+        if (Single.IsNaN(f))
+        {
+            Debug.Log("invalid float (NAN), dividing by zero? !");
+            return false;
+        }
+        return true;
+    }
+
+
+
+    public static bool ToBool(this int b)
+    {
+        return (b == 1);
+    }
+    public static int ToInt(this bool b)
+    {
+        return (b ? 1 : 0);
     }
     /* 
         #if UNITY_EDITOR
