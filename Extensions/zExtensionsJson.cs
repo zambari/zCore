@@ -1,8 +1,6 @@
-﻿
-
-using UnityEngine;
-using System;
+﻿using System;
 using System.IO;
+using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -21,7 +19,7 @@ public static class zExtensionsJson
     /// 
     /// 
 
-    public static void ToJson(this object obj, string path, bool silent = false) // different naming conventino
+    public static int ToJson(this object obj, string path, bool silent = false) // different naming conventino
     {
         // path = path.Replace('\\', '/');
         // if (!path.Contains(":\'") && !path.Contains("StreamingAssets"))
@@ -54,16 +52,21 @@ public static class zExtensionsJson
             {
                 Debug.Log("Saved : " + path);
 #if UNITY_EDITOR
-                AssetDatabase.Refresh();
+                //                AssetDatabase.Refresh();
 #endif
             }
         }
         else
             Debug.Log("saving failed, file not created : " + path);
-
+        return dataAsJson.Length;
     }
-    static string DefaultSavePath(string path)
+    static bool ContainsPersitentDataOrProject(string path)
     {
+        return path.Contains(Application.dataPath) || path.Contains(Application.persistentDataPath) || (path.Contains(":\\") || path.Contains("\\Volumes") || path.Contains(toucanPath));
+    }
+    public static string DefaultSavePath(string path)
+    {
+        path = ReplaceSlashes(path);
         if (!path.Contains(".json")) path += ".json";
 #if UNITY_EDITOR
         if (!Directory.Exists(Application.streamingAssetsPath))
@@ -71,28 +74,71 @@ public static class zExtensionsJson
             Directory.CreateDirectory(Application.streamingAssetsPath);
             AssetDatabase.Refresh(); // refresh to see new fodler
         }
+        if (ContainsPersitentDataOrProject(path)) return path;
         return Application.streamingAssetsPath + "/" + path;
 #else
+        if (ContainsPersitentDataOrProject(path)) return path;
         return Application.persistentDataPath + "/" + path;
 #endif
     }
     static string toucanPath { get { return "/data/toucan/"; } }
     static bool FileExists(string path)
     {
-        return System.IO.File.Exists(path);
+        try
+        {
+            return System.IO.File.Exists(path);
+        }
+        catch { return false; }
     }
-    static string TryToFindFile(string path)
+    static string ReplaceSlashes(string path)
     {
+        return path.Replace("\\", "/").Replace("//", "/").Replace("\\\\", "/").Replace("\\\\", "/");
+    }
+    public static int ParentDirectoryExists(string path, int limit)
+    {
+        //   Debug.Log("callled " + path + " limit " + limit);
+        string parentDir = Path.GetDirectoryName(path);
+        if (Directory.Exists(parentDir))
+        {
+            Debug.Log("parent exists " + parentDir + " returning ");
+            return limit;
+        }
+
+        limit--;
+        if (limit == 0) return -1;
+        return ParentDirectoryExists(parentDir, limit);
+
+    }
+    // public static string MaybeTheresSomeDirsMiggins(string path)
+    // {
+
+    // }
+    public static string TryToFindFile(string path)
+    {
+        path = ReplaceSlashes(path);
         if (FileExists(path)) return path;
         if (!path.Contains(".json")) path += ".json";
         if (FileExists(path)) return path;
+        {
+
+            // path = MaybeTheresSomeDirsMiggins(path);
+            string newpath = DefaultSavePath(Path.GetFileName(path));
+            // Debug.Log(path + " this looks like an aboslute path, but the file is not there, fallback?? " + newpath);
+
+            return newpath;
+            // Debug.Log("back to simple name");
+        }
 #if UNITY_EDITOR
-        if (FileExists(Application.streamingAssetsPath + "/" + path)) return Application.streamingAssetsPath + "/" + path;
+        if (FileExists(Application.streamingAssetsPath + "/" + path))
+        {
+            return Application.streamingAssetsPath + "/" + path;
+        }
+
         if (FileExists(Application.persistentDataPath + "/" + path)) return Application.persistentDataPath + "/" + path;
 #else
-   if (FileExists(Application.persistentDataPath+"/"+path)) return Application.persistentDataPath+"/"+path;
-     if (FileExists(Application.streamingAssetsPath+"/"+path)) return Application.streamingAssetsPath+"/"+path;
-    
+        if (FileExists(Application.persistentDataPath + "/" + path)) return Application.persistentDataPath + "/" + path;
+        if (FileExists(Application.streamingAssetsPath + "/" + path)) return Application.streamingAssetsPath + "/" + path;
+
 #endif
         if (FileExists(toucanPath + path)) return toucanPath + path;
         Debug.Log("Could not find path, creating default path " + DefaultSavePath(path));
@@ -104,17 +150,19 @@ public static class zExtensionsJson
     /// Loads an object from json. usage: newObject= newObject.FromJson &lt;typeOfNewObject&gt;(path)
     /// this version adds streamingAssetsPath to path string
     /// </summary>
-    public static T FromJson<T>(this T obj, string path, bool silent = false) // different naming conventino
+    public static T FromJson<T>(this T obj, string path, bool silent = false) where T : class // different naming conventin ow
     {
+
         path = TryToFindFile(path);
         // if (!path.Contains(".json")) path += ".json";
         // if (!path.Contains(Application.streamingAssetsPath)) path = Application.streamingAssetsPath + "/" + path;
-        if (!File.Exists(path)) return default(T);
+        if (!File.Exists(path)) return null; //default(T);
         string dataAsJson = File.ReadAllText(path);
         if (dataAsJson == null || dataAsJson.Length < 2)
         {
             if (!silent)
                 Debug.Log("loading file:" + path + " failed");
+            return null;
         }
         else
             obj = JsonUtility.FromJson<T>(dataAsJson);
@@ -148,6 +196,5 @@ public static class zExtensionsJson
     //     }
     //     return true;
     // }
-
 
 }

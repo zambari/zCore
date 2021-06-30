@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 // zambari 2019
@@ -5,6 +6,13 @@ using UnityEngine;
 // v.03 renadmed, directions
 // v.04 perperniduclar
 // v.05 get set component
+// v.06 interpolate
+// v.07 GetDimensions<T>(this T[][] vals)
+// v.08 Sort
+// v.09 maptoindex
+// v.10 more map extensions
+// v.11 more map Inverse fixed
+// v.12 ToVector3
 
 namespace Z
 {
@@ -12,6 +20,43 @@ namespace Z
     public static class zExtensionsVector
     {
         public enum DirectionsFour { up, right, down, left }
+
+        public static Vector2 Sort(this Vector2 source)
+        {
+            if (source.x > source.y) return new Vector2(source.y, source.x);
+            return source;
+        }
+        public static int MapToIndex(this float source, int range)
+        {
+            if (source < 0) source = 0;
+            else
+            if (source > 1) source = 1;
+            int index = Mathf.FloorToInt(source * range);
+            if (index == range) index--;
+            return index;
+        }
+        public static int MapToIndex(this IList source, float value)
+        {
+            int count = source.Count;
+            if (value < 0) value = 0;
+
+            int index = Mathf.FloorToInt(count * value);
+            if (index >= count) index = count - 1;
+            return index;
+        }
+        public static Vector2 ClampRange(this Vector2 source)
+        {
+            if (source.x < 0) source.x = 0;
+            if (source.y < 0) source.y = 0;
+            if (source.x > 1) source.x = 1;
+            if (source.y > 1) source.y = 1;
+            return source;
+        }
+        public static Vector2Int Sort(this Vector2Int source)
+        {
+            if (source.x > source.y) return new Vector2Int(source.y, source.x);
+            return source;
+        }
         public static DirectionsFour GetMainDirectionFour(Vector2 A, Vector2 B)
         {
             Vector3 delta = B - A;
@@ -33,25 +78,57 @@ namespace Z
             return DirectionsFour.down;
 
         }
+        public static float MapInversed(this float f, Vector2 minMax)
+        {
+            f /= (minMax.y - minMax.x);
+
+            f -= minMax.x;
+            return f;
+        }
+        public static float Map(this float f, Vector2 minMax)
+        {
+            f *= (minMax.y - minMax.x);
+            f += minMax.x;
+            return f;
+        }
         public enum VectorComponent { none, x, y, z }
         public static Vector3 SetComponent(this Vector3 vector, VectorComponent component, float f)
         {
             switch (component)
             {
-                case VectorComponent.x: vector.x = f; break;
-                case VectorComponent.y: vector.y = f; break;
-                case VectorComponent.z: vector.z = f; break;
+                case VectorComponent.x:
+                    vector.x = f;
+                    break;
+                case VectorComponent.y:
+                    vector.y = f;
+                    break;
+                case VectorComponent.z:
+                    vector.z = f;
+                    break;
             }
             return vector;
         }
-        public static Vector3 SetComponent(this Vector3 vector, VectorComponent component, float f, bool invert)
+
+        [System.Obsolete("use SetVectorComponent, less confusion")]
+        public static Vector3 SetComponent(this Vector3 vector, VectorComponent component, float f, bool invert = false)
+        {
+            return SetVectorComponent(vector, component, f, invert);
+        }
+
+        public static Vector3 SetVectorComponent(this Vector3 vector, VectorComponent component, float f, bool invert = false)
         {
             if (invert) f *= -1;
             switch (component)
             {
-                case VectorComponent.x: vector.x = f; break;
-                case VectorComponent.y: vector.y = f; break;
-                case VectorComponent.z: vector.z = f; break;
+                case VectorComponent.x:
+                    vector.x = f;
+                    break;
+                case VectorComponent.y:
+                    vector.y = f;
+                    break;
+                case VectorComponent.z:
+                    vector.z = f;
+                    break;
             }
             return vector;
         }
@@ -59,20 +136,36 @@ namespace Z
         {
             switch (component)
             {
-                case VectorComponent.x: vector.x *= -1; break;
-                case VectorComponent.y: vector.y *= -1; break;
-                case VectorComponent.z: vector.z *= -1; break;
+                case VectorComponent.x:
+                    vector.x *= -1;
+                    break;
+                case VectorComponent.y:
+                    vector.y *= -1;
+                    break;
+                case VectorComponent.z:
+                    vector.z *= -1;
+                    break;
             }
             return vector;
         }
+
+        [System.Obsolete("use getvectorcomponent, less confusion")]
         public static float GetComponent(this Vector3 vector, VectorComponent component)
+        {
+            return GetVectorComponent(vector, component);
+        }
+        public static float GetVectorComponent(this Vector3 vector, VectorComponent component)
         {
             switch (component)
             {
-                case VectorComponent.x: return vector.x;
-                case VectorComponent.y: return vector.y;
-                case VectorComponent.z: return vector.z;
-                default: return 0;
+                case VectorComponent.x:
+                    return vector.x;
+                case VectorComponent.y:
+                    return vector.y;
+                case VectorComponent.z:
+                    return vector.z;
+                default:
+                    return 0;
             }
         }
         public static Vector2 GetMainDirection(Vector2 A, Vector2 B)
@@ -95,36 +188,77 @@ namespace Z
             }
             return Vector2.down;
         }
+        public static Vector3 ToVector3(this float value)
+        {
+            return new Vector3(value, value, value);
+        }
+
+        public static Vector3 Interpolate(this IList<Vector3> positions, float lerpAmt)
+        {
+            if (lerpAmt < 0) lerpAmt = 0;
+            if (lerpAmt > 1) lerpAmt = 1;
+            var lenMinusOne = positions.Count - 1;
+            int startindex = Mathf.FloorToInt(lenMinusOne * lerpAmt);
+            if (startindex >= lenMinusOne - 1) startindex = lenMinusOne - 1;
+            float reminder = lerpAmt * lenMinusOne - startindex;
+            var startval = positions[startindex];
+            var endval = positions[startindex + 1];
+            return Vector3.Lerp(startval, endval, reminder);
+        }
+
+        public static float Interpolate(this IList<float> positions, float lerpAmt)
+        {
+            if (lerpAmt < 0) lerpAmt = 0;
+            if (lerpAmt > 1) lerpAmt = 1;
+            var lenMinusOne = positions.Count - 1;
+            int startindex = Mathf.FloorToInt(lenMinusOne * lerpAmt);
+            if (startindex >= lenMinusOne - 1) startindex = lenMinusOne - 1;
+            float reminder = lerpAmt * lenMinusOne - startindex;
+            var startval = positions[startindex];
+            var endval = positions[startindex + 1];
+            return Mathf.Lerp(startval, endval, reminder);
+        }
         public static Vector2 DeadZone(this Vector2 v, float zone, out bool wasOutside)
         {
             wasOutside = false;
             if (v.x > 0)
             {
                 v.x -= zone;
-                if (v.x < 0) v.x = 0; else wasOutside = true;
+                if (v.x < 0) v.x = 0;
+                else wasOutside = true;
             }
             else
             {
                 v.x += zone;
-                if (v.x > 0) v.x = 0; else wasOutside = true;
+                if (v.x > 0) v.x = 0;
+                else wasOutside = true;
             }
             if (v.y > 0)
             {
                 v.y -= zone;
-                if (v.y < 0) v.y = 0; else wasOutside = true;
+                if (v.y < 0) v.y = 0;
+                else wasOutside = true;
             }
             else
             {
                 v.y += zone;
-                if (v.y > 0) v.y = 0; else wasOutside = true;
+                if (v.y > 0) v.y = 0;
+                else wasOutside = true;
             }
             return v;
         }
         public static float DeadZone(this float v, float zone)
         {
             if (v > 0)
-                v -= zone; if (v < 0) v = 0;
-            else { v += zone; if (v > 0) v = 0; }
+            {
+                v -= zone;
+                if (v < 0) v = 0;
+            }
+            else
+            {
+                v += zone;
+                if (v > 0) v = 0;
+            }
             return v;
         }
         public static float DeadZone(this float v, float zone, out bool wasOutside)
@@ -132,11 +266,15 @@ namespace Z
             wasOutside = false;
             if (v > 0)
             {
-                v -= zone; if (v < 0) v = 0; else wasOutside = true;
+                v -= zone;
+                if (v < 0) v = 0;
+                else wasOutside = true;
             }
             else
             {
-                v += zone; if (v > 0) v = 0; else wasOutside = true;
+                v += zone;
+                if (v > 0) v = 0;
+                else wasOutside = true;
             }
             return v;
         }
@@ -225,7 +363,6 @@ namespace Z
 
         }
 
-
         public static Vector2 PerpendicularClockwise(this Vector2 vector2)
         {
             return new Vector2(vector2.y, -vector2.x);
@@ -236,8 +373,6 @@ namespace Z
             return new Vector2(-vector2.y, vector2.x);
         }
 
-
-
         public static float Map(this Vector2 minMax, float f)
         {
             f *= (minMax.y - minMax.x);
@@ -247,9 +382,9 @@ namespace Z
 
         public static float MapInversed(this Vector2 minMax, float f)
         {
+            f -= minMax.x;
             f /= (minMax.y - minMax.x);
 
-            f -= minMax.x;
             return f;
         }
         public static void SetScale(this Transform transform, float scale)
@@ -278,10 +413,7 @@ namespace Z
         {
             return new Vector2(v.y, v.x);
         }
-        public static Vector3 ToVector3(this float f)
-        {
-            return new Vector3(f, f, f);
-        }
+      
         public static Vector3 ToVector3FromInt(this int f)
         {
             return new Vector3(f, f, f);
@@ -318,6 +450,12 @@ namespace Z
                 thisPoint = nextPoint;
             }
             return totalLen;
+        }
+        public static Vector2Int GetDimensions<T>(this T[][] vals)
+        {
+            if (vals == null || vals.Length == 0 || vals[0] == null) return Vector2Int.zero;
+            return new Vector2Int(vals.Length, vals[0].Length);
+
         }
     }
 }

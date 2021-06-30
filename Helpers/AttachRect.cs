@@ -14,12 +14,13 @@ namespace Z
         [Header("can be used as offset in 3d space")]
         public Vector3 relativeAttachmentPoint;
         Vector3 _attachmentPoint;
+        public   Camera editorCamera;
         public void Attach(GameObject g)
         {
             followTransform = (g == null ? null : g.transform);
         }
         void OnEnable()
-        {
+        {    if (editorCamera == null) editorCamera = Camera.main;//GameObject.FindObjectOfType(typeof(Camera)) as Camera;
             canvasRectTransform = GetComponentInParent<Canvas>().GetComponent<RectTransform>();
         }
         protected void LateUpdate()
@@ -34,7 +35,7 @@ namespace Z
             {
                 _attachmentPoint = targetPoint + relativeAttachmentPoint;
             }
-            Vector3 screenPosHud = Camera.main.WorldToViewportPoint(_attachmentPoint);
+            Vector3 screenPosHud =editorCamera.WorldToViewportPoint(_attachmentPoint);
             screenPosHud.x *= Screen.width;
             screenPosHud.y *= Screen.height;
             //screenPosHud.x *= canvasRectTransform.rect.width;

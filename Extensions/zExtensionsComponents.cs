@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -11,8 +11,8 @@ using UnityEditor;
 // v. 0.6 undo support on addorgetcomponent
 // v. 0.7 getcompinf notnull
 // v. 0.8 transform localreset
-
-/// oeverrides zRectExtensions
+// v.   0 9 ad child to list
+///  v/// oeverrides zRectExtensions
 
 public static class zExtensionsComponents // to useful to be in namespace1
 {
@@ -112,13 +112,18 @@ namespace Z
     public static class zExtensionsComponentsZ
     {
 
-
-
-        public static void MoveComponentToPosition(this UnityEngine.Component component, int desiredPosition)// : where T:UnityEngine.Component
+        public static void MoveComponentToPosition(this UnityEngine.Component component, int desiredPosition) // : where T:UnityEngine.Component
         {
 #if UNITY_EDITOR
             if (component == null) return;
-
+#if UNITY_2018_3_OR_NEWER
+            var status = UnityEditor.PrefabUtility.GetPrefabInstanceStatus(component.gameObject);
+            if (status == PrefabInstanceStatus.Connected)
+            {
+                Debug.Log("cannot move component on prefab, aborting. remove this debug");
+                return;
+            }
+#endif
             var components = component.gameObject.GetComponents<UnityEngine.Component>();
             int currentPosition = 0;
             for (int i = 0; i < components.Length; i++)
@@ -137,10 +142,19 @@ namespace Z
 
         }
 
-        public static void MoveComponent(this UnityEngine.Component component, int offset)// : where T:UnityEngine.Component
+        public static void MoveComponent(this UnityEngine.Component component, int offset) // : where T:UnityEngine.Component
         {
 #if UNITY_EDITOR
             if (component == null) return;
+
+#if UNITY_2018_3_OR_NEWER
+            var status = UnityEditor.PrefabUtility.GetPrefabInstanceStatus(component.gameObject);
+            if (status == PrefabInstanceStatus.Connected)
+            {
+                Debug.Log("cannot move component on prefab, aborting. remove this debug");
+                return;
+            }
+#endif
             if (offset < 0)
                 for (int i = 0; i < -offset; i++)
                     UnityEditorInternal.ComponentUtility.MoveComponentUp(component);
@@ -150,7 +164,6 @@ namespace Z
 #endif
 
         }
-
 
         public static void RemoveAllComponentsExcluding(this GameObject obj, params System.Type[] types)
         {
@@ -167,7 +180,6 @@ namespace Z
                 g[i] = foundObjects[i].gameObject;
             return g;
         }
-
 
         public static string NameOrNull(this MonoBehaviour source)
         {
@@ -189,7 +201,25 @@ namespace Z
             return children;
         }
 
-
+        /// <summary>
+        /// Try using the transorm verion, its swice as fast
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="list"></param>
+        public static void AddAllChildrenToList(this GameObject t, List<GameObject> list)
+        {
+            if (list == null) return;
+            for (int i = 0; i < t.transform.childCount; i++)
+                AddAllChildrenToList(t.transform.GetChild(i).gameObject, list);
+            list.Add(t);
+        }
+        public static void AddAllChildrenToList(this Transform t, List<Transform> list)
+        {
+            if (list == null) return;
+            for (int i = 0; i < t.childCount; i++)
+                AddAllChildrenToList(t.GetChild(i), list);
+            list.Add(t);
+        }
         public static void DestroySmart(this UnityEngine.Component c)
         {
 
@@ -204,10 +234,7 @@ namespace Z
 #endif
             }
 
-
         }
-
-
 
         public static void CollapseComponent(this MonoBehaviour mono, UnityEngine.Component c, bool expanded = false)
         {
@@ -226,7 +253,6 @@ namespace Z
 #endif
         }
 
-
         public static void CollapseComponent(this UnityEngine.Component c, bool expanded = false)
         {
 #if UNITY_EDITOR
@@ -244,7 +270,42 @@ namespace Z
             }
             return children;
         }
+        public static T[] GetComponentsInChildrenIncludingInactive<T>(this Component k, List<Transform> childrenList)
+        {
 
+            List<T> list = new List<T>();
+            foreach (var c in childrenList)
+            {
+                var thisComponent = c.GetComponent<T>();
+                if (thisComponent != null) list.Add(thisComponent);
+            }
+            return list.ToArray();
+        }
+
+        public static List<T> GetComponentsInChildrenIncludingInactive<T>(this Component k)
+        {
+            List<T> list = new List<T>();
+            var allchildren = k.transform.GetAllChildren();
+            foreach (var c in allchildren)
+            {
+                var thisComponent = c.GetComponent<T>();
+                if (thisComponent != null) list.Add(thisComponent);
+            }
+            return list; //.ToArray();
+        }
+        public static List<Transform> GetAllChildren(this Transform transform, List<Transform> list = null)
+        {
+            if (list == null) list = new List<Transform>();
+            list.Add(transform);
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                var thisTransform = transform.GetChild(i);
+                thisTransform.GetAllChildren(list);
+            }
+
+            return list;
+
+        }
         public static GameObject[] GetChildren(this GameObject thisGo, bool deep = false)
         {
             if (!deep)
@@ -279,10 +340,8 @@ namespace Z
             for (int i = 0; i < thisGoArray.Length; i++)
                 children.AddRange((thisGoArray[i]).GetChildren(deep));
 
-
             return children.ToArray();
         }
-
 
         public static GameObject[] GetAllChildrenCalled(this GameObject[] thisGoArray, string name)
         {
@@ -293,7 +352,6 @@ namespace Z
                 if (children[i].name.Equals(name)) namedObjects.Add(children[i]);
             }
             return namedObjects.ToArray();
-
 
         }
     }

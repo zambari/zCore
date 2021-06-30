@@ -1,54 +1,55 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Z;
+using zUI;
+
+
+// v.02 button listeners
+// v.03 reset adds link
+// v.04 more redux
+// v.05 UIBASe
+// simplified ver
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-
-// simplified ver
-
-//[ExecuteInEditMode]
-using Z;
-public class ListItem : MonoBehaviour//, IPointerClickHandler
+public class ListItem : UIBase //, IPointerClickHandler
 {
-    public Text textLabel;
-    public int id;
-    public string label;
-    protected ListPopulator _listPopulator;
-    protected ListPopulator listPopulator { get { if (_listPopulator == null) _listPopulator = GetComponentInParent<ListPopulator>(); return _listPopulator; } }
-    public Button button;
-    public void SetID(int i)
+    public virtual void Populate(string label, UnityAction callback)
     {
-        id = i;
-    }
-    void Reset()
-    {
-        textLabel = GetComponentInChildren<Text>();
-    }
-    protected virtual void OnValidate()
-    {
-        if (textLabel == null) textLabel = GetComponentInChildren<Text>();
-        if (button == null) button = GetComponentInChildren<Button>();
 
+        this.label = label;
+        SetCallback(callback);
     }
-    public void SetLabel(string s)
+   
+    public void AddListener(UnityAction e)
     {
-        label = s;
-        name = /*(id == 0 ? "" : id + ".") + */" item " + label;
-        if (textLabel != null)
-            textLabel.text = s;
+        if (button==null) 
+        {
+            Debug.Log("no button on listiem "+name,gameObject);
+            return;
+        }
+        button.onClick.AddListener(e);
     }
-
-#if UNITY_EDITOR
-    [ExposeMethodInEditor]
-    protected void SelectController()
+    public void ClearListeners()
     {
-        if (listPopulator == null) Debug.Log("sorry, this must be a rouge item", gameObject);
+        button.onClick.RemoveAllListeners();
+    }
+    public void SetCallback(UnityAction e)
+    {
+        if (button != null)
+        {
+            ClearListeners();
+            AddListener(e);
+        }
         else
-            Selection.activeGameObject = listPopulator.gameObject;
-
+        {
+            Debug.Log("item has no butotn component present", gameObject);
+        }
     }
-#endif
 }

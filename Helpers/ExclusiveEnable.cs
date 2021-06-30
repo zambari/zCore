@@ -2,37 +2,34 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Z;
 // v.02 self check
+// v.03 namehlper removed
 [ExecuteInEditMode]
 public class ExclusiveEnable : MonoBehaviour, IShowHide
 {
     /// ➛ ➜ ➔ ➝ ➞ ➟ ➠ ➥ ➦ ➧ ➨ ➲ ★    ☀
     //  🠠 🠢 🠱 🠳 🠤 🠦 🠨 🠪 🠬 🠮 🠰 🠲
 
-    NameHelper nameHelper;
     // NameHelper nameHelper { get { if (_nameHelper == null) _nameHelper = new NameHelper(this); return _nameHelper; } }
     public virtual void Hide()
     {
-        nameHelper = new NameHelper(this);
-        nameHelper.SetTag("☉");
+        name = name.SetTag("☉");
         gameObject.SetActive(false);
-
     }
 
     public virtual void Show()
     {
-        nameHelper = new NameHelper(this);
-        nameHelper.SetTag("☀");
+        name = name.SetTag("☀");
         gameObject.SetActive(true);
     }
     void OnValidate()
     {
-        if (gameObject.activeSelf) Show(); else Hide();
+        if (gameObject.activeSelf) Show();
+        else Hide();
     }
-
     void OnDisable()
     {
-
         Hide();
     }
     void OnEnable()
@@ -44,11 +41,14 @@ public class ExclusiveEnable : MonoBehaviour, IShowHide
             if (en.gameObject != gameObject) en.Hide();
         Show();
     }
+#if UNITY_EDITOR
+
     void OnDestroy()
     {
-        nameHelper = new NameHelper(this);
-        nameHelper.RemoveTag();
+        if (!Application.isPlaying)
+            name = name.RemoveAllTags();
     }
+#endif
 
     void Reset()
     {

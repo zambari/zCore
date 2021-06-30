@@ -45,7 +45,9 @@
 // v0.80 bellcurve fix
 // v0.81 scurve, symmetrical evaluation
 // v0.82 name or null on gameobjects
-
+// v0.83 float sort
+// v0.84 swap generic
+// v0.85 some extensions moved
 
 /// zExtensionsRandom - randomizin floats, strings etc
 /// zExtensionsComponents component adding, removing, moving order
@@ -57,70 +59,17 @@
 /// 
 /// 
 /// 
-using UnityEngine;
 using System;
 using System.Collections;
+using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 public static class zExt
 {
+ 
 
-    public static void Animate(this MonoBehaviour source, System.Action<float> Execute, float animTime, System.Action onComplete = null, bool unscaled = false)
-    {
-        source.StartCoroutine(Animator(Execute, animTime, onComplete, (x) => { return x; }, unscaled));
-    }
-
-    public static void Animate(this MonoBehaviour source, System.Action<float> Execute, System.Func<float, float> MappingFunction, float animTime, System.Action onComplete = null, bool unscaled = false)
-    {
-        source.StartCoroutine(Animator(Execute, animTime, onComplete, MappingFunction, unscaled));
-    }
-    static IEnumerator Animator(System.Action<float> Execute, float animTime, System.Action onComplete, System.Func<float, float> MappingFunction, bool unscaled = false)
-    {
-        float x = 0;
-        float startTime = unscaled ? Time.unscaledTime : Time.time;
-        if (animTime == 0) animTime = 1;
-        while (x < 1)
-        {
-            x = ((unscaled ? Time.unscaledTime : Time.time) - startTime) / animTime;
-            Execute(MappingFunction(x));
-            yield return null;
-        }
-        Execute(MappingFunction(1));
-        if (onComplete != null) onComplete();
-    }
-
-
-    public static void ExecuteAfter(this MonoBehaviour source, float delay, System.Action Execute, bool unscaled = false)
-    {
-        source.StartCoroutine(WaitRoutine(delay, Execute, unscaled));
-    }
-    public static string GetDateTimeString()
-    {
-        var dt = System.DateTime.Now;
-        return dt.Year.ToString("0000") + "-" + dt.Month.ToString("00") + "-" + dt.Day.ToString("00") + " " + dt.Hour.ToString("00") + "-" + dt.Minute.ToString("00") + "-" + dt.Second.ToString("00");
-    }
-
-    static IEnumerator WaitRoutine(float wait, System.Action Execute, bool unscaled = false)
-    {
-        if (unscaled)
-            yield return new WaitForSecondsRealtime(wait);
-        else yield return new WaitForSeconds(wait);
-        if (Execute != null) Execute();
-    }
-    public static string RandomStringLetters(int length, float upperToLowerRatio)
-    {
-        var builder = new System.Text.StringBuilder();
-        for (var i = 0; i < length; i++)
-        {
-            var c = poolLetters[UnityEngine.Random.Range(0, poolLetters.Length - 1)];
-            string s = c + "";
-            if (UnityEngine.Random.value > upperToLowerRatio) s = s.ToLower(); else s = s.ToUpper();
-            builder.Append(c);
-        }
-        return builder.ToString();
-    }
-    public static string RandomString(int length)
+     public static string RandomString(int length)
     {
         var builder = new System.Text.StringBuilder();
         for (var i = 0; i < length; i++)
@@ -130,7 +79,8 @@ public static class zExt
         }
         return builder.ToString();
     }
-
+    static readonly string pool = "abcdefghijklmnopqrstuvwxyz0123456789";
+    static readonly string poolLetters = "abcdefghijklmnopqrstuvwxyz";
     public static string RandomString(int length, float upperToLowerRatio)
     {
         var builder = new System.Text.StringBuilder();
@@ -138,166 +88,83 @@ public static class zExt
         {
             var c = pool[UnityEngine.Random.Range(0, pool.Length - 1)];
             string s = c + "";
-            if (UnityEngine.Random.value > upperToLowerRatio) s = s.ToLower(); else s = s.ToUpper();
+            if (UnityEngine.Random.value > upperToLowerRatio) s = s.ToLower();
+            else s = s.ToUpper();
             builder.Append(c);
         }
         return builder.ToString();
     }
-    static readonly string pool = "abcdefghijklmnopqrstuvwxyz0123456789";
-    static readonly string poolLetters = "abcdefghijklmnopqrstuvwxyz";
 
-
-    public static void Swap(ref Vector3 a, ref Vector3 b)
+public static void Swap<T>(ref T a, ref T b)
     {
-        Vector3 temp = b;
-        b = a;
-        a = temp;
+        T c = a;
+        a = b;
+        b = c;
     }
-    public static void Swap(ref float a, ref float b)
+    public static void Sort(ref float a, ref float b)
     {
-        var temp = b;
-        b = a;
-        a = temp;
+        if (a > b) Swap(ref a, ref b);
     }
-    public static void Swap(ref int a, ref int b)
+     public static void Sort(ref int a, ref int b)
     {
-        var temp = b;
-        b = a;
-        a = temp;
-    }
-    public static void Swap(ref string a, ref string b)
-    {
-        var temp = b;
-        b = a;
-        a = temp;
-    }
-    public static bool Contains(this Vector2 range, float parameter)
-    {
-        return (parameter >= range.x && parameter <= range.y);
-    }
-    public static float Clamp(this Vector2 range, float parameter)
-    {
-        if (parameter < range.x) parameter = range.x;
-        if (parameter > range.y) parameter = range.y;
-        return parameter;
-    }
-    public static Vector2 NormalizeToScreenSize(this Vector2 input)
-    {
-        return new Vector2(input.x / Screen.width, input.y / Screen.height);
-    }
-    public static void DrawMarkerGizmo(this Transform transform, Color color, float size = 0.15f)
-    {
-        Vector3 pos = transform.position;
-        float smaller = size / 15;
-        Gizmos.color = color;
-        Gizmos.DrawWireCube(pos, new Vector3(size, smaller, smaller));
-        Gizmos.DrawWireCube(pos, new Vector3(smaller, size, smaller));
-        Gizmos.DrawWireCube(pos, new Vector3(smaller, smaller, size));
-
+        if (a > b) Swap(ref a, ref b);
     }
 
-    public static void DrawGizmoCross(this Vector3 pos, float size = 0.07f)
+    
+    /// <summary>
+    /// Creates an animation curve that contains pre-zero full range step, and ones in the normal range
+    /// </summary>
+    /// <returns></returns>
+
+    public static AnimationCurve StepCurve()
     {
-        float smaller = size / 15;
-
-        Gizmos.DrawCube(pos, new Vector3(size, smaller, smaller));
-        Gizmos.DrawCube(pos, new Vector3(smaller, size, smaller));
-        Gizmos.DrawCube(pos, new Vector3(smaller, smaller, size));
+        return new AnimationCurve(new Keyframe(-0.02f, 1f, 0, 0), new Keyframe(-0.01f, 0.0f, 0, 0), new Keyframe(0f, 1f, 0f, 0f), new Keyframe(1f, 1f, 0f, 0f));
     }
-
-    //taken from : https://gist.github.com/AlexanderDzhoganov/d795b897005389071e2a
-
-    public static string TimeFromSeconds(int seconds)
+    public static AnimationCurve OneCurve()
     {
-        if (seconds < 0) return "";
-        int min = Mathf.FloorToInt(seconds / 60);
-        return string.Format("{0:D2}:{1:D2}", min, seconds % 60);
-
+        return new AnimationCurve(new Keyframe(0, 1), new Keyframe(1, 1));
     }
-    public static void HideObjects(this GameObject[] list, HideFlags flag = HideFlags.HideInHierarchy)
+    /// <summary>
+    /// Creates an (0-1) animation curve S
+    /// </summary>
+    /// <returns></returns>
+
+    public static AnimationCurve SweepCurve()
     {
-        foreach (GameObject g in list)
-            g.hideFlags = flag;
-        RepaintHierarchy();
+        return new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
     }
-    public static void RepaintHierarchy()
-    {
-#if UNITY_EDITOR
-        EditorApplication.RepaintHierarchyWindow();
-        //        EditorApplication.DirtyHierarchyWindowSorting();
-#endif
-
-    }
-    public static void ShowObjects(this GameObject[] list, HideFlags flag = HideFlags.None)
-    {
-        foreach (GameObject g in list)
-            g.hideFlags = flag;
-
-        RepaintHierarchy();
-    }
-    [Obsolete("use HideObject In Hierarchy")]
-    public static void HideObject(this GameObject obj, HideFlags flag = HideFlags.HideInHierarchy)
-    {
-        HideObjectInHierarchy(obj, flag);
-    }
-    public static void HideObjectInHierarchy(this GameObject obj, HideFlags flag = HideFlags.HideInHierarchy)
-    {
-        obj.hideFlags = flag;
-        RepaintHierarchy();
-
-    }
-
-    [Obsolete("use ShowObjectInHierarchy")]
-    public static void ShowObject(this GameObject obj, HideFlags flag = HideFlags.None)
-    {
-        ShowObject(obj, flag);
-    }
-    public static void ShowObjectInHierarchy(this GameObject obj, HideFlags flag = HideFlags.None)
-    {
-        obj.hideFlags = flag;
-
-    }
-
-
-#if UNITY_EDITOR
-    public static void PerformAction(this GameObject[] selection, Action<GameObject> actionToPerform)
-    {
-        if (actionToPerform == null) return;
-        for (int i = 0; i < selection.Length; i++)
-        {
-            actionToPerform(selection[i]);
-        }
-    }
-#endif
-
 
     /// <summary>
-    /// Copied from https://gist.github.com/maxattack/4c7b4de00f5c1b95a33b
+    /// Creates an (0-1) animation curve Linear
     /// </summary>
-    public static Quaternion SmoothDamp(Quaternion rot, Quaternion target, ref Quaternion deriv, float time)
+    /// <returns></returns>
+    public static AnimationCurve LinearCurve()
     {
-        // account for double-cover
-        var Dot = Quaternion.Dot(rot, target);
-        var Multi = Dot > 0f ? 1f : -1f;
-        target.x *= Multi;
-        target.y *= Multi;
-        target.z *= Multi;
-        target.w *= Multi;
-        // smooth damp (nlerp approx)
-        var Result = new Vector4(
-            Mathf.SmoothDamp(rot.x, target.x, ref deriv.x, time),
-            Mathf.SmoothDamp(rot.y, target.y, ref deriv.y, time),
-            Mathf.SmoothDamp(rot.z, target.z, ref deriv.z, time),
-            Mathf.SmoothDamp(rot.w, target.w, ref deriv.w, time)
-        ).normalized;
-        // compute deriv
-        var dtInv = 1f / Time.deltaTime;
-        deriv.x = (Result.x - rot.x) * dtInv;
-        deriv.y = (Result.y - rot.y) * dtInv;
-        deriv.z = (Result.z - rot.z) * dtInv;
-        deriv.w = (Result.w - rot.w) * dtInv;
-        return new Quaternion(Result.x, Result.y, Result.z, Result.w);
+        return new AnimationCurve(new Keyframe(0, 0, 1, 1), new Keyframe(1, 1, 1, 1));
     }
+
+    public static AnimationCurve LinearCurveDown()
+    {
+        return new AnimationCurve(new Keyframe(1, 1, 1, 1), new Keyframe(0, 0, 1, 1));
+    }
+
+    public static AnimationCurve BellCurve()
+    {
+        return new AnimationCurve(new Keyframe(0, 0, 1, 0), new Keyframe(0.5f, 1f, 0, 0), new Keyframe(1, 0, 0, 0));
+
+    }
+    public static AnimationCurve SCurve()
+    {
+        return new AnimationCurve(new Keyframe(0, 0, 1, 0), new Keyframe(1f, 1f, 0, 0));
+
+    }
+    public static float EvaluateSymmetrical(this AnimationCurve animationCurve, float t)
+    {
+        t = t * 2;
+        if (t > 1) t = 2 - t;
+        return animationCurve.Evaluate(t);
+    }
+
     /// <summary>
     /// prints a list of keyframes, 
     /// </summary>
@@ -342,60 +209,152 @@ public static class zExt
         Debug.Log(s);
     }
 
-    /// <summary>
-    /// Creates an animation curve that contains pre-zero full range step, and ones in the normal range
-    /// </summary>
-    /// <returns></returns>
-
-    public static AnimationCurve StepCurve()
+    public static bool Contains(this Vector2 range, float parameter)
     {
-        return new AnimationCurve(new Keyframe(-0.02f, 1f, 0, 0), new Keyframe(-0.01f, 0.0f, 0, 0), new Keyframe(0f, 1f, 0f, 0f), new Keyframe(1f, 1f, 0f, 0f));
+        return (parameter >= range.x && parameter <= range.y);
     }
-    public static AnimationCurve OneCurve()
+    public static float Clamp(this Vector2 range, float parameter)
     {
-        return new AnimationCurve(new Keyframe(0, 1), new Keyframe(1, 1));
-    }
-    /// <summary>
-    /// Creates an (0-1) animation curve S
-    /// </summary>
-    /// <returns></returns>
-
-    public static AnimationCurve SweepCurve()
-    {
-        return new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
-    }
-
-    /// <summary>
-    /// Creates an (0-1) animation curve Linear
-    /// </summary>
-    /// <returns></returns>
-    public static AnimationCurve LinearCurve()
-    {
-        return new AnimationCurve(new Keyframe(0, 0, 1, 1), new Keyframe(1, 1, 1, 1));
+        if (parameter < range.x) parameter = range.x;
+        if (parameter > range.y) parameter = range.y;
+        return parameter;
     }
 
 
-    public static AnimationCurve LinearCurveDown()
+    public static void Animate(this MonoBehaviour source, System.Action<float> Execute, float animTime, System.Action onComplete = null, bool unscaled = false)
     {
-        return new AnimationCurve(new Keyframe(1, 1, 1, 1), new Keyframe(0, 0, 1, 1));
+        source.StartCoroutine(Animator(Execute, animTime, onComplete, (x) => { return x; }, unscaled));
     }
 
-    public static AnimationCurve BellCurve()
+    public static void Animate(this MonoBehaviour source, System.Action<float> Execute, System.Func<float, float> MappingFunction, float animTime, System.Action onComplete = null, bool unscaled = false)
     {
-        return new AnimationCurve(new Keyframe(0, 0, 1, 0), new Keyframe(0.5f, 1f, 0, 0), new Keyframe(1, 0, 0, 0));
+        source.StartCoroutine(Animator(Execute, animTime, onComplete, MappingFunction, unscaled));
+    }
+    static IEnumerator Animator(System.Action<float> Execute, float animTime, System.Action onComplete, System.Func<float, float> MappingFunction, bool unscaled = false)
+    {
+        float x = 0;
+        float startTime = unscaled ? Time.unscaledTime : Time.time;
+        if (animTime == 0) animTime = 1;
+        while (x < 1)
+        {
+            x = ((unscaled ? Time.unscaledTime : Time.time) - startTime) / animTime;
+            Execute(MappingFunction(x));
+            yield return null;
+        }
+        Execute(MappingFunction(1));
+        if (onComplete != null) onComplete();
+    }
+
+    public static void ExecuteAfter(this MonoBehaviour source, float delay, System.Action Execute, bool unscaled = false)
+    {
+        source.StartCoroutine(WaitRoutine(delay, Execute, unscaled));
+    }
+    public static string GetDateTimeString()
+    {
+        var dt = System.DateTime.Now;
+        return dt.Year.ToString("0000") + "-" + dt.Month.ToString("00") + "-" + dt.Day.ToString("00") + " " + dt.Hour.ToString("00") + "-" + dt.Minute.ToString("00") + "-" + dt.Second.ToString("00");
+    }
+	
+	public static string FormatWithTrailingZeros(this DateTime dt, string delimiter, string spacer) // by szymon
+    {
+        return dt.Year.ToString("0000") + delimiter + dt.Month.ToString("00") + delimiter + dt.Day.ToString("00") + spacer + dt.Hour.ToString("00") + delimiter + dt.Minute.ToString("00") + delimiter + dt.Second.ToString("00");
+    }
+
+
+    static IEnumerator WaitRoutine(float wait, System.Action Execute, bool unscaled = false)
+    {
+        if (unscaled)
+            yield return new WaitForSecondsRealtime(wait);
+        else yield return new WaitForSeconds(wait);
+        if (Execute != null) Execute();
+    }
+    public static string RandomStringLetters(int length, float upperToLowerRatio)
+    {
+        var builder = new System.Text.StringBuilder();
+        for (var i = 0; i < length; i++)
+        {
+            var c = poolLetters[UnityEngine.Random.Range(0, poolLetters.Length - 1)];
+            string s = c + "";
+            if (UnityEngine.Random.value > upperToLowerRatio) s = s.ToLower();
+            else s = s.ToUpper();
+            builder.Append(c);
+        }
+        return builder.ToString();
+    }
+   
+
+
+
+    public static Vector2 NormalizeToScreenSize(this Vector2 input)
+    {
+        return new Vector2(input.x / Screen.width, input.y / Screen.height);
+    }
+    
+
+    //taken from : https://gist.github.com/AlexanderDzhoganov/d795b897005389071e2a
+
+    public static string TimeFromSeconds(int seconds)
+    {
+        if (seconds < 0) return "";
+        int min = Mathf.FloorToInt(seconds / 60);
+        return string.Format("{0:D2}:{1:D2}", min, seconds % 60);
 
     }
-    public static AnimationCurve SCurve()
+    public static void HideObjects(this GameObject[] list, HideFlags flag = HideFlags.HideInHierarchy)
     {
-        return new AnimationCurve(new Keyframe(0, 0, 1, 0), new Keyframe(1f, 1f, 0, 0));
+        foreach (GameObject g in list)
+            g.hideFlags = flag;
+        RepaintHierarchy();
+    }
+    public static void RepaintHierarchy()
+    {
+#if UNITY_EDITOR
+        EditorApplication.RepaintHierarchyWindow();
+        //        EditorApplication.DirtyHierarchyWindowSorting();
+#endif
 
     }
-    public static float EvaluateSymmetrical(this AnimationCurve animationCurve, float t)
+    public static void ShowObjects(this GameObject[] list, HideFlags flag = HideFlags.None)
     {
-        t = t * 2;
-        if (t > 1) t = 2 - t;
-        return animationCurve.Evaluate(t);
+        foreach (GameObject g in list)
+            g.hideFlags = flag;
+
+        RepaintHierarchy();
     }
+
+    [Obsolete("use HideObject In Hierarchy")]
+    public static void HideObject(this GameObject obj, HideFlags flag = HideFlags.HideInHierarchy)
+    {
+        HideObjectInHierarchy(obj, flag);
+    }
+    public static void HideObjectInHierarchy(this GameObject obj, HideFlags flag = HideFlags.HideInHierarchy)
+    {
+        obj.hideFlags = flag;
+        RepaintHierarchy();
+
+    }
+
+    [Obsolete("use ShowObjectInHierarchy")]
+    public static void ShowObject(this GameObject obj, HideFlags flag = HideFlags.None)
+    {
+        ShowObject(obj, flag);
+    }
+    public static void ShowObjectInHierarchy(this GameObject obj, HideFlags flag = HideFlags.None)
+    {
+        obj.hideFlags = flag;
+
+    }
+
+#if UNITY_EDITOR
+    public static void PerformAction(this GameObject[] selection, Action<GameObject> actionToPerform)
+    {
+        if (actionToPerform == null) return;
+        for (int i = 0; i < selection.Length; i++)
+        {
+            actionToPerform(selection[i]);
+        }
+    }
+#endif
 
 
     public static string ToConstructorString(this Color c)
@@ -403,14 +362,10 @@ public static class zExt
         return "new Color(" + c.r + "f," + c.g + "f," + c.b + "f," + c.a + "f)";
     }
 
-
-
-
-    public static float Duration(this UnityEngine.Video.VideoPlayer videoPlayer)
-    {
-        return videoPlayer.frameCount / videoPlayer.frameRate;
-    }
-
+    // public static float Duration(this UnityEngine.Video.VideoPlayer videoPlayer)
+    // {
+    //     return videoPlayer.frameCount / videoPlayer.frameRate;
+    // }
 
     public static bool ShiftPressed()
     {
@@ -458,6 +413,66 @@ public static class zExt
     public static string NameOrNull(this GameObject source)
     {
         return (source == null ? "null" : source.name);
+    }
+
+    
+    /// <summary>
+    /// Copied from https://gist.github.com/maxattack/4c7b4de00f5c1b95a33b
+    /// </summary>
+    public static Quaternion SmoothDamp(Quaternion rot, Quaternion target, ref Quaternion deriv, float time)
+    {
+        // account for double-cover
+        var Dot = Quaternion.Dot(rot, target);
+        var Multi = Dot > 0f ? 1f : -1f;
+        target.x *= Multi;
+        target.y *= Multi;
+        target.z *= Multi;
+        target.w *= Multi;
+        // smooth damp (nlerp approx)
+        var Result = new Vector4(
+            Mathf.SmoothDamp(rot.x, target.x, ref deriv.x, time),
+            Mathf.SmoothDamp(rot.y, target.y, ref deriv.y, time),
+            Mathf.SmoothDamp(rot.z, target.z, ref deriv.z, time),
+            Mathf.SmoothDamp(rot.w, target.w, ref deriv.w, time)
+        ).normalized;
+        // compute deriv
+        var dtInv = 1f / Time.deltaTime;
+        deriv.x = (Result.x - rot.x) * dtInv;
+        deriv.y = (Result.y - rot.y) * dtInv;
+        deriv.z = (Result.z - rot.z) * dtInv;
+        deriv.w = (Result.w - rot.w) * dtInv;
+        return new Quaternion(Result.x, Result.y, Result.z, Result.w);
+    }
+
+     public static bool IsNullOrEmpty(this Array source)
+    {
+        return (source == null || source.Length == 0);
+    }
+    public static bool IsNullOrSmallerThan(this Array source, int len)
+    {
+        return (source == null || source.Length < len); // <=?
+    }
+
+
+    public static bool CheckFloat(this float f)
+    {
+        if (Single.IsNaN(f))
+        {
+            Debug.Log("invalid float (NAN), dividing by zero? !");
+            return false;
+        }
+        return true;
+    }
+
+
+
+    public static bool ToBool(this int b)
+    {
+        return (b == 1);
+    }
+    public static int ToInt(this bool b)
+    {
+        return (b ? 1 : 0);
     }
     /* 
         #if UNITY_EDITOR

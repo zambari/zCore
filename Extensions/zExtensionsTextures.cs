@@ -1,34 +1,34 @@
-﻿
-
-using UnityEngine;
+﻿using System;
 using System.IO;
-using System;
+using UnityEngine;
+using UnityEngine.Events;
 // v.02 check dimeniosn
 // v.02b check dimeniosn update
 // v.03 testpattern, circle
 // v.04  create and fill
+// v.05 shif color hue
+// v.06 moved colors 
+// v.07 draw cross , pixel normalized
+// v.08 to texture2d
+// v.10 rt events
+//getindex
+// v.11 are same
+namespace Z
+{
+    [System.Serializable]
+    public class RenderTexureEvent : UnityEvent<RenderTexture> { };
+    public interface IRenderTexture
+    {
+        RenderTexture renderTexture { get; set; }
+        RenderTexureEvent renderTexureEvent { get; }
+        Transform transform { get; }
+        string name { get;}
+    }
+}
 public static class zExtensionsTextures
 {
 
     // public static Color baseColor = new Color(1f / 6, 1f / 2, 1f / 2, 1f / 2); //?
-
-
-
-    public static string DumpToJPGBase64(this RenderTexture rt, int quality = 70)
-    {
-        var oldRT = RenderTexture.active;
-
-        var tex = new Texture2D(rt.width, rt.height);
-        RenderTexture.active = rt;
-        tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
-        tex.Apply();
-        byte[] bytes = tex.EncodeToJPG(quality);
-        string encoded = Convert.ToBase64String(bytes);
-        // convert.frombase64string
-        RenderTexture.active = oldRT;
-        return encoded;
-
-    }
 
 
     public static Texture2D CreateAndFill(this Texture2D t, Color c, int x = 1, int y = 1) //, bool apply=true
@@ -38,14 +38,18 @@ public static class zExtensionsTextures
         return t;
     }
 
-
-    public static void SetAlpha(this Color c, float a)
+    public static int GetIndex(int x, int y, Vector2Int dims)
     {
-        c.Alpha(a);
+        int index = ((dims.y - y + 1) * dims.x) - x; ;
+        if (index < 0) index = 0;
+        if (index >= dims.x * dims.y) return 0;
+        return index;
     }
-
-
-   
+    public static int GetIndex(int x, int y, int dimx, int dimy)
+    {
+        return GetIndex(x, y, new Vector2Int(dimx, dimy));
+        //   return (y * textureDimensions.x) + x;
+    }
     public static bool CheckDimensions(this Texture texture, Vector2Int targetDimensions)
     {
         if (texture == null) return false;
@@ -70,7 +74,6 @@ public static class zExtensionsTextures
         return true;
     }
 
-
     public static Texture2D TextureFromBase64(this string base64string)
     {
 
@@ -81,6 +84,22 @@ public static class zExtensionsTextures
         // convert.frombase64string
 
         return tex;
+
+    }
+
+    public static string DumpToJPGBase64(this RenderTexture rt, int quality = 70)
+    {
+        var oldRT = RenderTexture.active;
+
+        var tex = new Texture2D(rt.width, rt.height);
+        RenderTexture.active = rt;
+        tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+        tex.Apply();
+        byte[] bytes = tex.EncodeToJPG(quality);
+        string encoded = Convert.ToBase64String(bytes);
+        // convert.frombase64string
+        RenderTexture.active = oldRT;
+        return encoded;
 
     }
 
@@ -130,7 +149,26 @@ public static class zExtensionsTextures
                 texture.SetPixel(i, j, color);
 
     }
-
+    public static Color GetPixelNormalized(this Texture2D texture, Vector2 xy)
+    {
+        return texture.GetPixelNormalized(xy.x, xy.y);
+    }
+    public static Color GetPixelNormalized(this Texture2D texture, float x, float y)
+    {
+        return texture.GetPixel((int)(x * texture.width), (int)(y * texture.height));
+    }
+    public static void SetPixelNormalized(this Texture2D texture, Vector2 xy, Color c)
+    {
+        texture.SetPixelNormalized(xy.x, xy.y, c);
+    }
+    public static void SetPixelNormalized(this Texture2D texture, float x, float y, Color c)
+    {
+        texture.SetPixel((int)(x * texture.width), (int)(y * texture.height), c);
+    }
+    public static float Average(this Color32 color)
+    {
+        return ((int)color.r + color.g + color.b) / (3f * 255);
+    }
     /// <summary>
     ///  used for test pattern
     /// </summary>
@@ -173,6 +211,19 @@ public static class zExtensionsTextures
         File.WriteAllBytes(pngOutPath, tex.EncodeToPNG());
         RenderTexture.active = oldRT;
     }
+
+    public static Texture2D ToTexture2D(this RenderTexture rt)
+    {
+        var oldRT = RenderTexture.active;
+
+        var tex = new Texture2D(rt.width, rt.height);
+        RenderTexture.active = rt;
+        tex.name = rt.name + " converted";
+        tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+        tex.Apply();
+        RenderTexture.active = oldRT;
+        return tex;
+    }
     public static RenderTexture DestroyIfNotNull(this RenderTexture rt)
     {
         if (rt == null) return null;
@@ -180,11 +231,11 @@ public static class zExtensionsTextures
         UnityEngine.Object.DestroyImmediate(rt);
         return null;
     }
-public static string SizeString(this Texture t)
-{
-    if (t==null) return "null";
-    return "["+t.width+"x"+t.height+"]";
-}
+    public static string SizeString(this Texture t)
+    {
+        if (t == null) return "null";
+        return "[" + t.width + "x" + t.height + "]";
+    }
     public static RenderTexture ToRenderTexture(this Texture texture)
     {
         if (texture == null) return null;
@@ -192,7 +243,7 @@ public static string SizeString(this Texture t)
         renderTexture.format = RenderTextureFormat.ARGB32;
         renderTexture.Create();
         copyCount++;
-        renderTexture.name = texture.name + " as RT " + renderTexture.SizeString()+" /" + copyCount;
+        renderTexture.name = texture.name + " as RT " + renderTexture.SizeString() + " /" + copyCount;
         Graphics.Blit(texture, renderTexture);
         return renderTexture;
     }
@@ -210,6 +261,13 @@ public static string SizeString(this Texture t)
         return renderTexture;
 
     }
+    public static bool IsSameSize(this Texture source, Texture target)
+    {
+        if (source==target) return true;
+        if ((source==null&& target !=null) || (source!=null && target!=null))return false;
+        return source.width==target.width && source.height==target.height;
+    
+    }
     // From StackOverflow https://stackoverflow.com/questions/30410317/how-to-draw-circle-on-texture-in-unity
     public static Texture2D Circle(this Texture2D tex, int x, int y, float r, Color color)
     {
@@ -225,9 +283,9 @@ public static string SizeString(this Texture t)
         for (int u = 0; u < tex.width; u++)
             for (int v = 0; v < tex.height; v++)
                 tex.SetPixel(u, v, Color.Lerp(
-                                                Color.Lerp(color0, color3, u / (float)tex.width),
-                                                Color.Lerp(color1, color2, u / (float)tex.width),
-                                                  v / (float)tex.height));
+                    Color.Lerp(color0, color3, u / (float)tex.width),
+                    Color.Lerp(color1, color2, u / (float)tex.width),
+                    v / (float)tex.height));
 
         return tex;
     }
@@ -261,7 +319,7 @@ public static string SizeString(this Texture t)
         texture.Fill(Color.black);
         float colorMulti = 0.5f;
         texture.FourCornerGradient(Color.blue * colorMulti, Color.red * colorMulti, Color.green * colorMulti, Color.yellow * colorMulti);
-        Color32[] parade = GetParade();
+        Color32[] parade = zExtensionsColors.GetParade();
 
         int offset = texture.width / 10;
         int step = (texture.width - offset) / (parade.Length + 1);
@@ -301,21 +359,6 @@ public static string SizeString(this Texture t)
     /// From http://wiki.unity3d.com/index.php/TextureDrawLine
     /// </summary>
 
-    static Color32[] GetParade()
-    {
-        float Low = 18f / 255;
-        float High = 240f / 255;
-        return new Color32[] {
-                        new Color ( High,High,High),
-                        new Color( High,High,Low),
-                        new Color( Low, High,High),
-                        new Color( Low, High,Low),
-                        new Color( High, Low,High),
-                        new Color( High, Low,Low),
-                        new Color( Low, Low, High),
-                        new Color( Low, Low, Low)
-                        };
-    }
     public static Texture2D DrawLine(this Texture2D tex, int x0, int y0, int x1, int y1, Color col)
     {
         if (tex == null) tex = new Texture2D(defaultTextureDim, defaultTextureDim);
@@ -364,5 +407,75 @@ public static string SizeString(this Texture t)
             }
         }
         return tex;
+    }
+
+    public static void DrawCross(this Texture2D texture, int x, int y, Color color, int len = 3)
+    {
+        //texture.SetPixel(x,y,color);
+        for (int i = -len; i <= len; i++)
+        {
+            texture.SetPixel(x, y + i, color);
+            texture.SetPixel(x + i, y, color);
+        }
+    }
+
+    public static void DrawCross(this Texture2D texture, int x, int y, Color color, int len, int width)
+    {
+        texture.SetPixel(x, y, color);
+        for (int i = -len; i < len; i++)
+        {
+            for (int j = -width; j <= width; j++)
+            {
+                texture.SetPixel(x + j, y + i, color);
+                texture.SetPixel(x + i, y + j, color);
+            }
+        }
+    }
+public static Texture2D Create(this Texture2D t, Color fillColor, int sixeX = 1, int sizeY = 1) //, bool apply=true
+    {
+        Texture2D texture = new Texture2D(sixeX, sizeY);
+        Color32[] black = new Color32[texture.width * texture.height];
+        for (int i = 0; i < black.Length; i++)
+            black[i] = fillColor;
+
+        texture.SetPixels32(black);
+        texture.Apply();
+        return texture;
+
+    }
+    public static void Multiply(this Texture2D texture, Color fillColor) //, bool apply=true
+    {
+        Color32[] colors = texture.GetPixels32();
+        for (int i = 0; i < colors.Length; i++)
+            colors[i] = colors[i] * fillColor;
+
+        texture.SetPixels32(colors);
+        texture.Apply();
+
+    }
+
+    public static void Add(this Texture2D texture, Color fillColor) //, bool apply=true
+    {
+        Color32[] colors = texture.GetPixels32();
+        for (int i = 0; i < colors.Length; i++)
+            colors[i] = colors[i] + fillColor;
+        texture.SetPixels32(colors);
+        texture.Apply();
+
+    }
+
+    public static void DrawCross(this Texture2D texture, int x, int y, Color color, int len, int width, int deadzonecenter)
+    {
+        texture.SetPixel(x, y, color);
+        for (int i = -len; i < len; i++)
+        {
+            if (i < -deadzonecenter || i > deadzonecenter)
+                for (int j = -width; j <= width; j++)
+                {
+
+                    texture.SetPixel(x + j, y + i, color);
+                    texture.SetPixel(x + i, y + j, color);
+                }
+        }
     }
 }

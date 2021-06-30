@@ -1,5 +1,4 @@
-﻿#define LINERENDERER_not
-
+﻿
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -13,14 +12,9 @@ using Z;
 
 // v.02 target transform gets rect transform
 // v.03 inverse, color caching
-// v.04 linerenderer merge
-
 
 [ExecuteInEditMode]
 [RequireComponent(typeof(RectTransform))]
-#if LINERENDERER
-[RequireComponent(typeof(LineRenderer))]
-#endif
 public class TransitionVisualizer : MonoBehaviour
 {
     RectTransform thisRect;
@@ -29,37 +23,7 @@ public class TransitionVisualizer : MonoBehaviour
     public RectTransform source { get { return _target; } set { _target = value; RecalculteLine(); } }
     public Transform targetTransform { get { return target; } set { if (value == null) _target = null; else target = value.GetComponent<RectTransform>(); } }
     public Transform sourceTransform { get { return target; } set { if (value == null) _target = null; else target = value.GetComponent<RectTransform>(); } }
-#if LINERENDERER
 
-    static Texture2D lineRendTexture;
-    static Material lineRendererMaterial;
-    [SerializeField] [HideInInspector] LineRenderer _lineRenderer;
-    LineRenderer lineRenderer { get { if (_lineRenderer == null) _lineRenderer = gameObject.AddOrGetComponent<LineRenderer>(); return _lineRenderer; } }
-    void CheckTexture()
-    {
-        if (lineRendererMaterial == null)
-        {
-            Shader shader = Shader.Find("Unlit/Texture");
-            lineRendererMaterial = new Material(shader);
-        }
-        if (lineRendTexture == null)
-        {
-            lineRendTexture = new Texture2D(128, 1);
-            for (int i = 0; i < lineRendTexture.width; i++)
-            {
-                float thisPos = i * 1f / lineRendTexture.width;
-                lineRendTexture.SetPixel(i, 0, Color.Lerp(color, color / 4, thisPos));
-            }
-            lineRendTexture.Apply();
-        }
-        lineRendererMaterial.mainTexture = lineRendTexture;
-        if (lineRenderer != null)
-        {
-            lineRenderer.material = lineRendererMaterial;
-            lineRenderer.widthCurve = new AnimationCurve(new Keyframe(0, lineDetails.lineRendererWidth), new Keyframe(1, lineDetails.lineRendererWidth));
-        }
-    }
-#endif
 
     [Header("Drag another object here")]
     [FormerlySerializedAs("_source")]
@@ -81,7 +45,7 @@ public class TransitionVisualizer : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        if (Application.isPlaying) return;
+        // if (Application.isPlaying) return;
         //RecalculteLine();
         if (thisRect == null) thisRect = GetComponent<RectTransform>();
         if (target != null && isActiveAndEnabled)
@@ -140,9 +104,6 @@ public class TransitionVisualizer : MonoBehaviour
 
     void RecalculteLine()
     {
-#if LINERENDERER
-        CheckTexture();
-#endif
 #if UNITY_EDITOR
         if (target == null) return;
         if (thisRect == null) thisRect = GetComponent<RectTransform>();
@@ -214,14 +175,6 @@ public class TransitionVisualizer : MonoBehaviour
             arrowInfo.SetPoints(computedPoints, edgeLen);
         }
         lineDetails.currentStepCount = computedPoints.Count;
-#if LINERENDERER
-
-        if (lineRenderer != null)
-        {
-            lineRenderer.SetPositions(computedPoints.ToArray());
-            lineRenderer.positionCount = computedPoints.Count;
-        }
-#endif
 #endif
     }
 
@@ -284,9 +237,6 @@ public class TransitionVisualizer : MonoBehaviour
         [Range(0f, 2.5f)]
         public float bezierMultiplier = 1;
         public bool useAnchorPoint = false;
-#if LINERENDERER
-        public float lineRendererWidth = 0.06f;
-#endif
         public float GetStep()
         {
 
