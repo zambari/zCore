@@ -15,7 +15,7 @@ namespace Z
 {
 
     [RequireComponent(typeof(Text))]
-    public class ScreenConsole : MonoBehaviour, IRequestInitEarly
+    public class ScreenConsole : MonoBehaviour
     {
         Text text;
         public Color color = Color.white;

@@ -12,6 +12,7 @@ using Z;
 // v.0.08 back to conetn
 // v.0.09a stealth object deactivtn
 // v.0.10 no items
+// v.0.11 clearkitem sfix
 public class ListPopulator : MonoBehaviour
 {
 
@@ -64,7 +65,7 @@ public class ListPopulator : MonoBehaviour
         for (int i = 0; i < items.Count; i++)
         {
             var thisitem = items[i];
-            Destroy(thisitem);
+            Destroy(thisitem.gameObject);
         }
 
         //         for (int i = itemTemplate.transform.parent.childCount - 1; i >= 0; i--)
