@@ -13,6 +13,7 @@ using UnityEngine;
 // v.10 more map extensions
 // v.11 more map Inverse fixed
 // v.12 ToVector3
+// v.13 map inversed yet another bugfix
 
 namespace Z
 {
@@ -78,19 +79,7 @@ namespace Z
             return DirectionsFour.down;
 
         }
-        public static float MapInversed(this float f, Vector2 minMax)
-        {
-            f /= (minMax.y - minMax.x);
 
-            f -= minMax.x;
-            return f;
-        }
-        public static float Map(this float f, Vector2 minMax)
-        {
-            f *= (minMax.y - minMax.x);
-            f += minMax.x;
-            return f;
-        }
         public enum VectorComponent { none, x, y, z }
         public static Vector3 SetComponent(this Vector3 vector, VectorComponent component, float f)
         {
@@ -379,7 +368,12 @@ namespace Z
             f += minMax.x;
             return f;
         }
-
+        public static float Map(this float f, Vector2 minMax)
+        {
+            f *= (minMax.y - minMax.x);
+            f += minMax.x;
+            return f;
+        }
         public static float MapInversed(this Vector2 minMax, float f)
         {
             f -= minMax.x;
@@ -387,6 +381,14 @@ namespace Z
 
             return f;
         }
+        public static float MapInversed(this float f, Vector2 minMax)
+        {
+            f -= minMax.x;
+            f /= (minMax.y - minMax.x);
+
+            return f;
+        }
+
         public static void SetScale(this Transform transform, float scale)
         {
             if (transform != null) transform.localScale = new Vector3(scale, scale, scale);
@@ -413,7 +415,7 @@ namespace Z
         {
             return new Vector2(v.y, v.x);
         }
-      
+
         public static Vector3 ToVector3FromInt(this int f)
         {
             return new Vector3(f, f, f);
