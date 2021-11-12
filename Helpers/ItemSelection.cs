@@ -30,7 +30,6 @@ namespace zUI
         public ISelectableUIController selectonHandler { get { if (_selectonHandler == null) _selectonHandler = GetComponentInParent<ISelectableUIController>(); return _selectonHandler; } }
         private ISelectableUIController _selectonHandler;
         public Color selectedColor;
-        public bool enableUnselection = true;
         Color normalColor;
         [SerializeField]
         bool _isSelected;
@@ -45,28 +44,18 @@ namespace zUI
             get { return _isSelected; }
             set
             {
-                Debug.Log($" isselected {value} {name}", gameObject);
                 if (_isSelected == value)
                 {
                     Debug.Log("no change");
                     return;
                 }
                 _isSelected = value;
-                if (toggleSource == ToggleSource.button)
-                {
-
-                }
                 if (toggleSource == ToggleSource.toggle)
                 {
                     var toggle = listItem.objectReferences.toggle;
                     toggle.isOn = value;
-                    if (!enableUnselection)
-                    {
-                        toggle.interactable = !value;
-
-                    }
+                  
                 }
-
                 SignalSelection(value);
             }
         }
@@ -102,12 +91,7 @@ namespace zUI
             }
             else
             {
-                if (enableUnselection)
-                    selectonHandler.HandleSelection(this, false);
-                else
-                {
-                    Debug.Log("unselection disabled");
-                }
+               selectonHandler.HandleSelection(this, false);
             }
         }
 
