@@ -13,6 +13,7 @@ using UnityEditor;
 // v.0.10 no items
 // v.0.11 clearkitem sfix
 // v.0.11a simplified version
+// v.0.12 indexer, count    
 public class ListPopulator : MonoBehaviour
 {
     public ListItem itemTemplate;
@@ -21,6 +22,11 @@ public class ListPopulator : MonoBehaviour
 
     [HideInInspector]
     public List<ListItem> items = new List<ListItem>();
+    public int Count { get { return items.Count; } }
+    public ListItem this[int i]
+    {
+        get { return items[i]; }
+    }
     protected virtual void OnValidate()
     {
         if (ListItem.PrefabModeIsActive(gameObject)) return;
@@ -46,8 +52,11 @@ public class ListPopulator : MonoBehaviour
         if (noItemsObject != null) noItemsObject.SetActive(false);
         if (itemTemplate != null) itemTemplate.gameObject.SetActive(false);
     }
-
-    public virtual void ClearList()
+    public void ClearList()
+    {
+        Clear();
+    }
+    public virtual void Clear()
     {
         if (itemTemplate == null) return;
         HideTemplates();
@@ -77,7 +86,7 @@ public class ListPopulator : MonoBehaviour
         HideTemplates();
         return item;
     }
- 
+
     public void SetListSize(int size)
     {
         if (itemTemplate == null) return;
