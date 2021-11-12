@@ -47,7 +47,7 @@ public class ListItem : MonoBehaviour
                     }
                 }
             }
-           
+
         }
     }
     public Button button
@@ -100,7 +100,20 @@ public class ListItem : MonoBehaviour
         label = label;
 
     }
-
+    public virtual void Populate(string label, UnityAction callback)
+    {
+        this.label = label;
+        button.onClick.AddListener(callback);
+    }
+    public void AddListener(UnityAction callback)
+    {
+        button.onClick.AddListener(callback);
+    }
+    public void SetCallback(UnityAction callback)
+    {
+        button.onClick.RemoveAllListeners();
+        button.onClick.AddListener(callback);
+    }
     public static bool PrefabModeIsActive(GameObject gameObject) //https://stackoverflow.com/questions/56155148/how-to-avoid-the-onvalidate-method-from-being-called-in-prefab-mode
     {
 #if UNITY_EDITOR && UNITY_2018_3_OR_NEWER
