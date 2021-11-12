@@ -14,24 +14,29 @@ using UnityEditor;
 // v.0.11 clearkitem sfix
 // v.0.11a simplified version
 // v.0.12 indexer, count    
-public class ListPopulator : MonoBehaviour
+// v.0.13 generic version
+public class ListPopulator : ListPopulatorBase<ListItem>
 {
-    public ListItem itemTemplate;
+
+}
+public class ListPopulatorBase<T> : MonoBehaviour where T : ListItem
+{
+    public T itemTemplate;
     public GameObject noItemsObject;
     public RectTransform content;
 
     [HideInInspector]
-    public List<ListItem> items = new List<ListItem>();
+    public List<T> items = new List<T>();
     public int Count { get { return items.Count; } }
-    public ListItem this[int i]
+    public T this[int i]
     {
         get { return items[i]; }
     }
     protected virtual void OnValidate()
     {
-        if (ListItem.PrefabModeIsActive(gameObject)) return;
+       if (ListItem.PrefabModeIsActive(gameObject)) return;
 
-        if (itemTemplate == null) itemTemplate = GetComponentInChildren<ListItem>();
+        if (itemTemplate == null) itemTemplate = GetComponentInChildren<T>();
         if (content == null)
         {
             if (itemTemplate != null)
@@ -66,13 +71,13 @@ public class ListPopulator : MonoBehaviour
             Destroy(thisitem.gameObject);
         }
         if (noItemsObject != null) noItemsObject.SetActive(true);
-        items = new List<ListItem>();
+        items = new List<T>();
     }
-    public ListItem CreateItem()
+    public T CreateItem()
     {
         if (items == null)
         {
-            items = new List<ListItem>();
+            items = new List<T>();
             if (itemTemplate != null) itemTemplate.gameObject.SetActive(false);
         }
         if (itemTemplate == null)
@@ -93,7 +98,7 @@ public class ListPopulator : MonoBehaviour
         itemTemplate.gameObject.SetActive(false);
         if (noItemsObject != null) noItemsObject.SetActive(size == 0);
 
-        if (items == null) items = new List<ListItem>();
+        if (items == null) items = new List<T>();
         while (items.Count > size)
         {
             var thisItem = items[0];
