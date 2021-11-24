@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Z;
 // v.02 contains 
 // v.03 ranges, but construtor changed!
+// v.04 added string debug option
 
 [System.Serializable]
 public class TimeRange
@@ -16,6 +17,12 @@ public class TimeRange
     [SerializeField] float _rangeIn;
     [Range(0, 1)]
     [SerializeField] float _rangeOut = 1;
+
+    [Header("Debug")]
+    [SerializeField] bool showAsStrings;
+    [SerializeField] string startDateAsString = "Please set showAsStrings=true";
+    [SerializeField] string endDateAsString = "To get updated values";
+    [SerializeField] string durationAsString = "here";
     public long FromNormalized(float x)
     {
         return selectedStart + (long)(_selectedDuration * x);
@@ -32,22 +39,20 @@ public class TimeRange
         get { return _startTick; }
         set
         {
-            //			Debug.Log("start chaned " + value);
             _startTick = value;
             ComputeDerived();
         }
     }
+    public void SetRangeLinuxTimeToNow()
+    {
+        SetRange((new System.DateTime(1970, 1, 1)).Ticks, System.DateTime.Now.Ticks);
+    }
 
     public TimeRange()
     {
+        SetRangeLinuxTimeToNow();
+    }
 
-    }
-    public static TimeRange MostTime()
-    {
-        long thisstartTick = (new System.DateTime(1970, 1, 1)).Ticks;
-        long thisendTick = System.DateTime.Now.Ticks;
-        return new TimeRange(thisstartTick, thisendTick);
-    }
     public TimeRange(TimeRange source)
     {
         if (source == null)
@@ -117,6 +122,15 @@ public class TimeRange
         _selectedstartTick = startTick + (long)(duration * rangeIn);
         _seletctedEndTick = startTick + (long)(duration * rangeOut);
         _selectedDuration = _seletctedEndTick - _selectedstartTick;
+#if UNITY_EDITOR
+        if (showAsStrings)
+        {
+            startDateAsString = (new System.DateTime(startTick)).ToString();
+            endDateAsString = (new System.DateTime(endTick)).ToString();
+            var dur = new System.TimeSpan(endTick - startTick);
+            durationAsString = $"{dur.Days} days {dur.Seconds} seconds";
+        }
+#endif
     }
 
     public float rangeOut
@@ -185,7 +199,7 @@ public class TimeRange
         return timeStamp >= startTick && timeStamp <= endTick;
 
     }
-    public bool Touches(TimeRange otherTimeRange)
+    public bool Touches(TimeRange otherTimeRange) //how is it different from containts?
     {
         if (startTick > otherTimeRange.endTick) return false;
         if (endTick < otherTimeRange.startTick) return false;
