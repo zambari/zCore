@@ -1,11 +1,10 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-using Z;
 // v.0.05b barebones
 // v.0.06 better template handling
 // v.0.07 ifaplettes
@@ -13,20 +12,31 @@ using Z;
 // v.0.09a stealth object deactivtn
 // v.0.10 no items
 // v.0.11 clearkitem sfix
-public class ListPopulator : MonoBehaviour
+// v.0.11a simplified version
+// v.0.12 indexer, count    
+// v.0.13 generic version
+public class ListPopulator : ListPopulatorBase<ListItem>
 {
 
-    public ListItem itemTemplate;
+}
+public class ListPopulatorBase<T> : MonoBehaviour where T : ListItem
+{
+    public T itemTemplate;
     public GameObject noItemsObject;
-    // public Transform content;
-    [HideInInspector]
-    public List<ListItem> items = new List<ListItem>();
+    public RectTransform content;
 
+    [HideInInspector]
+    public List<T> items = new List<T>();
+    public int Count { get { return items.Count; } }
+    public T this[int i]
+    {
+        get { return items[i]; }
+    }
     protected virtual void OnValidate()
     {
-        if (zBench.PrefabModeIsActive(gameObject)) return;
+       if (ListItem.PrefabModeIsActive(gameObject)) return;
 
-        if (itemTemplate == null) itemTemplate = GetComponentInChildren<ListItem>();
+        if (itemTemplate == null) itemTemplate = GetComponentInChildren<T>();
         if (content == null)
         {
             if (itemTemplate != null)
@@ -35,17 +45,8 @@ public class ListPopulator : MonoBehaviour
             {
                 var sr = GetComponent<ScrollRect>();
                 if (sr != null) content = sr.content;
-                else
-                {
-#if PALETTES
-                    // var sp = GetComponentInChildren<ScrollPooled>();
-                    // if (sp != null) content = sp.content;
-#endif
-
-                }
             }
         }
-        // if (content == null && itemTemplate != null) content = itemTemplate.transform.parent;
     }
     public virtual void OnEnable()
     {
@@ -56,9 +57,11 @@ public class ListPopulator : MonoBehaviour
         if (noItemsObject != null) noItemsObject.SetActive(false);
         if (itemTemplate != null) itemTemplate.gameObject.SetActive(false);
     }
-
-    [ExposeMethodInEditor]
-    public virtual void ClearList()
+    public void ClearList()
+    {
+        Clear();
+    }
+    public virtual void Clear()
     {
         if (itemTemplate == null) return;
         HideTemplates();
@@ -67,54 +70,35 @@ public class ListPopulator : MonoBehaviour
             var thisitem = items[i];
             Destroy(thisitem.gameObject);
         }
-
-        //         for (int i = itemTemplate.transform.parent.childCount - 1; i >= 0; i--)
-        //         {
-        //             GameObject g = itemTemplate.transform.parent.GetChild(i).gameObject;
-        //             if ((g != itemTemplate.gameObject /* || g.GetComponent<ListConstant>()!=null*/ ) && g.activeSelf)
-        //             {
-        // #if UNITY_EDITOR_
-        //                 EditorApplication.delayCall += () => DestroyImmediate(g);
-        // #else
-        //                 Destroy(g);
-        // #endif
-        //             }
-        //         }
         if (noItemsObject != null) noItemsObject.SetActive(true);
-        items = new List<ListItem>();
+        items = new List<T>();
     }
-    public RectTransform content;
-    public ListItem CreateItem()
+    public T CreateItem()
     {
         if (items == null)
         {
-            items = new List<ListItem>();
+            items = new List<T>();
             if (itemTemplate != null) itemTemplate.gameObject.SetActive(false);
         }
         if (itemTemplate == null)
         {
-#if PALETTES
             Debug.Log("no template");
-            //return;
-            var thisItem = PrefabProvider.Get(this).GetGameObject(content, "FileItem", "File");
-            if (thisItem != null)
-                itemTemplate = thisItem.GetComponent<ListItem>();
-#endif
+            return null;
         }
         var item = Instantiate(itemTemplate, content);
-        // Debug.Log($"{name} Created  item with parent {itemTemplate.transform.parent}");
         items.Add(item);
         item.gameObject.SetActive(true);
         HideTemplates();
         return item;
     }
+
     public void SetListSize(int size)
     {
         if (itemTemplate == null) return;
         itemTemplate.gameObject.SetActive(false);
         if (noItemsObject != null) noItemsObject.SetActive(size == 0);
 
-        if (items == null) items = new List<ListItem>();
+        if (items == null) items = new List<T>();
         while (items.Count > size)
         {
             var thisItem = items[0];
@@ -126,14 +110,4 @@ public class ListPopulator : MonoBehaviour
             CreateItem();
     }
 
-#if UNITY_EDITOR
-    [ExposeMethodInEditor]
-    protected void SelectTemplate()
-    {
-        if (itemTemplate == null) Debug.Log("sorry, no template set", gameObject);
-        else
-            Selection.activeObject = itemTemplate;
-    }
-
-#endif
 }
