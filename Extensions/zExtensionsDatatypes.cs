@@ -13,8 +13,7 @@ using UnityEngine;
 /// v.06 ItemBasedOnNormalized
 /// v.07 aarr to sring
 /// v.07 b maxlen
-/// v.08 list extensoins removed and moved to seperate class
-
+/// v.08 list compare
 namespace Z
 {
     public interface IEndianReverse
@@ -25,6 +24,19 @@ namespace Z
     public static class zExtensionDatatypes
     {
 
+        public static void CompareLists<T>(this List<T> listA, List<T> listB, out List<T> added, out List<T> removed)
+        {
+            added = new List<T>();
+            removed = new List<T>();
+            for (int i = 0; i < listA.Count; i++)
+            {
+                if (!listB.Contains(listA[i])) added.Add(listA[i]);
+            }
+            for (int i = 0; i < listB.Count; i++)
+            {
+                if (!listA.Contains(listB[i])) removed.Add(listB[i]);
+            }
+        }
         public static ulong GetHash(this string s)
         {
             return GetHashFromString(s);
@@ -35,15 +47,17 @@ namespace Z
             if (string.IsNullOrEmpty(s)) return 0; // invalid hash
             byte[] bytes;
 
-            using(System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
+            using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
             {
                 md5.Initialize();
                 md5.ComputeHash(Encoding.UTF8.GetBytes(s));
                 bytes = md5.Hash;
-                return (ulong) BitConverter.ToUInt64(bytes, 0);
+                return (ulong)BitConverter.ToUInt64(bytes, 0);
             }
 
         }
+
+
 
         public static float InversedSquare(this float f)
         {
@@ -79,7 +93,7 @@ namespace Z
                         charCount++;
                     }
 
-                    if ((int) thischar < 128 && (int) thischar > 48)
+                    if ((int)thischar < 128 && (int)thischar > 48)
                     {
                         thisName += thischar;
                         charCount++;
@@ -118,7 +132,37 @@ namespace Z
             return src[0];
         }
 
-     
+        public static T LastItem<T>(this IList<T> src)
+        {
+            if (src == null || src.Count == 0) return default(T);
+            return src[src.Count - 1];
+        }
+        public static T MiddleItem<T>(this IList<T> src)
+        {
+            if (src == null || src.Count == 0) return default(T);
+            return src[src.Count / 2];
+        }
+
+        public static T RandomItem<T>(this IList<T> src)
+        {
+            if (src == null || src.Count == 0) return default(T);
+            return src[UnityEngine.Random.Range(0, src.Count)];
+        }
+
+        public static T ItemBasedOnNormalized<T>(this IList<T> src, float lerpAmt)
+        {
+            if (src == null || src.Count == 0) return default(T);
+
+            return src[IndexBasedOnNormalized(src, lerpAmt)];
+        }
+        public static int IndexBasedOnNormalized<T>(this IList<T> src, float lerpAmt)
+        {
+            if (src == null || src.Count == 0) return 0;
+            int index = Mathf.RoundToInt(lerpAmt * src.Count);
+            if (index < 0) index = 0;
+            if (index >= src.Count) index = src.Count - 1;
+            return index;
+        }
 
         public static float NormalizedFromIndex<T>(this IList<T> src, int index)
         {
@@ -209,7 +253,7 @@ namespace Z
                 Int32 len = bytearray.Length;
                 IntPtr i = Marshal.AllocHGlobal(len);
                 Marshal.Copy(bytearray, 0, i, len);
-                var val = (T) Marshal.PtrToStructure(i, typeof(T));
+                var val = (T)Marshal.PtrToStructure(i, typeof(T));
                 Marshal.FreeHGlobal(i);
 
                 var rev = val as IEndianReverse;
@@ -227,7 +271,7 @@ namespace Z
         {
             byte[] byteArray = new byte[intz.Length];
             for (int i = 0; i < intz.Length; i++)
-                byteArray[i] = (byte) intz[i];
+                byteArray[i] = (byte)intz[i];
             return byteArray;
         }
 
@@ -236,11 +280,11 @@ namespace Z
             if (string.IsNullOrEmpty(s)) return new byte[0];
             byte[] byteArray = new byte[s.Length];
             for (int i = 0; i < s.Length; i++)
-                byteArray[i] = (byte) s[i];
+                byteArray[i] = (byte)s[i];
             return byteArray;
         }
 
-        public static string ByteArrayToString(this byte[] b, int startIndex = 0, int length = 0, char fillNonPrintable = (char) 0) // 2019.09.25
+        public static string ByteArrayToString(this byte[] b, int startIndex = 0, int length = 0, char fillNonPrintable = (char)0) // 2019.09.25
 
         {
             return b.ArrayToString(startIndex, length, fillNonPrintable);
@@ -256,21 +300,21 @@ namespace Z
                 sb.Append("[" + (b[i]).ToHex() + "]");
             return sb.ToString();
         }
-        public static string ArrayToString(this byte[] b, int startIndex = 0, int length = 0, char fillNonPrintable = (char) 0) /// 2019.09.25
+        public static string ArrayToString(this byte[] b, int startIndex = 0, int length = 0, char fillNonPrintable = (char)0) /// 2019.09.25
         {
             string s = "";
             if (b == null || b.Length == 0 || b[0] == 0) return s;
             if (length == 0) length = b.Length;
             for (int i = startIndex; i < length; i++)
             {
-                char c = (char) b[i];
+                char c = (char)b[i];
                 if (!char.IsControl(c))
                 {
                     s += c;
                 }
                 else
                 {
-                    if (fillNonPrintable != (char) 0)
+                    if (fillNonPrintable != (char)0)
                         s += fillNonPrintable;
 
                 }
@@ -329,8 +373,8 @@ namespace Z
             for (int i = 0; i < bytes.Length; i++)
             {
                 //Dbg.Log(" stirng 1 "+hexStrings[i]);
-                int conv = (int) Convert.ToUInt32(hexStrings[i], 16);
-                bytes[i] = (byte) conv;
+                int conv = (int)Convert.ToUInt32(hexStrings[i], 16);
+                bytes[i] = (byte)conv;
             }
             return bytes;
         }
@@ -341,13 +385,13 @@ namespace Z
             if (len == -1) return new char[1];
             char[] c = new char[len];
             for (int i = 0; i < len; i++)
-                c[i] = (char) b[i];
+                c[i] = (char)b[i];
             return c;
         }
 
         public static string ToHex(this byte b)
         {
-            return ((int) b).ToString("x2");
+            return ((int)b).ToString("x2");
         }
         public static string ToHex(this int i)
         {
@@ -367,7 +411,7 @@ namespace Z
                 current2 = current2 * 2;
             }
 
-            return (byte) temp;
+            return (byte)temp;
         }
 
         public static string ByteToBinaryString(this byte inputByte)

@@ -17,9 +17,12 @@ namespace zUI
         public List<ISelectableUI> selectedItems { get { return _selectedItems; } }
         [ReadOnly]
         [SerializeField] int selectedItemCount;
-        public bool enableUnselecting;
-
-
+        public bool allowUnselecting;
+        // [SerializeField]
+        // void Awake()
+        // {
+        //     onSelectionChanged.AddListener(() => Debug.Log($"itemselection invoked { name} {selectedItems.Count}", gameObject));
+        // }
         public void Clear()
         {
             selectedItem = null;
@@ -34,7 +37,7 @@ namespace zUI
         public void HandleSelectionSingle(ISelectableUI source, bool value)
 
         {
-            if (!value && selectedItem == source && enableUnselecting)
+            if (!value && selectedItem == source && allowUnselecting)
             {
                 Clear();
             }
@@ -43,22 +46,23 @@ namespace zUI
             {
                 if (selectedItems.Contains(source))
                 {
-                    Debug.Log($"already selected {source.name}");
+                    Debug.Log($"already selected {source.name} ");
                 }
                 else
                 {
                     if (selectedItem != null)
                     {
-                        Debug.Log($" triggering isselected false on {selectedItem.name}");
+                        // Debug.Log($" triggering isselected false on {selectedItem.name}");
                         selectedItem.isSelected = false;
                     }
                     selectedItem = source;
                     _selectedItems.Clear();
                     _selectedItems.Add(source);
                     selectedItem.isSelected = true;
-                    onSelectionChanged.Invoke();
                 }
             }
+
+            // selecedItemGo = selectedItem == null ? null : source.gameObject;
             selectedItemCount = selectedItem == null ? 0 : 1;
             onSelectionChanged.Invoke();
 
@@ -69,7 +73,7 @@ namespace zUI
             {
                 if (selectedItems.Contains(source))
                 {
-                    if (enableUnselecting || selectedItems.Count > 1)
+                    if (allowUnselecting || selectedItems.Count > 1)
                     {
                         selectedItems.Remove(source);
                         source.isSelected = false;

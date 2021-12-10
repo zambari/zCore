@@ -15,6 +15,7 @@ using UnityEditor;
 // v.0.11a simplified version
 // v.0.12 indexer, count    
 // v.0.13 generic version
+// v.0.13 removing last rather than first on downsize
 public class ListPopulator : ListPopulatorBase<ListItem>
 {
 
@@ -34,7 +35,7 @@ public class ListPopulatorBase<T> : MonoBehaviour where T : ListItem
     }
     protected virtual void OnValidate()
     {
-       if (ListItem.PrefabModeIsActive(gameObject)) return;
+        if (ListItem.PrefabModeIsActive(gameObject)) return;
 
         if (itemTemplate == null) itemTemplate = GetComponentInChildren<T>();
         if (content == null)
@@ -91,8 +92,26 @@ public class ListPopulatorBase<T> : MonoBehaviour where T : ListItem
         HideTemplates();
         return item;
     }
-
-    public void SetListSize(int size)
+    public T InsertItem()
+    {
+        if (items == null)
+        {
+            items = new List<T>();
+            if (itemTemplate != null) itemTemplate.gameObject.SetActive(false);
+        }
+        if (itemTemplate == null)
+        {
+            Debug.Log("no template");
+            return null;
+        }
+        var item = Instantiate(itemTemplate, content);
+        item.transform.SetAsFirstSibling();
+        items.Insert(0, item);
+        item.gameObject.SetActive(true);
+        HideTemplates();
+        return item;
+    }
+    public void SetListSizeRemovingFromStart(int size)
     {
         if (itemTemplate == null) return;
         itemTemplate.gameObject.SetActive(false);
@@ -102,6 +121,23 @@ public class ListPopulatorBase<T> : MonoBehaviour where T : ListItem
         while (items.Count > size)
         {
             var thisItem = items[0];
+            items.Remove(thisItem);
+            Destroy(thisItem.gameObject);
+        }
+        while (items.Count < size)
+
+            CreateItem();
+    }
+    public void SetListSize(int size)
+    {
+        if (itemTemplate == null) return;
+        itemTemplate.gameObject.SetActive(false);
+        if (noItemsObject != null) noItemsObject.SetActive(size == 0);
+
+        if (items == null) items = new List<T>();
+        while (items.Count > size)
+        {
+            var thisItem = items[items.Count - 1];
             items.Remove(thisItem);
             Destroy(thisItem.gameObject);
         }

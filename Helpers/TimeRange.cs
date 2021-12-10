@@ -6,6 +6,7 @@ using Z;
 // v.02 contains 
 // v.03 ranges, but construtor changed!
 // v.04 added string debug option
+// v.05 contains in selection
 
 [System.Serializable]
 public class TimeRange
@@ -99,7 +100,7 @@ public class TimeRange
     long _selectedDuration;
     public long selectedDurationTicks { get { return _selectedDuration; } }
 
-    [SerializeField] long _selectedstartTick;
+    [SerializeField] long _selectedStartTick;
     [SerializeField] long _seletctedEndTick;
     public Vector2 range { get { return new Vector2(rangeIn, rangeOut); } set { rangeIn = value.x; rangeOut = value.y; } }
     public float rangeIn
@@ -119,9 +120,9 @@ public class TimeRange
         {
             //			Debug.Log("wrong durat");
         }
-        _selectedstartTick = startTick + (long)(duration * rangeIn);
+        _selectedStartTick = startTick + (long)(duration * rangeIn);
         _seletctedEndTick = startTick + (long)(duration * rangeOut);
-        _selectedDuration = _seletctedEndTick - _selectedstartTick;
+        _selectedDuration = _seletctedEndTick - _selectedStartTick;
 #if UNITY_EDITOR
         if (showAsStrings)
         {
@@ -153,7 +154,7 @@ public class TimeRange
     {
         get
         {
-            return _selectedstartTick;
+            return _selectedStartTick;
         }
     }
     public long selectedEnd
@@ -197,6 +198,11 @@ public class TimeRange
     public bool Contains(long timeStamp)
     {
         return timeStamp >= startTick && timeStamp <= endTick;
+
+    }
+     public bool ContainsInSelection(long timeStamp)
+    {
+        return timeStamp >= _selectedStartTick && timeStamp <= _seletctedEndTick;
 
     }
     public bool Touches(TimeRange otherTimeRange) //how is it different from containts?

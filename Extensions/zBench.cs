@@ -8,7 +8,7 @@ using UnityEngine.UI;
 //v.04 getipaddress, 2017 compatibility
 //v.04a time desciptions
 //v.05 throttled debugs
-
+//v.06 stopwatch keys clear
 public static class zBench
 {
     static Dictionary<string, System.Diagnostics.Stopwatch> stopwatchdict;
@@ -20,6 +20,10 @@ public static class zBench
     static Dictionary<string, float> _throttledStrings;
     public static Dictionary<string, List<float>> callDictionary;
     static float throttledInterval = 15; // 5 seconds
+    public static void ClearBenchKeys()
+    {
+        if (stopwatchdict != null) stopwatchdict = new Dictionary<string, System.Diagnostics.Stopwatch>();
+    }
     public static System.Diagnostics.Stopwatch GetStopWatch(string key)
     {
         if (stopwatchdict == null) stopwatchdict = new Dictionary<string, System.Diagnostics.Stopwatch>();
@@ -143,18 +147,18 @@ public static class zBench
     public static int ElapsedMilliseconds(string key)
     {
         var sw = GetStopWatch(key);
-        return (int) sw.ElapsedMilliseconds;
+        return (int)sw.ElapsedMilliseconds;
     }
     public static int ElapsedTicks(string key)
     {
         var sw = GetStopWatch(key);
-        return (int) sw.ElapsedTicks;
+        return (int)sw.ElapsedTicks;
     }
     public static int Pause(string key)
     {
         var sw = GetStopWatch(key);
         sw.Start();
-        return (int) sw.ElapsedMilliseconds;
+        return (int)sw.ElapsedMilliseconds;
     }
     /// <summary>
     /// Ends the stopwatch and returns the number of millis it took. optionally prints debug
@@ -176,7 +180,7 @@ public static class zBench
                 Debug.Log("Time between starting and finih of [" + key + "] was  " + sw.ElapsedMilliseconds + " ms (or " + sw.ElapsedTicks + " ticks)");
         }
         stopwatchdict.Remove(key);
-        return (int) sw.ElapsedMilliseconds;
+        return (int)sw.ElapsedMilliseconds;
     }
     public static int EndMillis(string key, string message)
     {
@@ -184,7 +188,7 @@ public static class zBench
         sw.Stop();
         Debug.Log(("[" + key + "] : " + sw.ElapsedMilliseconds + " ms  ").Small() + message);
         stopwatchdict.Remove(key);
-        return (int) sw.ElapsedMilliseconds;
+        return (int)sw.ElapsedMilliseconds;
     }
 
     /// <summary>

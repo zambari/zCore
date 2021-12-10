@@ -22,9 +22,9 @@ public static class FlasherExtension
     {
         if (flasher != null) flasher.Flash();
     }
-   public static void Flash(this GameObject go)
+    public static void Flash(this GameObject go)
     {
-        var flasher=go.GetComponentInParent<Flasher>();
+        var flasher = go.GetComponentInParent<Flasher>();
 
         if (flasher != null) flasher.Flash();
     }
@@ -130,7 +130,7 @@ public class Flasher : MonoBehaviour, IRequestInitLate //IShowHide
         // if (speespeed=1;
 #if LAYOUTPANEL
 #else
-//        Debug.Log("Uwaga, nie mamy define od layoutpanelu");
+        Debug.Log("Uwaga, nie mamy define od layoutpanelu");
 #endif
         // inputPreview=1;
         //	intensityMultiplier=.7;
@@ -193,6 +193,7 @@ public class Flasher : MonoBehaviour, IRequestInitLate //IShowHide
             GetBorderImages();
         }
 #endif
+        if (Time.time < 1) phase = 1;
     }
 
     [ExposeMethodInEditor]
@@ -201,6 +202,7 @@ public class Flasher : MonoBehaviour, IRequestInitLate //IShowHide
         if (!gameObject.activeInHierarchy)
             return;
         phase = 0;
+
         enabled = true;
         flashStatusMode = FlashStatusMode.normal;
 #if LAYOUTPANEL
@@ -243,12 +245,12 @@ public class Flasher : MonoBehaviour, IRequestInitLate //IShowHide
         {
             phase = 1;
             enabled = false;
-            #if LAYOUTPANEL
+#if LAYOUTPANEL
             // foreach (var b in borders)
             // {
             //     b.enabled = true;
             // }
-            #endif
+#endif
         }
     }
     // IEnumerator FlashRoutine()

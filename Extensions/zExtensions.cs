@@ -48,6 +48,7 @@
 // v0.83 float sort
 // v0.84 swap generic
 // v0.85 some extensions moved
+// v0.85 randomstring, now using system ranom
 
 /// zExtensionsRandom - randomizin floats, strings etc
 /// zExtensionsComponents component adding, removing, moving order
@@ -68,8 +69,7 @@ using UnityEditor;
 public static class zExt
 {
  
-
-     public static string RandomString(int length)
+  public static string RandomString(int length)
     {
         var builder = new System.Text.StringBuilder();
         for (var i = 0; i < length; i++)
@@ -79,6 +79,7 @@ public static class zExt
         }
         return builder.ToString();
     }
+    
     static readonly string pool = "abcdefghijklmnopqrstuvwxyz0123456789";
     static readonly string poolLetters = "abcdefghijklmnopqrstuvwxyz";
     public static string RandomString(int length, float upperToLowerRatio)
