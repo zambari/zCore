@@ -10,6 +10,7 @@ using UnityEngine.UI;
 // v.06 // clear made public
 // v.07  more ini
 // v.08 replace newline with space, will it fix formatitng?
+// v.09 less dependenceis
 
 namespace Z
 {
@@ -81,36 +82,36 @@ namespace Z
             text.text = temp;
         }
 
-        [ExposeMethodInEditor]
-        void PrintSomeRubbih()
-        {
-            if (Application.isPlaying)
-                StartCoroutine(RubbishPrinter());
-        }
+        // [ExposeMethodInEditor]
+        // void PrintSomeRubbih()
+        // {
+        //     if (Application.isPlaying)
+        //         StartCoroutine(RubbishPrinter());
+        // }
 
-        [ExposeMethodInEditor]
-        void PrintMoreubbih()
-        {
-            if (Application.isPlaying)
-                StartCoroutine(RubbishPrinter(40, 10, 50, 5, 30));
-        }
+        // [ExposeMethodInEditor]
+        // void PrintMoreubbih()
+        // {
+        //     if (Application.isPlaying)
+        //         StartCoroutine(RubbishPrinter(40, 10, 50, 5, 30));
+        // }
 
-        [ExposeMethodInEditor]
-        void Logerrors()
-        {
-            Debug.LogError("error");
-        }
-        IEnumerator RubbishPrinter(int count = 20, int wordMin = 5, int wordMax = 15, int wordCountMin = 1, int wordCountMax = 10)
-        {
-            for (int i = 0; i < count; i++)
-            {
-                string s = i + " ";
-                for (int j = 0; j < Random.Range(wordCountMin, wordCountMax); j++)
-                    s += zExt.RandomString(Random.Range(wordMin, wordMax));
-                Log(s);
-                yield return null;
-            }
-        }
+        // [ExposeMethodInEditor]
+        // void Logerrors()
+        // {
+        //     Debug.LogError("error");
+        // }
+        // IEnumerator RubbishPrinter(int count = 20, int wordMin = 5, int wordMax = 15, int wordCountMin = 1, int wordCountMax = 10)
+        // {
+        //     for (int i = 0; i < count; i++)
+        //     {
+        //         string s = i + " ";
+        //         for (int j = 0; j < Random.Range(wordCountMin, wordCountMax); j++)
+        //             s += zExt.RandomString(Random.Range(wordMin, wordMax));
+        //         Log(s);
+        //         yield return null;
+        //     }
+        // }
         bool wasInit;
         bool antiFeedback;
 

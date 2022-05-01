@@ -49,6 +49,9 @@
 // v0.84 swap generic
 // v0.85 some extensions moved
 // v0.85 randomstring, now using system ranom
+// v0.87 randomstring2, sprawdzic 
+// v0.88 long sort
+
 
 /// zExtensionsRandom - randomizin floats, strings etc
 /// zExtensionsComponents component adding, removing, moving order
@@ -68,35 +71,63 @@ using UnityEditor;
 #endif
 public static class zExt
 {
- 
-  public static string RandomString(int length)
+
+
+    public static string RandomString(int length)
     {
         var builder = new System.Text.StringBuilder();
         for (var i = 0; i < length; i++)
         {
-            var c = pool[UnityEngine.Random.Range(0, pool.Length - 1)];
-            builder.Append(c);
-        }
-        return builder.ToString();
-    }
-    
-    static readonly string pool = "abcdefghijklmnopqrstuvwxyz0123456789";
-    static readonly string poolLetters = "abcdefghijklmnopqrstuvwxyz";
-    public static string RandomString(int length, float upperToLowerRatio)
-    {
-        var builder = new System.Text.StringBuilder();
-        for (var i = 0; i < length; i++)
-        {
-            var c = pool[UnityEngine.Random.Range(0, pool.Length - 1)];
-            string s = c + "";
-            if (UnityEngine.Random.value > upperToLowerRatio) s = s.ToLower();
-            else s = s.ToUpper();
+            var c = pool[random.Next(0, pool.Length - 1)];
             builder.Append(c);
         }
         return builder.ToString();
     }
 
-public static void Swap<T>(ref T a, ref T b)
+    static readonly string pool = "abcdefghijklmnopqrstuvwxyz0123456789";
+    static readonly string poolLetters = "abcdefghijklmnopqrstuvwxyz";
+    // public static string RandomString(int length, float upperToLowerRatio)
+    // {
+    //     var builder = new System.Text.StringBuilder();
+    //     for (var i = 0; i < length; i++)
+    //     {
+    //         var c = pool[random.Next(0, pool.Length - 1)];
+    //         string s = c + "";
+    //         if (random.NextDouble() > upperToLowerRatio) s = s.ToLower();
+    //         else s = s.ToUpper();
+    //         builder.Append(c);
+    //     }
+    //     return builder.ToString();
+    // }
+
+    //     public static string RandomStringLetters(int length, float upperToLowerRatio)
+    // {
+    //     var builder = new System.Text.StringBuilder();
+    //     for (var i = 0; i < length; i++)
+    //     {
+    //         string s =poolLetters[random.Next(0, poolLetters.Length - 2)].ToString();
+    //     if (random.NextDouble() > upperToLowerRatio) s = s.ToLower();
+    //         else s = s.ToUpper();
+    //         builder.Append(c);
+    //     }
+    //     return builder.ToString();
+    // }
+
+    public static string RandomStringLetters(int length = 16)
+    {
+        var builder = new System.Text.StringBuilder();
+        for (var i = 0; i < length; i++)
+        {
+            builder.Append(poolLetters[random.Next(0, poolLetters.Length - 2)]);
+        }
+        return builder.ToString();
+    }
+
+
+    static System.Random random { get { if (_random == null) _random = new System.Random(Environment.TickCount); return _random; } }
+    static System.Random _random;
+
+    public static void Swap<T>(ref T a, ref T b)
     {
         T c = a;
         a = b;
@@ -106,12 +137,21 @@ public static void Swap<T>(ref T a, ref T b)
     {
         if (a > b) Swap(ref a, ref b);
     }
-     public static void Sort(ref int a, ref int b)
+    public static void Sort(ref int a, ref int b)
     {
         if (a > b) Swap(ref a, ref b);
     }
+    public static void Sort(ref long a, ref long b)
+    {
+        if (a > b)
+        {
+            long c = a;
+            a = b;
+            b = c;
+        }
+    }
 
-    
+
     /// <summary>
     /// Creates an animation curve that contains pre-zero full range step, and ones in the normal range
     /// </summary>
@@ -255,8 +295,8 @@ public static void Swap<T>(ref T a, ref T b)
         var dt = System.DateTime.Now;
         return dt.Year.ToString("0000") + "-" + dt.Month.ToString("00") + "-" + dt.Day.ToString("00") + " " + dt.Hour.ToString("00") + "-" + dt.Minute.ToString("00") + "-" + dt.Second.ToString("00");
     }
-	
-	public static string FormatWithTrailingZeros(this DateTime dt, string delimiter, string spacer) // by szymon
+
+    public static string FormatWithTrailingZeros(this DateTime dt, string delimiter, string spacer) // by szymon
     {
         return dt.Year.ToString("0000") + delimiter + dt.Month.ToString("00") + delimiter + dt.Day.ToString("00") + spacer + dt.Hour.ToString("00") + delimiter + dt.Minute.ToString("00") + delimiter + dt.Second.ToString("00");
     }
@@ -269,20 +309,6 @@ public static void Swap<T>(ref T a, ref T b)
         else yield return new WaitForSeconds(wait);
         if (Execute != null) Execute();
     }
-    public static string RandomStringLetters(int length, float upperToLowerRatio)
-    {
-        var builder = new System.Text.StringBuilder();
-        for (var i = 0; i < length; i++)
-        {
-            var c = poolLetters[UnityEngine.Random.Range(0, poolLetters.Length - 1)];
-            string s = c + "";
-            if (UnityEngine.Random.value > upperToLowerRatio) s = s.ToLower();
-            else s = s.ToUpper();
-            builder.Append(c);
-        }
-        return builder.ToString();
-    }
-   
 
 
 
@@ -290,7 +316,7 @@ public static void Swap<T>(ref T a, ref T b)
     {
         return new Vector2(input.x / Screen.width, input.y / Screen.height);
     }
-    
+
 
     //taken from : https://gist.github.com/AlexanderDzhoganov/d795b897005389071e2a
 
@@ -416,7 +442,7 @@ public static void Swap<T>(ref T a, ref T b)
         return (source == null ? "null" : source.name);
     }
 
-    
+
     /// <summary>
     /// Copied from https://gist.github.com/maxattack/4c7b4de00f5c1b95a33b
     /// </summary>
@@ -445,24 +471,13 @@ public static void Swap<T>(ref T a, ref T b)
         return new Quaternion(Result.x, Result.y, Result.z, Result.w);
     }
 
-     public static bool IsNullOrEmpty(this Array source)
+    public static bool IsNullOrEmpty(this Array source)
     {
         return (source == null || source.Length == 0);
     }
     public static bool IsNullOrSmallerThan(this Array source, int len)
     {
         return (source == null || source.Length < len); // <=?
-    }
-
-
-    public static bool CheckFloat(this float f)
-    {
-        if (Single.IsNaN(f))
-        {
-            Debug.Log("invalid float (NAN), dividing by zero? !");
-            return false;
-        }
-        return true;
     }
 
 

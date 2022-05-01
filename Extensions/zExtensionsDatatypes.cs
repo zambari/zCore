@@ -12,8 +12,9 @@ using UnityEngine;
 /// v.05 firstitem, middleitem
 /// v.06 ItemBasedOnNormalized
 /// v.07 aarr to sring
-/// v.07 b maxlen
+/// v.07 b maxlen 
 /// v.08 list compare
+/// v.09 ilist compare
 namespace Z
 {
     public interface IEndianReverse
@@ -24,17 +25,17 @@ namespace Z
     public static class zExtensionDatatypes
     {
 
-        public static void CompareLists<T>(this List<T> listA, List<T> listB, out List<T> added, out List<T> removed)
+        public static void CompareLists<T>(this IList<T> listA, IList<T> currentList, out List<T> added, out List<T> removed)
         {
             added = new List<T>();
             removed = new List<T>();
             for (int i = 0; i < listA.Count; i++)
             {
-                if (!listB.Contains(listA[i])) added.Add(listA[i]);
+                if (!currentList.Contains(listA[i])) added.Add(listA[i]);
             }
-            for (int i = 0; i < listB.Count; i++)
+            for (int i = 0; i < currentList.Count; i++)
             {
-                if (!listA.Contains(listB[i])) removed.Add(listB[i]);
+                if (!listA.Contains(currentList[i])) removed.Add(currentList[i]);
             }
         }
         public static ulong GetHash(this string s)
