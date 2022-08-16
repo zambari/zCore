@@ -13,6 +13,7 @@
 [System.Serializable]
 public class Damper
 {
+    public float smoothTime = 0.1f;
     public float deltaCutoff = 0.001f;
     public float currentValue;
     [SerializeField] protected float _targetValue;
@@ -38,7 +39,7 @@ public class Damper
             motionFinished = false;
         }
     }
-    public float smoothTime = 0.1f;
+ 
     public float velocity;
     public void InitializeValue(float value)
     {

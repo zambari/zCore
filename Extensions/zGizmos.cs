@@ -56,7 +56,12 @@ public static class zGizmos
     public static bool PrefabModeIsActive(GameObject gameObject) //https://stackoverflow.com/questions/56155148/how-to-avoid-the-onvalidate-method-from-being-called-in-prefab-mode
     {
 #if UNITY_EDITOR && UNITY_2018_3_OR_NEWER
-        UnityEditor.Experimental.SceneManagement.PrefabStage prefabStage = UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetPrefabStage(gameObject);
+#if UNITY_2020_3_OR_NEWER
+	  UnityEditor.SceneManagement.PrefabStage prefabStage = UnityEditor.SceneManagement.PrefabStageUtility.GetPrefabStage(gameObject);
+#else
+	  UnityEditor.Experimental.SceneManagement.PrefabStage prefabStage = UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetPrefabStage(gameObject);
+#endif
+      
         if (prefabStage != null)
             return true;
         if (UnityEditor.EditorUtility.IsPersistent(gameObject))

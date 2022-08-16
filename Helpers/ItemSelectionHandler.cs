@@ -3,129 +3,146 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-namespace zUI
+using zUI;
+public class ItemSelectionHandler : MonoBehaviour, ISelectableUIController// second class for multiple?
 {
-    public class ItemSelectionHandler : MonoBehaviour, ISelectableUIController// second class for multiple?
+    public UnityEvent onSelectionChanged = new UnityEvent();
+    //   public ISelectableUI selectedItem { get { return _selectedItem; } protected set { _selectedItem = value; } }
+    //  ISelectableUI _selectedItem;
+    public enum SelectionMode { Single, Multiple };
+    public SelectionMode selectionMode;
+    List<ISelectableUI> _selectedItems = new List<ISelectableUI>();
+    public List<ISelectableUI> selectedItems { get { return _selectedItems; } }
+    public bool hasSelectedItem { get { return selectedItem != null && selectedItem.gameObject != null; } }
+    public ISelectableUI selectedItem
     {
-        public UnityEvent onSelectionChanged = new UnityEvent();
-        public ISelectableUI selectedItem { get { return _selectedItem; } protected set { _selectedItem = value; } }
-        ISelectableUI _selectedItem;
-        public enum SelectionMode { Single, Multiple };
-        public SelectionMode selectionMode;
-
-        List<ISelectableUI> _selectedItems = new List<ISelectableUI>();
-        public List<ISelectableUI> selectedItems { get { return _selectedItems; } }
-        [ReadOnly]
-        [SerializeField] int selectedItemCount;
-        public bool allowUnselecting;
-        // [SerializeField]
-        // void Awake()
-        // {
-        //     onSelectionChanged.AddListener(() => Debug.Log($"itemselection invoked { name} {selectedItems.Count}", gameObject));
-        // }
-        public void Clear()
+        get
         {
-            selectedItem = null;
-            foreach (var thisItem in selectedItems)
-            {
-                if (thisItem != null)
-                    thisItem.isSelected = false;
-            }
-            _selectedItems.Clear();
-            onSelectionChanged.Invoke();
+            if (_selectedItems.Count == 0) return null;
+            return _selectedItems[0];
         }
-        public void HandleSelectionSingle(ISelectableUI source, bool value)
+    }
+    [ReadOnly]
+    [SerializeField] int selectedItemCount;
+    public bool allowUnselecting;
 
+    public void Clear()
+    {
+        foreach (var thisItem in selectedItems)
         {
-            if (!value && selectedItem == source && allowUnselecting)
+            if (thisItem != null)
+                thisItem.isSelected = false;
+        }
+        _selectedItems.Clear();
+        TriggerSend();
+    }
+    public void HandleDestroy(ISelectableUI source)
+    {
+        if (_selectedItems.Contains(source))
+        {
+            _selectedItems.Remove(source);
+            TriggerSend();
+        }
+    }
+    public void HandleSelectionSingle(ISelectableUI source, bool value)
+    {
+
+        if (!value && selectedItem == source && allowUnselecting)
+        {
+            Clear();
+        }
+        else
+        if (value)
+        {
+            if (selectedItems.Contains(source))
             {
-                Clear();
+                Debug.Log($"already selected {source.name} ");
             }
             else
-            if (value)
             {
-                if (selectedItems.Contains(source))
+                if (selectedItem != null)
                 {
-                    Debug.Log($"already selected {source.name} ");
-                }
-                else
-                {
-                    if (selectedItem != null)
+                    if (selectedItem.gameObject == null)
+                    {
+                        Debug.Log("no gameobject");
+
+                    }
+                    else
                     {
                         // Debug.Log($" triggering isselected false on {selectedItem.name}");
                         selectedItem.isSelected = false;
                     }
-                    selectedItem = source;
-                    _selectedItems.Clear();
-                    _selectedItems.Add(source);
-                    selectedItem.isSelected = true;
                 }
+                _selectedItems.Clear();
+                _selectedItems.Add(source);
+                selectedItem.isSelected = true;
             }
-
-            // selecedItemGo = selectedItem == null ? null : source.gameObject;
-            selectedItemCount = selectedItem == null ? 0 : 1;
-            onSelectionChanged.Invoke();
-
         }
-        public void HandleSelectionMulti(ISelectableUI source, bool value)
+        // selecedItemGo = selectedItem == null ? null : source.gameObject;
+        selectedItemCount = selectedItem == null ? 0 : 1;
+        TriggerSend();
+    }
+    public void HandleSelectionMulti(ISelectableUI source, bool value)
+    {
+        if (!value)
         {
-            if (!value)
+            if (selectedItems.Contains(source))
             {
-                if (selectedItems.Contains(source))
+                if (allowUnselecting || selectedItems.Count > 1)
                 {
-                    if (allowUnselecting || selectedItems.Count > 1)
-                    {
-                        selectedItems.Remove(source);
-                        source.isSelected = false;
-                    }
-                }
-                else
-                {
-                    Debug.Log("item was not selected  {source.name}", source.gameObject);
+                    selectedItems.Remove(source);
+                    source.isSelected = false;
                 }
             }
             else
             {
-                if (selectedItems.Contains(source))
-                {
-                    Debug.Log($"item was selected already {source.name}", source.gameObject);
-                }
-                else
-                {
-                    selectedItems.Add(source);
-                    source.isSelected = true;
-                }
-
+                Debug.Log("item was not selected  {source.name}", source.gameObject);
             }
-            selectedItemCount = selectedItems.Count;
-            onSelectionChanged.Invoke();
-
         }
-        public void HandleSelection(ISelectableUI source, bool value)
+        else
         {
-            if (selectionMode == SelectionMode.Single)
+            if (selectedItems.Contains(source))
             {
-                HandleSelectionSingle(source, value);
+                Debug.Log($"item was selected already {source.name}", source.gameObject);
             }
-            if (selectionMode == SelectionMode.Multiple)
+            else
             {
-                HandleSelectionMulti(source, value);
+                selectedItems.Add(source);
+                source.isSelected = true;
             }
 
         }
-        // void Start()
-        // {
-        //     var lp = GetComponentInChildren<ListPopulator>();
-        //     if (lp == null)
-        //     {
-        //         Debug.Log("no list populator", gameObject);
-        //         return;
-        //     }
-        //     lp.SetListSize(10);
-        //     for (int i = 0; i < lp.Count; i++)
-        //     {
-        //         lp[i].label = "item " + i;
-        //     }
-        // }
+        selectedItemCount = selectedItems.Count;
+        TriggerSend();
+
+    }
+    public void HandleSelection(ISelectableUI source, bool value)
+    {
+        if (source == null)
+        {
+            Debug.Log("handling source==null");
+            return;
+        }
+        if (source.gameObject == null)
+        {
+            Debug.Log("handling source gameobject=null");
+            return;
+
+        }
+        if (selectionMode == SelectionMode.Single)
+        {
+            HandleSelectionSingle(source, value);
+        }
+        if (selectionMode == SelectionMode.Multiple)
+        {
+            HandleSelectionMulti(source, value);
+        }
+
+    }
+
+    public  void TriggerSend()
+    {
+
+        onSelectionChanged?.Invoke();
     }
 }

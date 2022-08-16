@@ -3,15 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+// v.02 printDebugInfo
 [ExecuteInEditMode]
 public class TriggerActionsOnEnable : MonoBehaviour
 {
     public UnityEvent whenEnabled;
     public UnityEvent whenDisabled;
-    public float delay;
-    public bool waitOneFrame = true;
+   
     public BoolEvent onEnabled;
     public BoolEvent onEnabledInverted;
+    public bool printDebugInfo;
+    public bool waitOneFrame = true;
+    public float delay;
     void OnEnable()
     {
         if (delay > 0 || waitOneFrame)
@@ -22,6 +25,8 @@ public class TriggerActionsOnEnable : MonoBehaviour
             whenEnabled.Invoke();
         onEnabled.Invoke(true);
         onEnabled.Invoke(false);
+        if (printDebugInfo)
+            Debug.Log($"{name} enabled", gameObject);
     }
     IEnumerator DelayedEnableRoutine()
     {
@@ -34,6 +39,8 @@ public class TriggerActionsOnEnable : MonoBehaviour
         whenDisabled.Invoke();
         onEnabled.Invoke(false);
         onEnabled.Invoke(false);
+        if (printDebugInfo)
+            Debug.Log($"{name} disabled", gameObject);
     }
 
 }

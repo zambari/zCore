@@ -14,6 +14,7 @@ using UnityEngine;
 // v.11 more map Inverse fixed
 // v.12 ToVector3
 // v.13 map inversed yet another bugfix
+// v.14 deadzone updated
 
 namespace Z
 {
@@ -248,7 +249,7 @@ namespace Z
                 v += zone;
                 if (v > 0) v = 0;
             }
-            return v;
+            return v / (1 - zone);
         }
         public static float DeadZone(this float v, float zone, out bool wasOutside)
         {
@@ -270,27 +271,8 @@ namespace Z
 
         public static Vector2 DeadZone(this Vector2 v, float zone)
         {
-            if (v.x > 0)
-            {
-                v.x -= zone;
-                if (v.x < 0) v.x = 0;
-            }
-            else
-            {
-                v.x += zone;
-                if (v.x > 0) v.x = 0;
-            }
-
-            if (v.y > 0)
-            {
-                v.y -= zone;
-                if (v.y < 0) v.y = 0;
-            }
-            else
-            {
-                v.y += zone;
-                if (v.y > 0) v.y = 0;
-            }
+            v.x = v.x.DeadZone(zone);
+            v.y = v.y.DeadZone(zone);
             return v;
         }
 

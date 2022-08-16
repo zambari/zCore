@@ -15,7 +15,8 @@ using UnityEditor;
 // v.0.11a simplified version
 // v.0.12 indexer, count    
 // v.0.13 generic version
-// v.0.13 removing last rather than first on downsize
+// v.0.14 removing last rather than first on downsize
+// v.0.15 color, removeitem
 public class ListPopulator : ListPopulatorBase<ListItem>
 {
 
@@ -110,6 +111,29 @@ public class ListPopulatorBase<T> : MonoBehaviour where T : ListItem
         item.gameObject.SetActive(true);
         HideTemplates();
         return item;
+    }
+	
+	 public Color color
+    {
+        get
+        {
+            return Color.red;
+        }
+        set
+        {
+            // Debug.Log($"changing color to {value}");
+            itemTemplate.image.color = value;
+            for (int i = 0; i < Count; i++)
+                items[i].image.color = value;
+        }
+    }
+	
+    public void RemoveItem(T item)
+    {
+        if (items == null)
+            return;
+        items.Remove(item);
+        GameObject.Destroy(item.gameObject);
     }
     public void SetListSizeRemovingFromStart(int size)
     {
