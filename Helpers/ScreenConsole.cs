@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,171 +13,138 @@ using UnityEngine.UI;
 // v.07  more ini
 // v.08 replace newline with space, will it fix formatitng?
 // v.09 less dependenceis
+// v.10 initializeonload, optimiezed
 
 namespace Z
 {
-
     [RequireComponent(typeof(Text))]
     public class ScreenConsole : MonoBehaviour
     {
-        Text text;
-        public Color color = Color.white;
-        public static bool useFades { get { if (instance != null) return instance._useFades; return true; } }
-        public bool _useFades = true;
-        public static ScreenConsole instance;
-        static List<string> logList;
-        // public List<string> logList2; //temp
-        static List<float> times;
-        public bool alsoLogToConsole;
-        bool logDirty;
-        [Header("Fade duration")]
-        public float fadeTime = 5;
-        [Header("Fade starts after this time")]
-        public float fadeDelay = 10;
-        [Header("Affects performance")]
-        public float refreshTime = 0.1f;
-        WaitForSeconds waiter;
-        public int maxlinecharacterCount = 200;
-        public bool captureMainLog = true;
-        public bool captureMainErrors = true;
-        public bool captureMainExceptions = true;
-        static StringBuilder sb;
-        public int maxLines = 10;
-        public bool ActiveAndEnabled()
+        private static List<TimedLogEntry> eventList = new List<TimedLogEntry>();
+        private static StringBuilder sb = new StringBuilder();
+        public int maxLines = 30;
+        public int showSeconds = 10;
+        public int maxLineCharacterCount = 200;
+
+        public Color normalColor = Color.white;
+        public Color errorColor = new Color(1f, 0.3f, 0.2f);
+        public Color exceptionColor = new Color(1f, 0.0f, .9f);
+        public bool addTimeStamp = true;
+        private static bool logDirty;
+        private Text text;
+        private float refreshTime = 0.1f;
+        private WaitForSeconds waiter;
+        private TimeSpan showSpan;
+        private string normalColorString; //cached
+        private string errorColorString;
+        private string exceptionColorString;
+        private const string endColorString = "</color>";
+        private RectTransform rectTransform;
+
+        [Serializable]
+        class TimedLogEntry
         {
-            return gameObject.activeInHierarchy && enabled;
+            public System.DateTime timeStamp;
+            public LogType logType;
+            public string text;
         }
-        /* IEnumerator Fader()
-         {
-             if (faderRunning || canvasGroup == null) yield break; ;
-             faderRunning = true;
-             canvasGroup.alpha = fadeLimits.y;
-             while (canvasGroup.alpha > fadeLimits.x)
-             {
-                 canvasGroup.alpha -= Time.deltaTime / fadeTime;
-                 yield return null;
-                 if (wasAdded)
-                 {
-                     canvasGroup.alpha = fadeLimits.y;
-                     wasAdded = false;
-                     yield return new WaitForSeconds(fadeDelay);
-                 }
-             }
-             faderRunning = false;
-         } */
-        /*  void GetMaxLineCount()
-         {
-             if (text == null) text = GetComponent<Text>();
-             var lineHeight = text.font.lineHeight * text.lineSpacing;
-             var rectHegight = GetComponent<RectTransform>().rect.height;
-             maxLines = Mathf.FloorToInt(rectHegight / lineHeight);
-         }*/
+
         void OnValidate()
         {
+            showSpan = TimeSpan.FromSeconds(showSeconds);
+            CreateColorStrings();
             if (text == null) text = GetComponent<Text>();
-            text.supportRichText = useFades;
-            text.color = color;
+            text.supportRichText = true;
+            text.color = normalColor;
             waiter = new WaitForSeconds(refreshTime);
-            string temp = "Log:";
-            for (int i = 1; i < maxLines - 1; i++) temp += "-\n";
-            temp += "---\n";
-            text.text = temp;
-        }
-
-        // [ExposeMethodInEditor]
-        // void PrintSomeRubbih()
-        // {
-        //     if (Application.isPlaying)
-        //         StartCoroutine(RubbishPrinter());
-        // }
-
-        // [ExposeMethodInEditor]
-        // void PrintMoreubbih()
-        // {
-        //     if (Application.isPlaying)
-        //         StartCoroutine(RubbishPrinter(40, 10, 50, 5, 30));
-        // }
-
-        // [ExposeMethodInEditor]
-        // void Logerrors()
-        // {
-        //     Debug.LogError("error");
-        // }
-        // IEnumerator RubbishPrinter(int count = 20, int wordMin = 5, int wordMax = 15, int wordCountMin = 1, int wordCountMax = 10)
-        // {
-        //     for (int i = 0; i < count; i++)
-        //     {
-        //         string s = i + " ";
-        //         for (int j = 0; j < Random.Range(wordCountMin, wordCountMax); j++)
-        //             s += zExt.RandomString(Random.Range(wordMin, wordMax));
-        //         Log(s);
-        //         yield return null;
-        //     }
-        // }
-        bool wasInit;
-        bool antiFeedback;
-
-        public void Init(MonoBehaviour awakenSource)
-        {
-            if (wasInit) return;
-            wasInit = true;
-            Application.logMessageReceived -= HandleLog;
-            Application.logMessageReceived += HandleLog;
-        }
-        void OnEnable()
-        {
-            Init(this);
-            //Application.logMessageReceived += HandleLog;
-        }
-        void OnDisable()
-        {
-            Application.logMessageReceived -= HandleLog;
         }
 
         static void HandleLog(string logString, string stackTrace, LogType type)
         {
-            if (instance != null && instance.antiFeedback) return;
-            logString = logString.Replace('\n', ' ');
-            if (type == LogType.Log && (instance == null || instance.captureMainLog))
-                Log(logString);
-            else
-            if (type == LogType.Error && (instance == null || instance.captureMainErrors))
-                Log(useFades ? "<color=#ff0000>" + logString + "</color>" : logString);
-            else
-            if (type == LogType.Exception && (instance == null || instance.captureMainExceptions))
-                Log(useFades ? "<color=#ff2020>" + logString + "</color>" : logString);
+            eventList.Add(new TimedLogEntry() { text = logString, timeStamp = System.DateTime.Now, logType = type });
+            logDirty = true;
         }
 
         public void Clear()
         {
-            logList = new List<string>();
-            times = new List<float>();
-            logDirty = true;
+            eventList.Clear();
         }
 
-        public static void Log(string logentry)
+        void RemoveLinesIfTooMany()
         {
-            if (instance == null)
-            {
-                //            Debug.LogWarning(" simple log not present !");
-            }
-            else
-            {
-                instance.log(logentry);
-            }
+            while ((eventList.Count > maxLines))
+                eventList.RemoveAt(0);
         }
-        public void log(string logentry)
+
+        void RemoveLinesIfOld()
         {
-            if (logList == null) return;
-            if (maxlinecharacterCount > 0 && logentry.Length > maxlinecharacterCount) logentry = logentry.Substring(0, maxlinecharacterCount);
-            logList.Add(logentry);
-            times.Add(Time.time);
-            logDirty = true;
-            if (alsoLogToConsole)
+            var currentTime = System.DateTime.Now;
+            while (eventList.Count > 0 && (currentTime - eventList[0].timeStamp > showSpan))
+                eventList.RemoveAt(0);
+        }
+
+        void CreateColorStrings()
+        {
+            normalColorString = $"<color=#{ColorUtility.ToHtmlStringRGBA(normalColor)}>";
+            errorColorString = $"<color=#{ColorUtility.ToHtmlStringRGBA(errorColor)}>";
+            exceptionColorString = $"<color=#{ColorUtility.ToHtmlStringRGBA(exceptionColor)}>";
+        }
+
+        string TruncateString(string source)
+        {
+            if (source.Length > maxLineCharacterCount) source = source.Substring(0, maxLineCharacterCount) + "(...)";
+            return source;
+        }
+
+        string GetTimeStampString(TimedLogEntry entry)
+        {
+            if (addTimeStamp)
+                return $"[{entry.timeStamp.Minute}:{entry.timeStamp.Second}] ";
+            else
+                return null;
+        }
+
+        void AddLineNormal(TimedLogEntry entry)
+        {
+            sb.Append(normalColorString);
+            sb.Append(GetTimeStampString(entry));
+            sb.Append(TruncateString(entry.text));
+            sb.Append(endColorString);
+        }
+
+        void AddLineError(TimedLogEntry entry)
+        {
+            sb.Append(errorColorString);
+            sb.Append(GetTimeStampString(entry));
+            sb.Append(TruncateString(entry.text));
+            sb.Append(endColorString);
+        }
+
+        void AddLineException(TimedLogEntry entry)
+        {
+            sb.Append(exceptionColorString);
+            sb.Append(GetTimeStampString(entry));
+            sb.Append(TruncateString(entry.text));
+            sb.Append(endColorString);
+        }
+
+        float CalculateLineHeight()
+        {
+            var extents = text.cachedTextGenerator.rectExtents.size * 0.5f;
+            var setting = text.GetGenerationSettings(extents);
+            var lineHeight = text.cachedTextGeneratorForLayout.GetPreferredHeight("A", setting);
+            return lineHeight * text.lineSpacing / setting.scaleFactor;
+        }
+
+        IEnumerator TextAdjuster()
+        {
+            var wait = new WaitForSeconds(3);
+            while (true)
             {
-                antiFeedback = true;
-                Debug.Log(logentry);
-                antiFeedback = false;
+                showSpan = TimeSpan.FromSeconds(showSeconds);
+                var height = rectTransform.rect.height;
+                maxLines = Mathf.FloorToInt(height / CalculateLineHeight());
+                yield return wait;
             }
         }
 
@@ -183,95 +152,96 @@ namespace Z
         {
             while (true)
             {
-                if (logDirty || useFades)
+                if (logDirty)
                 {
-                    if (logList.Count == 0) yield return waiter; // might hang list line
+                    if (eventList.Count == 0) yield return waiter; // might hang list line
+                    RemoveLinesIfTooMany();
+                    RemoveLinesIfOld();
+                    sb.Clear();
 
-                    while ((logList.Count > maxLines))
+                    for (int i = 0; i < eventList.Count; i++)
                     {
-                        logList.RemoveAt(0);
-                        times.RemoveAt(0);
+                        var thisEvent = eventList[i];
+                        switch (thisEvent.logType)
+                        {
+                            case LogType.Log:
+                                AddLineNormal(thisEvent);
+                                break;
+                            case LogType.Error:
+                                AddLineError(thisEvent);
+                                break;
+                            case LogType.Exception:
+                                AddLineException(thisEvent);
+                                break;
+                        }
+
+                        sb.Append(Environment.NewLine);
                     }
 
-                    //    logList2 = logList; //temp
-                    /*     while ((text.preferredHeight > rect.rect.height))
-                        {
-                            logList.RemoveAt(0);
-                            times.RemoveAt(0);
-                        }
-                        */
-                    sb = new System.Text.StringBuilder();
-                    float currentTime = Time.time;
-                    for (int i = 0; i < logList.Count; i++)
-                    {
-
-                        float thisLife = currentTime - times[i] - fadeDelay;
-                        if (thisLife > fadeTime)
-                        {
-                            times.RemoveAt(0);
-                            logList.RemoveAt(0);
-                            //   i--;
-                            continue;
-                        }
-                        else
-                        {
-                            if (useFades)
-                            {
-                                float thisFadeAmt = thisLife / fadeTime;
-                                Color thisColor = color;
-                                thisColor.a = 1 - thisFadeAmt;
-                                sb.Append("<color=#");
-                                sb.Append(ColorUtility.ToHtmlStringRGBA(thisColor));
-                                sb.Append(">");
-                                sb.Append(logList[i]);
-                                sb.Append("</color>");
-                            }
-                            else
-                                sb.Append(logList[i]);
-                        }
-
-                        sb.Append("\n");
-                    }
                     text.text = sb.ToString();
                     logDirty = false;
                 }
+
+                Debug.Log($"current char count {sb.Length}");
                 yield return waiter;
             }
-
         }
 
-        void Awake()
-        {
-            waiter = new WaitForSeconds(refreshTime);
-            sb = new StringBuilder();
-            text = GetComponent<Text>();
-            if (instance != null) { Debug.LogWarning("another SimplEonsole : other object " + instance.name + " this object we are " + name, gameObject); }
-            instance = this;
-            Clear();
-            StartCoroutine(Rebuilder());
-        }
 
         void Reset()
         {
-            text = GetComponent<Text>();
-
-            if (text == null)
-            {
-                GameObject g = new GameObject("ConsoleText");
-                RectTransform t = g.AddComponent<RectTransform>();
-                text = g.AddComponent<Text>();
-                t.SetParent(transform);
-                t.anchorMin = new Vector2(0, 0);
-                t.anchorMax = new Vector2(1, 1);
-                t.offsetMin = new Vector2(5, 5);
-                t.offsetMax = new Vector2(-5, -5);
-                text.raycastTarget = false;
-            }
-            name = "ScreenConsole";
-            text.color = Color.white;
+            RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
+            rectTransform.SetParent(transform);
+            rectTransform.anchorMin = new Vector2(0, 0);
+            rectTransform.anchorMax = new Vector2(1, 1);
+            rectTransform.offsetMin = new Vector2(5, 5);
+            rectTransform.offsetMax = new Vector2(-5, -5);
             text.raycastTarget = false;
-
+            // var outline = gameObject.GetComponent<Outline>();
+            // if (outline == null)
+            //     outline = gameObject.AddComponent<Outline>();
+            // outline.effectColor = new Color(0, 0, 0, 0.3f);
+            name = "ScreenConsole";
+            text.color = normalColor;
+            text.raycastTarget = false;
+            string temp = "Log:";
+            for (int i = 1; i < maxLines - 1; i++) temp += "-\n";
+            temp += "---\n";
+            text.text = temp;
         }
 
+        [InitializeOnLoadMethod]
+        static void Initialize()
+        {
+#if UNITY_EDITOR
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+#endif
+            {
+                Application.logMessageReceived += HandleLog;
+            }
+        }
+
+        void OnEnable()
+        {
+            waiter = new WaitForSeconds(refreshTime);
+            if (text == null) text = GetComponent<Text>();
+            if (rectTransform == null) rectTransform = GetComponent<RectTransform>();
+            CreateColorStrings();
+            StartCoroutine(Rebuilder());
+            StartCoroutine(TextAdjuster());
+        }
+
+        void OnDisable()
+        {
+            text = GetComponent<Text>();
+            showSpan = TimeSpan.FromSeconds(showSeconds);
+            CreateColorStrings();
+            StopAllCoroutines();
+        }
+
+        private void OnDestroy()
+        {
+            Application.logMessageReceived -= HandleLog;
+        }
     }
 }

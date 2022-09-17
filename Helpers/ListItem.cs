@@ -116,8 +116,8 @@ public class ListItem : MonoBehaviour
     }
     public static bool PrefabModeIsActive(GameObject gameObject) //https://stackoverflow.com/questions/56155148/how-to-avoid-the-onvalidate-method-from-being-called-in-prefab-mode
     {
-#if UNITY_EDITOR && UNITY_2018_3_OR_NEWER
-        UnityEditor.Experimental.SceneManagement.PrefabStage prefabStage = UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetPrefabStage(gameObject);
+#if UNITY_EDITOR && UNITY_2021_3_OR_NEWER
+        UnityEditor.SceneManagement.PrefabStage prefabStage = UnityEditor.SceneManagement.PrefabStageUtility.GetPrefabStage(gameObject);
         if (prefabStage != null)
             return true;
         if (UnityEditor.EditorUtility.IsPersistent(gameObject))

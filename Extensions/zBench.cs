@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,17 +13,25 @@ public static class zBench
 {
     static Dictionary<string, System.Diagnostics.Stopwatch> stopwatchdict;
     static readonly int throttledDictionaryLimit = 255;
+
     static Dictionary<string, float> throttledStrings
     {
-        get { if (_throttledStrings == null) _throttledStrings = new Dictionary<string, float>(); return _throttledStrings; }
+        get
+        {
+            if (_throttledStrings == null) _throttledStrings = new Dictionary<string, float>();
+            return _throttledStrings;
+        }
     }
+
     static Dictionary<string, float> _throttledStrings;
     public static Dictionary<string, List<float>> callDictionary;
     static float throttledInterval = 15; // 5 seconds
+
     public static void ClearBenchKeys()
     {
         if (stopwatchdict != null) stopwatchdict = new Dictionary<string, System.Diagnostics.Stopwatch>();
     }
+
     public static System.Diagnostics.Stopwatch GetStopWatch(string key)
     {
         if (stopwatchdict == null) stopwatchdict = new Dictionary<string, System.Diagnostics.Stopwatch>();
@@ -39,6 +47,7 @@ public static class zBench
             return newSw;
         }
     }
+
     public static bool IsSelected(this Component src)
     {
 #if UNITY_EDITOR
@@ -49,10 +58,22 @@ public static class zBench
 #endif
     }
 
-    public static bool PrefabModeIsActive(GameObject gameObject) //https://stackoverflow.com/questions/56155148/how-to-avoid-the-onvalidate-method-from-being-called-in-prefab-mode
+    public static bool
+        PrefabModeIsActive(
+            GameObject gameObject) //https://stackoverflow.com/questions/56155148/how-to-avoid-the-onvalidate-method-from-being-called-in-prefab-mode
     {
 #if UNITY_EDITOR && UNITY_2018_3_OR_NEWER
-        UnityEditor.Experimental.SceneManagement.PrefabStage prefabStage = UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetPrefabStage(gameObject);
+
+#if UNITY_2021_3_OR_NEWER
+        UnityEditor.SceneManagement.PrefabStage prefabStage =
+            UnityEditor.SceneManagement.PrefabStageUtility.GetPrefabStage(gameObject);
+#else
+        UnityEditor.Experimental.SceneManagement.PrefabStage prefabStage =
+ UnityEditor.SceneManagement.PrefabStageUtility.GetPrefabStage(gameObject);
+#endif
+
+
+#else
         if (prefabStage != null)
             return true;
         if (UnityEditor.EditorUtility.IsPersistent(gameObject))
@@ -65,6 +86,7 @@ public static class zBench
     {
         ThrottledLog(message, gameObject);
     }
+
     public static void ThrottledLog(string message, GameObject gameObject = null)
     {
         float lastTime = 0;
@@ -85,6 +107,7 @@ public static class zBench
             if (throttledStrings.Count > throttledDictionaryLimit) throttledStrings.Clear();
         }
     }
+
     public static void DebugOnce(string message, GameObject gameObject = null)
     {
         if (!throttledStrings.ContainsKey(message))
@@ -93,14 +116,15 @@ public static class zBench
             Debug.Log("zBench.ONCE:" + message, gameObject);
         }
     }
+
     public static void FlagIfKeepsFiring(string label, int maxCallsInTime = 10, float time = 2)
     {
         if (callDictionary == null) callDictionary = new Dictionary<string, List<float>>();
         List<float> thisList = null;
         if (!callDictionary.TryGetValue(label, out thisList))
         {
-
         }
+
         if (thisList == null) thisList = new List<float>();
         thisList.Add(Time.time);
         callDictionary.Add(label, thisList);
@@ -108,11 +132,14 @@ public static class zBench
         {
             thisList.RemoveAt(0);
         }
+
         if (Time.time - thisList[0] < time)
         {
-            Debug.Log("Warning More than " + maxCallsInTime + " calls labeled " + label + " were executed during last " + time);
+            Debug.Log("Warning More than " + maxCallsInTime + " calls labeled " + label +
+                      " were executed during last " + time);
         }
     }
+
     public static string GetIPAddress()
     {
         if (Application.isPlaying)
@@ -126,8 +153,10 @@ public static class zBench
 
                     return ipaddress.ToString();
         }
+
         return "x.x.x.x";
     }
+
     /// <summary>
     /// Starts A System Diagnostics instance and adds it to a dictionary
     /// </summary>
@@ -144,22 +173,26 @@ public static class zBench
     {
         return Start(key);
     }
+
     public static int ElapsedMilliseconds(string key)
     {
         var sw = GetStopWatch(key);
         return (int)sw.ElapsedMilliseconds;
     }
+
     public static int ElapsedTicks(string key)
     {
         var sw = GetStopWatch(key);
         return (int)sw.ElapsedTicks;
     }
+
     public static int Pause(string key)
     {
         var sw = GetStopWatch(key);
         sw.Start();
         return (int)sw.ElapsedMilliseconds;
     }
+
     /// <summary>
     /// Ends the stopwatch and returns the number of millis it took. optionally prints debug
     /// </summary>
@@ -196,7 +229,6 @@ public static class zBench
     /// </summary>
     /// <param name="key"></param>
     /// <returns></returns>
-
     /// <summary>
     /// Ends the stopwatch and returns the number of ticks it took. optionally prints debug
     /// </summary>
