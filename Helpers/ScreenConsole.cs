@@ -68,19 +68,7 @@ namespace Z
         public void Clear()
         {
             eventList.Clear();
-        }
-
-        void RemoveLinesIfTooMany()
-        {
-            while ((eventList.Count > maxLines))
-                eventList.RemoveAt(0);
-        }
-
-        void RemoveLinesIfOld()
-        {
-            var currentTime = System.DateTime.Now;
-            while (eventList.Count > 0 && (currentTime - eventList[0].timeStamp > showSpan))
-                eventList.RemoveAt(0);
+            logDirty = true;
         }
 
         void CreateColorStrings()
@@ -155,8 +143,11 @@ namespace Z
                 if (logDirty)
                 {
                     if (eventList.Count == 0) yield return waiter; // might hang list line
-                    RemoveLinesIfTooMany();
-                    RemoveLinesIfOld();
+                    while ((eventList.Count > maxLines))
+                        eventList.RemoveAt(0);
+                    var currentTime = System.DateTime.Now;
+                    while (eventList.Count > 0 && (currentTime - eventList[0].timeStamp > showSpan))
+                        eventList.RemoveAt(0);
                     sb.Clear();
 
                     for (int i = 0; i < eventList.Count; i++)
