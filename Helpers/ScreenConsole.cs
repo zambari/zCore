@@ -200,8 +200,11 @@ namespace Z
             temp += "---\n";
             text.text = temp;
         }
-
+#if UNITY_EDITOR
         [InitializeOnLoadMethod]
+#else
+        [RuntimeInitializeOnLoadMethod]
+#endif
         static void Initialize()
         {
 #if UNITY_EDITOR

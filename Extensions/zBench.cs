@@ -62,7 +62,8 @@ public static class zBench
         PrefabModeIsActive(
             GameObject gameObject) //https://stackoverflow.com/questions/56155148/how-to-avoid-the-onvalidate-method-from-being-called-in-prefab-mode
     {
-#if UNITY_EDITOR && UNITY_2018_3_OR_NEWER
+#if UNITY_EDITOR
+#if UNITY_2018_3_OR_NEWER
 
 #if UNITY_2021_3_OR_NEWER
         UnityEditor.SceneManagement.PrefabStage prefabStage =
@@ -78,6 +79,7 @@ public static class zBench
             return true;
         if (UnityEditor.EditorUtility.IsPersistent(gameObject))
             return true;
+#endif
 #endif
         return false;
     }
@@ -208,13 +210,17 @@ public static class zBench
         if (print)
         {
             if (sw.ElapsedMilliseconds < 5)
-                Debug.Log("Time between starting and finih of [" + key + "] was  " + sw.ElapsedMilliseconds + " ms (or " + sw.ElapsedTicks + " ticks)");
+                Debug.Log("Time between starting and finih of [" + key + "] was  " + sw.ElapsedMilliseconds +
+                          " ms (or " + sw.ElapsedTicks + " ticks)");
             else
-                Debug.Log("Time between starting and finih of [" + key + "] was  " + sw.ElapsedMilliseconds + " ms (or " + sw.ElapsedTicks + " ticks)");
+                Debug.Log("Time between starting and finih of [" + key + "] was  " + sw.ElapsedMilliseconds +
+                          " ms (or " + sw.ElapsedTicks + " ticks)");
         }
+
         stopwatchdict.Remove(key);
         return (int)sw.ElapsedMilliseconds;
     }
+
     public static int EndMillis(string key, string message)
     {
         var sw = GetStopWatch(key);
@@ -239,10 +245,13 @@ public static class zBench
         if (print)
         {
             if (sw.ElapsedMilliseconds < 5)
-                Debug.Log("Time between starting and finih of [" + key + "] was  " + sw.ElapsedMilliseconds + " ms (or " + sw.ElapsedTicks + " ticks)");
+                Debug.Log("Time between starting and finih of [" + key + "] was  " + sw.ElapsedMilliseconds +
+                          " ms (or " + sw.ElapsedTicks + " ticks)");
             else
-                Debug.Log("Time between starting and finih of [" + key + "] was  " + sw.ElapsedMilliseconds + " ms (or " + sw.ElapsedTicks + " ticks)");
+                Debug.Log("Time between starting and finih of [" + key + "] was  " + sw.ElapsedMilliseconds +
+                          " ms (or " + sw.ElapsedTicks + " ticks)");
         }
+
         stopwatchdict.Remove(key);
         return sw.ElapsedTicks;
     }
