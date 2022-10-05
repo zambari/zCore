@@ -173,7 +173,7 @@ namespace Z
                     logDirty = false;
                 }
 
-                Debug.Log($"current char count {sb.Length}");
+                // Debug.Log($"current char count {sb.Length}");
                 yield return waiter;
             }
         }
