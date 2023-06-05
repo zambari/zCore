@@ -26,202 +26,183 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
+
 using Klak.Math;
+
 using UnityEngine;
+
 // transform gizmo version
 // hexagon psytrance verions
 // [DisallowMultipleComponent]
 public class BrownianMotionZ : MonoBehaviour
 {
-    #region Editable Properties
-    [Space]
-    [Header("Crazy festrival Edition")]
-    [Space]
-    [Header("Position")]
-    public bool _enablePositionNoise = false;
-    [Range(0, 2f)]
-    public float _positionFrequency = 0.5f;
+#region Editable Properties
+	[Space]
+	[Header("Crazy festrival Edition")]
+	[Space]
+	[Header("Position")]
+	public bool _enablePositionNoise = false;
 
-    [Range(0, 5)]
-    public float _positionAmplitude = 0.5f;
-    [Space]
-    [Header("Rotationf")]
-    public bool _enableRotationNoise = false;
-    [Range(0, 1.5f)]
-    public float _rotationFrequency = 0.5f;
-    [Range(0, 180f)]
-    public float _rotationAmplitude = 10.0f;
-    public Vector3 _positionScale = Vector3.one;
-    public Vector3 _rotationScale = new Vector3(0, 1, 1);
+	[Range(0, 2f)]
+	public float _positionFrequency = 0.5f;
 
-    [SerializeField, Range(1, 8)] int _positionFractalLevel = 3;
-    [SerializeField, Range(1, 8)] int _rotationFractalLevel = 3;
+	[Range(0, 5)]
+	public float _positionAmplitude = 0.5f;
 
-    #endregion
-    [ExposeMethodInEditor]
-    void resetPositionAndRotation()
-    {
-        transform.localPosition = Vector3.zero;
-        transform.localRotation = Quaternion.identity;
-    }
-    #region Public Properties And Methods
+	[Space]
+	[Header("Rotationf")]
+	public bool _enableRotationNoise = false;
 
-    public bool enablePositionNoise
-    {
-        get { return _enablePositionNoise; }
-        set { _enablePositionNoise = value; }
-    }
+	[Range(0, 1.5f)]
+	public float _rotationFrequency = 0.5f;
 
-    public bool enableRotationNoise
-    {
-        get { return _enableRotationNoise; }
-        set { _enableRotationNoise = value; }
-    }
+	[Range(0, 180f)]
+	public float _rotationAmplitude = 10.0f;
 
-    public float positionFrequency
-    {
-        get { return _positionFrequency; }
-        set { _positionFrequency = value; }
-    }
+	public Vector3 _positionScale = Vector3.one;
 
-    public float rotationFrequency
-    {
-        get { return _rotationFrequency; }
-        set { _rotationFrequency = value; }
-    }
+	public Vector3 _rotationScale = new Vector3(0, 1, 1);
 
-    public float positionAmplitude
-    {
-        get { return _positionAmplitude; }
-        set { _positionAmplitude = value; }
-    }
+	[SerializeField, Range(1, 8)]
+	private int _positionFractalLevel = 3;
 
-    public float rotationAmplitude
-    {
-        get { return _rotationAmplitude; }
-        set { _rotationAmplitude = value; }
-    }
+	[SerializeField, Range(1, 8)]
+	private int _rotationFractalLevel = 3;
+#endregion
 
-    public Vector3 positionScale
-    {
-        get { return _positionScale; }
-        set { _positionScale = value; }
-    }
+#region Public Properties And Methods
+	public bool enablePositionNoise
+	{
+		get { return _enablePositionNoise; }
+		set { _enablePositionNoise = value; }
+	}
 
-    public Vector3 rotationScale
-    {
-        get { return _rotationScale; }
-        set { _rotationScale = value; }
-    }
+	public bool enableRotationNoise
+	{
+		get { return _enableRotationNoise; }
+		set { _enableRotationNoise = value; }
+	}
 
-    public int positionFractalLevel
-    {
-        get { return _positionFractalLevel; }
-        set { _positionFractalLevel = value; }
-    }
+	public float positionFrequency
+	{
+		get { return _positionFrequency; }
+		set { _positionFrequency = value; }
+	}
 
-    public int rotationFractalLevel
-    {
-        get { return _rotationFractalLevel; }
-        set { _rotationFractalLevel = value; }
-    }
+	public float rotationFrequency
+	{
+		get { return _rotationFrequency; }
+		set { _rotationFrequency = value; }
+	}
 
-    public void Rehash()
-    {
-        for (var i = 0; i < 6; i++)
-            _time[i] = Random.Range(-10000.0f, 0.0f);
-    }
+	public float positionAmplitude
+	{
+		get { return _positionAmplitude; }
+		set { _positionAmplitude = value; }
+	}
 
-    #endregion
+	public float rotationAmplitude
+	{
+		get { return _rotationAmplitude; }
+		set { _rotationAmplitude = value; }
+	}
 
-    #region Private Members
+	public Vector3 positionScale
+	{
+		get { return _positionScale; }
+		set { _positionScale = value; }
+	}
 
-    const float _fbmNorm = 1 / 0.75f;
+	public Vector3 rotationScale
+	{
+		get { return _rotationScale; }
+		set { _rotationScale = value; }
+	}
 
-    Vector3 _initialPosition;
-    Quaternion _initialRotation;
-    float[] _time;
+	public int positionFractalLevel
+	{
+		get { return _positionFractalLevel; }
+		set { _positionFractalLevel = value; }
+	}
 
-    #endregion
+	public int rotationFractalLevel
+	{
+		get { return _rotationFractalLevel; }
+		set { _rotationFractalLevel = value; }
+	}
 
-    #region MonoBehaviour Functions
-    void Start()
-    {
-        _time = new float[6];
-        // TransformGizmo.onSelectionChanged += OnTransformGizmoSelection;
-        _initialPosition = transform.localPosition;
-        _initialRotation = transform.localRotation;
-        Rehash();
-    }
-    bool wasEnabled = true;
-    void OnTransformGizmoSelection()
-    {
-        if (this == null)
-        {
-            //            Debug.Log("zombie");
-            return;
-        }
-        // if (TransformGizmo.mainTargetRoot == transform)
-        // {
-        //     wasEnabled = enabled;
-        //     enabled = false;
-        // }
-        // else
-        // {
-        //     enabled = wasEnabled;
-        // }
-        // Debug.Log("brownian looks");
-    }
+	public void Rehash()
+	{
+		for (var i = 0; i < 6; i++) _time[i] = Random.Range(-10000.0f, 0.0f);
+	}
+#endregion
 
-    // void OnEnable()
-    // {
-    //     _initialPosition = transform.localPosition;
-    //     _initialRotation = transform.localRotation;
-    // }
+#region Private Members
+	private const float _fbmNorm = 1 / 0.75f;
 
-    // void OnDisable()
-    // {
-    //     _initialPosition = transform.localPosition;
-    //     _initialRotation = transform.localRotation;
-    // }
+	private Vector3 _initialPosition;
 
-    void Update()
-    {
-        var dt = Time.deltaTime;
+	private Quaternion _initialRotation;
 
-        if (_enablePositionNoise)
-        {
-            for (var i = 0; i < 3; i++)
-                _time[i] += _positionFrequency * _positionFrequency * _positionFrequency * dt;
+	private float[] _time;
+#endregion
 
-            var n = new Vector3(
-                Perlin.Fbm(_time[0], _positionFractalLevel),
-                Perlin.Fbm(_time[1], _positionFractalLevel),
-                Perlin.Fbm(_time[2], _positionFractalLevel));
+#region MonoBehaviour Functions
+	private void Start()
+	{
+		_time = new float[6];
 
-            n = Vector3.Scale(n, _positionScale);
-            n *= _positionAmplitude * _fbmNorm;
+		// TransformGizmo.onSelectionChanged += OnTransformGizmoSelection;
+		_initialPosition = transform.localPosition;
+		_initialRotation = transform.localRotation;
+		Rehash();
+	}
 
-            transform.localPosition = _initialPosition + n;
-        }
+	// bool wasEnabled = true;
+	protected virtual void OnTransformGizmoSelection() { }
 
-        if (_enableRotationNoise)
-        {
-            for (var i = 0; i < 3; i++)
-                _time[i + 3] += _rotationFrequency * _rotationFrequency * _rotationFrequency * dt;
+	private void Update()
+	{
+		var dt = Time.deltaTime;
 
-            var n = new Vector3(
-                Perlin.Fbm(_time[3], _rotationFractalLevel),
-                Perlin.Fbm(_time[4], _rotationFractalLevel),
-                Perlin.Fbm(_time[5], _rotationFractalLevel));
+		if (_enablePositionNoise)
+		{
+			for (var i = 0; i < 3; i++) _time[i] += _positionFrequency * _positionFrequency * _positionFrequency * dt;
 
-            n = Vector3.Scale(n, _rotationScale);
-            n *= _rotationAmplitude * _fbmNorm;
+			var n = new Vector3(
+				Perlin.Fbm(_time[0], _positionFractalLevel),
+				Perlin.Fbm(_time[1], _positionFractalLevel),
+				Perlin.Fbm(_time[2], _positionFractalLevel));
 
-            transform.localRotation =
-                Quaternion.Euler(n) * _initialRotation;
-        }
-    }
+			n = Vector3.Scale(n, _positionScale);
+			n *= _positionAmplitude * _fbmNorm;
 
-    #endregion
+			transform.localPosition = _initialPosition + n;
+		}
+
+		if (_enableRotationNoise)
+		{
+			for (var i = 0; i < 3; i++)
+				_time[i + 3] += _rotationFrequency * _rotationFrequency * _rotationFrequency * dt;
+
+			var n = new Vector3(
+				Perlin.Fbm(_time[3], _rotationFractalLevel),
+				Perlin.Fbm(_time[4], _rotationFractalLevel),
+				Perlin.Fbm(_time[5], _rotationFractalLevel));
+
+			n = Vector3.Scale(n, _rotationScale);
+			n *= _rotationAmplitude * _fbmNorm;
+
+			transform.localRotation =
+				Quaternion.Euler(n) * _initialRotation;
+		}
+	}
+#endregion
+
+	[ExposeMethodInEditor]
+	private void ResetPositionAndRotation()
+	{
+		transform.localPosition = Vector3.zero;
+		transform.localRotation = Quaternion.identity;
+	}
 }

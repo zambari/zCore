@@ -71,8 +71,8 @@ using UnityEditor;
 #endif
 public static class zExt
 {
-
-
+    private static System.Random random { get { if (_random == null) _random = new System.Random(Environment.TickCount); return _random; } }
+    private static System.Random _random;
     public static string RandomString(int length)
     {
         var builder = new System.Text.StringBuilder();
@@ -84,34 +84,11 @@ public static class zExt
         return builder.ToString();
     }
 
-    static readonly string pool = "abcdefghijklmnopqrstuvwxyz0123456789";
-    static readonly string poolLetters = "abcdefghijklmnopqrstuvwxyz";
-    // public static string RandomString(int length, float upperToLowerRatio)
-    // {
-    //     var builder = new System.Text.StringBuilder();
-    //     for (var i = 0; i < length; i++)
-    //     {
-    //         var c = pool[random.Next(0, pool.Length - 1)];
-    //         string s = c + "";
-    //         if (random.NextDouble() > upperToLowerRatio) s = s.ToLower();
-    //         else s = s.ToUpper();
-    //         builder.Append(c);
-    //     }
-    //     return builder.ToString();
-    // }
+    private const string pool = "abcdefghijklmnopqrstuvwxyz0123456789";
 
-    //     public static string RandomStringLetters(int length, float upperToLowerRatio)
-    // {
-    //     var builder = new System.Text.StringBuilder();
-    //     for (var i = 0; i < length; i++)
-    //     {
-    //         string s =poolLetters[random.Next(0, poolLetters.Length - 2)].ToString();
-    //     if (random.NextDouble() > upperToLowerRatio) s = s.ToLower();
-    //         else s = s.ToUpper();
-    //         builder.Append(c);
-    //     }
-    //     return builder.ToString();
-    // }
+    private const string poolLetters = "abcdefghijklmnopqrstuvwxyz";
+
+  
 
     public static string RandomStringLetters(int length = 16)
     {
@@ -124,8 +101,7 @@ public static class zExt
     }
 
 
-    static System.Random random { get { if (_random == null) _random = new System.Random(Environment.TickCount); return _random; } }
-    static System.Random _random;
+  
 
     public static void Swap<T>(ref T a, ref T b)
     {

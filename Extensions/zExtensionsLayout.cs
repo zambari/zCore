@@ -9,6 +9,7 @@ using UnityEditor;
 using Z;
 namespace zUI
 {
+    using ZUI;
 
     // v.0.4 merge with a more progressive branch
     // v.0.5 add child text

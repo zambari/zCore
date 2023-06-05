@@ -100,23 +100,7 @@ namespace Z
 
 
         }
-        // public static int ClampedMul(int arrayLength, float normalizedPointer)
-        // {
-        //     if (normalizedPointer < 0) normalizedPointer = 0;
-        //     int result = Mathf.FloorToInt(arrayLength * normalizedPointer);
-        //     if (result > arrayLength) //range check, and 1.0f border case handling
-        //         return arrayLength;
-        //     return result;
-        // }
-
-        // public static int ClampedMulFromInt(this int arrayLength, float normalizedPointer)
-        // {
-        //     return ClampedMul(arrayLength, normalizedPointer);
-        // }
-        // public static int ClampedMulFromFloat(this float normalizedPointer, int arrayLength)
-        // {
-        //     return ClampedMul(arrayLength, normalizedPointer);
-        // }
+       
 
     }
 }
