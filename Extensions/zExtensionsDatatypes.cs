@@ -15,6 +15,7 @@ using UnityEngine;
 /// v.07 b maxlen 
 /// v.08 list compare
 /// v.09 ilist compare
+/// v.10 duplicate firstitem etc removed
 namespace Z
 {
     public interface IEndianReverse
@@ -25,19 +26,7 @@ namespace Z
     public static class zExtensionDatatypes
     {
 
-        public static void CompareLists<T>(this IList<T> listA, IList<T> currentList, out List<T> added, out List<T> removed)
-        {
-            added = new List<T>();
-            removed = new List<T>();
-            for (int i = 0; i < listA.Count; i++)
-            {
-                if (!currentList.Contains(listA[i])) added.Add(listA[i]);
-            }
-            for (int i = 0; i < currentList.Count; i++)
-            {
-                if (!listA.Contains(currentList[i])) removed.Add(currentList[i]);
-            }
-        }
+   
         public static ulong GetHash(this string s)
         {
             return GetHashFromString(s);
@@ -58,8 +47,6 @@ namespace Z
 
         }
 
-
-
         public static float InversedSquare(this float f)
         {
             f = 1 - f;
@@ -74,6 +61,8 @@ namespace Z
             f = 1 - f;
             return f;
         }
+        
+        //todo:move
         public static string GetGameObjectPath(this GameObject g)
         {
             string path = g.name;
@@ -127,35 +116,31 @@ namespace Z
             bt[1] = t;
             return BitConverter.ToUInt32(bt, 0);
         }
-        public static T FirstItem<T>(this IList<T> src)
-        {
-            if (src == null || src.Count == 0) return default(T);
-            return src[0];
-        }
-
-        public static T LastItem<T>(this IList<T> src)
-        {
-            if (src == null || src.Count == 0) return default(T);
-            return src[src.Count - 1];
-        }
-        public static T MiddleItem<T>(this IList<T> src)
-        {
-            if (src == null || src.Count == 0) return default(T);
-            return src[src.Count / 2];
-        }
-
-        public static T RandomItem<T>(this IList<T> src)
-        {
-            if (src == null || src.Count == 0) return default(T);
-            return src[UnityEngine.Random.Range(0, src.Count)];
-        }
-
-        public static T ItemBasedOnNormalized<T>(this IList<T> src, float lerpAmt)
-        {
-            if (src == null || src.Count == 0) return default(T);
-
-            return src[IndexBasedOnNormalized(src, lerpAmt)];
-        }
+     
+        //
+        // public static T LastItem<T>(this IList<T> src)
+        // {
+        //     if (src == null || src.Count == 0) return default(T);
+        //     return src[src.Count - 1];
+        // }
+        // public static T MiddleItem<T>(this IList<T> src)
+        // {
+        //     if (src == null || src.Count == 0) return default(T);
+        //     return src[src.Count / 2];
+        // }
+        //
+        // // public static T RandomItem<T>(this IList<T> src)
+        // // {
+        // //     if (src == null || src.Count == 0) return default(T);
+        // //     return src[UnityEngine.Random.Range(0, src.Count)];
+        // // }
+        //
+        // public static T ItemBasedOnNormalized<T>(this IList<T> src, float lerpAmt)
+        // {
+        //     if (src == null || src.Count == 0) return default(T);
+        //
+        //     return src[IndexBasedOnNormalized(src, lerpAmt)];
+        // }
         public static int IndexBasedOnNormalized<T>(this IList<T> src, float lerpAmt)
         {
             if (src == null || src.Count == 0) return 0;
