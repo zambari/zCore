@@ -1,5 +1,7 @@
 # zCore
 
+_Edit: this repo aged badly. There are still useful snippets there - and I sometimes go back to pick a method or an extension, but overall its not something I would bring into a project in 2025 and onwards._
+
 A collection of useful snippets that I keep around for most projects. You may find it a bit bloated (at first), it doesn't do a single function, it's just a collection of non-coupled scripts that I often use. 
 
 With this release a lot of good code has been added (from the dev branch, but also quite a few bad or not really useful code has been removed. Well, not really removed, you can still find it in LessNeeded.zip, but at least it doesn't consume name space as much.
